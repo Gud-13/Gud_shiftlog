@@ -1039,6 +1039,39 @@ function updateDescriptionList() {
   ).join('');
 }
 
+function updateCategoryTags() {
+  const box = $('tkCategoryTags');
+  if (!box) return;
+  const categories = [
+    'Measurement System','SSD Issue','SSD Logistics','SCRIVE',
+    'Vehicle','Vehicle Service','Vehicle Handover','Vehicle Takeover',
+    'Logistics','Transfer','Organisational','Backpacks'
+  ];
+  box.innerHTML = categories.map(c =>
+    `<button type="button" class="desc-suggestion-btn" onclick="pickCategory('${esc(c)}')">${esc(c)}</button>`
+  ).join('');
+}
+
+function pickCategory(val) {
+  const input = $('tkCategory');
+  if (input) { input.value = val; input.dispatchEvent(new Event('input')); }
+  const box = $('tkCategoryTags');
+  if (box) box.style.display = 'none';
+  updateDescriptionList();
+}
+
+function toggleCategoryTags() {
+  const box = $('tkCategoryTags');
+  if (!box) return;
+  const isHidden = box.style.display === 'none' || !box.style.display;
+  if (isHidden) {
+    updateCategoryTags();
+    box.style.display = 'flex';
+  } else {
+    box.style.display = 'none';
+  }
+}
+
 function pickDescription(val) {
   const ta = $('tkDescription');
   if (ta) { ta.value = val; autoHeight(ta); }

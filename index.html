@@ -256,7 +256,11 @@
           </div>
           <div class="field">
             <label>Category</label>
-            <input type="text" id="tkCategory" placeholder="e.g. Measurement System" list="tkCategoryList">
+            <div class="input-with-btn">
+              <input type="text" id="tkCategory" placeholder="e.g. Measurement System" list="tkCategoryList" autocomplete="off"
+                oninput="updateDescriptionList()">
+              <button type="button" class="btn-tags-toggle" onclick="toggleCategoryTags()" title="Show categories">▾</button>
+            </div>
             <datalist id="tkCategoryList">
               <option value="Measurement System">
               <option value="SSD Issue">
@@ -271,6 +275,7 @@
               <option value="Organisational">
               <option value="Backpacks">
             </datalist>
+            <div id="tkCategoryTags" class="desc-suggestions" style="display:none"></div>
           </div>
           <div class="field">
             <label>Description</label>

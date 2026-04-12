@@ -780,3 +780,50 @@ body.dark .help-section-highlight {
   background: rgba(255,69,58,.08);
   border-color: rgba(255,69,58,.25);
 }
+
+/* ═══════════════════════════════════════════
+   MOBILE ADAPTATIONS (max-width: 500px)
+═══════════════════════════════════════════ */
+@media (max-width: 500px) {
+  /* Shift Parameters: верхний ряд 3 col → 1 col, нижний ряд 4 col → 2 col */
+  .shift-params-grid .field:nth-child(1) { grid-column: span 4; }
+  .shift-params-grid .field:nth-child(2) { grid-column: span 4; }
+  .shift-params-grid .field:nth-child(3) { grid-column: span 4; }
+  .shift-params-grid .field:nth-child(4) { grid-column: span 6; }
+  .shift-params-grid .field:nth-child(5) { grid-column: span 6; }
+  .shift-params-grid .field:nth-child(6) { grid-column: span 6; }
+  .shift-params-grid .field:nth-child(7) { grid-column: span 6; }
+
+  /* Ticket Settings: 3 col → 2 col */
+  .ticket-settings-grid .field:nth-child(1) { grid-column: span 3; }
+  .ticket-settings-grid .field:nth-child(2) { grid-column: span 3; }
+  .ticket-settings-grid .field:nth-child(3) { grid-column: span 6; }
+  .ticket-settings-grid .field:nth-child(4) { grid-column: span 3; }
+  .ticket-settings-grid .field:nth-child(5) { grid-column: span 3; }
+
+  /* Body textarea — меньше на мобильном */
+  #tkBody { min-height: 120px; }
+}
+
+/* Input с кнопкой ▾ для Category */
+.input-with-btn {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+.input-with-btn input { flex: 1; }
+.btn-tags-toggle {
+  flex-shrink: 0;
+  width: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--sub);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, border-color .15s;
+}
+.btn-tags-toggle:hover { border-color: var(--blue); color: var(--blue); }
