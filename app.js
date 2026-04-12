@@ -386,6 +386,7 @@ function _doSave() {
       country:    $('country').value,
       driverId:   $('driverId').value,
       operatorId: $('operatorId').value,
+      myRole:     document.querySelector('input[name="myRole"]:checked')?.value || '',
       notes:      $('notes').value,
       events,
       disks,
@@ -408,6 +409,10 @@ function loadState() {
     $('country').value    = s.country    || 'Germany';
     $('driverId').value   = s.driverId   || '1009';
     $('operatorId').value = s.operatorId || '1108';
+    if (s.myRole) {
+      const r = document.querySelector(`input[name="myRole"][value="${s.myRole}"]`);
+      if (r) r.checked = true;
+    }
     $('notes').value      = s.notes      || '';
     events       = s.events       || [];
     disks        = s.disks        || [];
@@ -754,10 +759,17 @@ function initFirebaseSync() {
     _fbRef.on('value', snapshot => {
       if (_fbIgnoreNext) { _fbIgnoreNext = false; return; }
       const data = snapshot.val();
-      if (data && Array.isArray(data)) {
-        disks = data;
+      if (!data) return;
+      // Поддерживаем оба формата: старый (массив) и новый (объект с meta)
+      const diskData = Array.isArray(data) ? data : data.disks;
+      if (diskData && Array.isArray(diskData)) {
+        disks = diskData;
         diskCounter = disks.length > 0 ? Math.max(...disks.map(d => d.id)) : 0;
         renderDisks();
+        // Показываем кто обновил
+        if (!Array.isArray(data) && data.updatedBy && data.lastUpdated) {
+          showToast(`🔄 ${data.lastUpdated} · ${data.updatedBy}`);
+        }
       }
     });
 
@@ -767,12 +779,26 @@ function initFirebaseSync() {
   }
 }
 
+function getMyName() {
+  const role = document.querySelector('input[name="myRole"]:checked')?.value;
+  if (role === 'driver') return `Dr. ${$('driverId').value || '?'}`;
+  if (role === 'operator') return `Op. ${$('operatorId').value || '?'}`;
+  return null;
+}
+
 function saveDiskToFirebase() {
   const vehicleId = getFBVehicleId();
   if (!vehicleId || vehicleId === 'default' || !_fbRef) return;
   try {
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    const name = getMyName();
     _fbIgnoreNext = true;
-    _fbRef.set(disks);
+    _fbRef.set({
+      disks,
+      lastUpdated: timeStr,
+      updatedBy: name || '',
+    });
   } catch(e) {
     console.warn('Firebase save error:', e);
   }
@@ -782,7 +808,6 @@ function saveDiskToFirebase() {
 function renderDisks() {
   const list = $('diskList');
   if (!list) return;
-  // Auto-sort: in use → empty → full
   const order = { 'in use': 0, 'empty': 1, 'full': 2 };
   const sorted = [...disks].sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
   list.innerHTML = sorted.map(dk => buildDiskRow(dk)).join('');
@@ -1454,13 +1479,23 @@ const HELP_DATA = {
       {
         icon: '📋', title: 'Shift Report',
         steps: [
-          ['Fill in Shift Parameters', 'Date · Vehicle ID · Mission ID · City (📍 auto-detect) · Country · Driver & Operator ID'],
+          ['Fill in Shift Parameters', 'Date · Vehicle ID · Mission ID · City (📍 auto-detect) · Country · Driver & Operator ID · <b>Select your role</b> (○ next to Driver ID or Operator ID) — required for disk sync'],
           ['Add events via Quick Add', 'Tap a button → event is created with current time. Orange = System DT, Blue = Org DT'],
-          ['Complete each event card', 'Start/End time · KM start→end (Enter copies to end) · Address 📍 · For DT events: pick comment from dropdown, tap ✏️ to edit the text (e.g. replace A→Frankfurt, B→Paris)'],
+          ['Complete each event card', 'Start/End time · KM start→end (Enter copies to end) · Address 📍 · For DT events: pick comment from dropdown, tap ✏️ to edit text (e.g. replace A→Frankfurt, B→Paris)'],
           ['Preview & Copy', 'Generates a full formatted report and copies it to clipboard — paste in WhatsApp or email'],
           ['New Shift', 'Saves current shift to History, clears all events. Disk data is preserved.'],
         ],
         tip: '⏱ Open event timer warns you after 30 min — close events on time.',
+      },
+      {
+        icon: '👤', title: 'Your Role — Important',
+        items: [
+          '<b>Every team member must select their role</b> before starting the shift',
+          'Select ○ next to <b>Driver ID</b> if you are the driver',
+          'Select ○ next to <b>Operator ID</b> if you are the operator',
+          'This identifies who made changes to Disk Status — visible to the whole team in real time',
+          'Your role is saved automatically — no need to select again after page refresh',
+        ],
       },
       {
         icon: '💾', title: 'Disk Status',
@@ -1470,16 +1505,17 @@ const HELP_DATA = {
           'For <b>in use</b>: enter available TB → fill % is calculated from 90 TB total capacity',
           'Progress bar color: green → yellow → red as disk fills up',
           '<b>📋 Copy report</b> — formatted text ready to paste in WhatsApp',
+          '🔄 <b>Real-time sync</b> — all devices with the same Vehicle ID see the same disks instantly',
         ],
       },
       {
         icon: '🎫', title: 'Ticket',
         steps: [
           ['Ticket Settings (once)', 'Fill in Team Leader, Vehicle, Plate, Phones, Location — saved permanently to the device'],
-          ['Choose a template', 'SSD Logistics: Sending / Receiving / Both → replace [SSD ID] and [tracking number] placeholders'],
-          ['Copy Ticket', 'Tap 📋 Copy Ticket → paste directly into WhatsApp or email. ✕ Clear resets the fields.'],
+          ['Choose a template', 'Tap the template field → select from list: SSD Logistics, Vehicle Handover/Takeover, Backpack Handover/Takeover → fill in placeholders'],
+          ['Select category', 'Tap Category field → bottom sheet opens with full list. For Measurement System: description suggestions appear automatically'],
+          ['Copy Ticket', 'Tap 📋 Copy Ticket → paste directly into WhatsApp. ✕ Clear resets all fields. 📖 Manual opens ticket rules.'],
           ['Copy Update', 'Type update text in the Update block → 📤 Copy Update. ✕ Clear resets the update field.'],
-          ['Copy Update', 'Type the update text → 📤 Copy Update — "Update:" prefix is added automatically'],
         ],
       },
       {
@@ -1542,18 +1578,29 @@ const HELP_DATA = {
       },
     ],
   },
-  ro: {
+
+    ro: {
     sections: [
       {
         icon: '📋', title: 'Shift Report',
         steps: [
-          ['Completați Shift Parameters', 'Dată · ID vehicul · ID misiune · Oraș (📍 detectare automată) · Țară · ID șofer & operator'],
+          ['Completați Shift Parameters', 'Dată · ID vehicul · ID misiune · Oraș (📍 detectare automată) · Țară · ID șofer & operator · <b>Selectați rolul</b> (○ lângă Driver ID sau Operator ID) — obligatoriu pentru sincronizarea discurilor'],
           ['Adăugați evenimente', 'Apăsați buton → eveniment creat cu ora curentă. Portocaliu = System DT, Albastru = Org DT'],
-          ['Completați cardul evenimentului', 'Ora start/end · KM start→end (Enter copiază) · Adresă 📍 · Selectați comentariu din dropdown, apăsați ✏️ pentru a edita textul (ex. înlocuiți A→Frankfurt, B→Paris)'],
+          ['Completați cardul evenimentului', 'Ora start/end · KM start→end (Enter copiază) · Adresă 📍 · Selectați comentariu din dropdown, apăsați ✏️ pentru a edita textul'],
           ['Preview & Copy', 'Generează raport complet și îl copiază în clipboard — lipiți în WhatsApp sau email'],
           ['New Shift', 'Salvează în History, șterge evenimentele. Discurile rămân.'],
         ],
         tip: '⏱ Timerul evenimentelor deschise avertizează după 30 min — închideți la timp.',
+      },
+      {
+        icon: '👤', title: 'Rolul tău — Important',
+        items: [
+          '<b>Fiecare membru al echipei trebuie să selecteze rolul</b> înainte de a începe schimbul',
+          'Selectați ○ lângă <b>Driver ID</b> dacă sunteți șofer',
+          'Selectați ○ lângă <b>Operator ID</b> dacă sunteți operator',
+          'Aceasta identifică cine a făcut modificări la Disk Status — vizibil pentru toată echipa în timp real',
+          'Rolul se salvează automat — nu trebuie selectat din nou după reîncărcarea paginii',
+        ],
       },
       {
         icon: '💾', title: 'Disk Status',
@@ -1563,14 +1610,16 @@ const HELP_DATA = {
           'Pentru <b>in use</b>: introduceți TB disponibili → % se calculează din 90 TB total',
           'Bara de progres: verde → galben → roșu pe măsură ce discul se umple',
           '<b>📋 Copy report</b> — text formatat gata de lipit în WhatsApp',
+          '🔄 <b>Sincronizare în timp real</b> — toate dispozitivele cu același Vehicle ID văd aceleași discuri instant',
         ],
       },
       {
         icon: '🎫', title: 'Ticket',
         steps: [
           ['Ticket Settings (o dată)', 'Team Leader, Vehicul, Înmatriculare, Telefoane, Locație — salvate permanent pe dispozitiv'],
-          ['Selectați template', 'SSD Logistics: Sending / Receiving / Both → înlocuiți [SSD ID] și [tracking number]'],
-          ['Copy Ticket', 'Apăsați 📋 Copy Ticket → lipiți direct în WhatsApp. ✕ Clear resetează câmpurile.'],
+          ['Selectați template', 'Apăsați câmpul template → selectați din listă: SSD Logistics, Vehicle Handover/Takeover, Backpack Handover/Takeover → completați placeholder-ele'],
+          ['Selectați categoria', 'Apăsați câmpul Category → se deschide lista completă. Pentru Measurement System: sugestii de descriere apar automat'],
+          ['Copy Ticket', 'Apăsați 📋 Copy Ticket → lipiți direct în WhatsApp. ✕ Clear resetează câmpurile. 📖 Manual deschide regulile.'],
           ['Copy Update', 'Scrieți textul în blocul Update → 📤 Copy Update. ✕ Clear resetează câmpul.'],
         ],
       },
@@ -1634,18 +1683,29 @@ const HELP_DATA = {
       },
     ],
   },
-  ru: {
+
+    ru: {
     sections: [
       {
         icon: '📋', title: 'Shift Report',
         steps: [
-          ['Заполни Shift Parameters', 'Дата · Vehicle ID · Mission ID · Город (📍 автоопределение) · Страна · Driver & Operator ID'],
+          ['Заполни Shift Parameters', 'Дата · Vehicle ID · Mission ID · Город (📍 автоопределение) · Страна · Driver & Operator ID · <b>Выбери свою роль</b> (○ рядом с Driver ID или Operator ID) — обязательно для синхронизации дисков'],
           ['Добавляй события через Quick Add', 'Нажми кнопку → событие с текущим временем. Оранжевый = System DT, Синий = Org DT'],
-          ['Заполни карточку события', 'Время start/end · KM start→end (Enter копирует) · Адрес 📍 · Для DT: выбери комментарий из dropdown, нажми ✏️ для редактирования текста (например замени A→Франкфурт, B→Париж)'],
+          ['Заполни карточку события', 'Время start/end · KM start→end (Enter копирует) · Адрес 📍 · Для DT: выбери комментарий из dropdown, нажми ✏️ для редактирования текста'],
           ['Preview & Copy', 'Генерирует полный отчёт и копирует в буфер — вставляй в WhatsApp или email'],
           ['New Shift', 'Сохраняет смену в историю, очищает события. Данные дисков сохраняются.'],
         ],
         tip: '⏱ Таймер открытых событий предупреждает через 30 мин — закрывай вовремя.',
+      },
+      {
+        icon: '👤', title: 'Твоя роль — Важно',
+        items: [
+          '<b>Каждый член команды обязан выбрать свою роль</b> перед началом смены',
+          'Выбери ○ рядом с <b>Driver ID</b> если ты водитель',
+          'Выбери ○ рядом с <b>Operator ID</b> если ты оператор',
+          'Это определяет кто вносил изменения в Disk Status — видно всей команде в реальном времени',
+          'Роль сохраняется автоматически — не нужно выбирать повторно после перезагрузки',
+        ],
       },
       {
         icon: '💾', title: 'Disk Status',
@@ -1655,14 +1715,16 @@ const HELP_DATA = {
           'Для <b>in use</b>: введи доступные TB → % заполненности считается от 90 TB',
           'Цвет прогресс-бара: зелёный → жёлтый → красный по мере заполнения',
           '<b>📋 Copy report</b> — форматированный текст для вставки в WhatsApp',
+          '🔄 <b>Синхронизация в реальном времени</b> — все устройства с одинаковым Vehicle ID видят одни и те же диски мгновенно',
         ],
       },
       {
         icon: '🎫', title: 'Ticket',
         steps: [
           ['Ticket Settings (один раз)', 'Тимлидер, Авто, Номер, Телефоны, Адрес — сохраняются навсегда на устройстве'],
-          ['Выбери шаблон', 'SSD Logistics: Sending / Receiving / Both → замени [SSD ID] и [tracking number]'],
-          ['Copy Ticket', 'Нажми 📋 Copy Ticket → вставляй напрямую в WhatsApp. ✕ Clear сбрасывает поля.'],
+          ['Выбери шаблон', 'Нажми поле Template → выбери из списка: SSD Logistics, Vehicle Handover/Takeover, Backpack Handover/Takeover → заполни плейсхолдеры'],
+          ['Выбери категорию', 'Нажми поле Category → открывается полный список. Для Measurement System: подсказки для Description появляются автоматически'],
+          ['Copy Ticket', 'Нажми 📋 Copy Ticket → вставляй напрямую в WhatsApp. ✕ Clear сбрасывает все поля. 📖 Manual открывает правила тикета.'],
           ['Copy Update', 'Введи текст в блоке Update → 📤 Copy Update. ✕ Clear сбрасывает поле обновления.'],
         ],
       },
@@ -1726,89 +1788,4 @@ const HELP_DATA = {
       },
     ],
   },
-};
-function openHelp() {
-  renderHelp(_helpLang);
-  $('helpOverlay').classList.add('open');
 }
-
-function renderHelp(lang) {
-  _helpLang = lang;
-  localStorage.setItem('helpLang', lang);
-  const data = HELP_DATA[lang];
-  document.querySelectorAll('.lang-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.lang === lang);
-  });
-
-  $('helpContent').innerHTML = data.sections.map(sec => {
-    const body = sec.steps
-      ? `<div class="help-steps">${sec.steps.map((s, i) => `
-          <div class="help-step">
-            <div class="help-step-num">${i+1}</div>
-            <div class="help-step-body">
-              <div class="help-step-title">${s[0]}</div>
-              <div class="help-step-sub">${s[1]}</div>
-            </div>
-          </div>`).join('')}</div>`
-      : `<div class="help-items">${sec.items.map(it =>
-          `<div class="help-item">${it}</div>`).join('')}</div>`;
-
-    const tip = sec.tip ? `<div class="help-tip">${sec.tip}</div>` : '';
-    const highlightClass = sec.highlight ? ' help-section-highlight' : '';
-
-    return `<div class="help-section${highlightClass}">
-      <div class="help-section-header">
-        <span class="help-section-icon">${sec.icon}</span>
-        <span class="help-section-title">${sec.title}</span>
-      </div>
-      ${body}${tip}
-    </div>`;
-  }).join('');
-}
-
-function initHelp() {
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', () => renderHelp(btn.dataset.lang));
-  });
-}
-
-
-/* ───────────────────────────────────────────
-   INIT
-─────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => {
-  // Set today's date
-  $('shiftDate').value = new Date().toISOString().slice(0,10);
-
-  // Load saved state
-  const restored = loadState();
-
-  // Render UI
-  renderEvents();
-  renderDisks();
-  renderDocs();
-
-  // Init modules
-  initTheme();
-  initClock();
-  initNav();
-  initQuickAdd();
-  initGeo();
-  initModals();
-  initTicket();
-  initHelp();
-  bindEnterBlur();
-  bindAutoSave();
-
-  startEventTimers();
-
-  // Firebase sync — запускаем когда Vehicle ID заполнен
-  setTimeout(() => initFirebaseSync(), 500);
-
-  // Переподключаемся при смене Vehicle ID
-  $('vehicleId').addEventListener('change', () => {
-    initFirebaseSync();
-  });
-
-  if (restored) showToast('Shift data restored');
-});

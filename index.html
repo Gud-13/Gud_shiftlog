@@ -112,11 +112,23 @@
             </div>
             <div class="field">
               <label>Driver ID</label>
-              <input type="text" id="driverId" placeholder="1009">
+              <div class="field-with-radio">
+                <input type="text" id="driverId" placeholder="1009">
+                <label class="radio-role">
+                  <input type="radio" name="myRole" value="driver" id="roleDriver">
+                  <span class="radio-dot"></span>
+                </label>
+              </div>
             </div>
             <div class="field">
               <label>Operator ID</label>
-              <input type="text" id="operatorId" placeholder="1108">
+              <div class="field-with-radio">
+                <input type="text" id="operatorId" placeholder="1108">
+                <label class="radio-role">
+                  <input type="radio" name="myRole" value="operator" id="roleOperator">
+                  <span class="radio-dot"></span>
+                </label>
+              </div>
             </div>
           </div>
         </div>

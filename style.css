@@ -895,3 +895,48 @@ body.dark .btn-sheet-select { background: #2c2c2e; color: var(--muted); }
 }
 .sheet-item:last-child { border-bottom: none; }
 .sheet-item:active { color: var(--blue); }
+
+/* Radio role selector рядом с Driver/Operator ID */
+.field-with-radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.field-with-radio input[type=text] { flex: 1; }
+
+.radio-role {
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+.radio-role input[type=radio] {
+  display: none;
+}
+.radio-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  transition: border-color .15s, background .15s;
+  position: relative;
+  flex-shrink: 0;
+}
+.radio-dot::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: transparent;
+  transition: background .15s;
+}
+.radio-role input[type=radio]:checked + .radio-dot {
+  border-color: var(--green);
+}
+.radio-role input[type=radio]:checked + .radio-dot::after {
+  background: var(--green);
+}
