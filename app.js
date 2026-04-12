@@ -727,8 +727,58 @@ function initQuickAdd() {
 
 
 /* ───────────────────────────────────────────
-   DISK STATUS
+   FIREBASE SYNC — DISK STATUS
 ─────────────────────────────────────────── */
+let _fbRef = null;
+let _fbListening = false;
+let _fbIgnoreNext = false;
+
+function getFBVehicleId() {
+  return ($('vehicleId')?.value || 'default').replace(/[.#$\[\]\/]/g, '_');
+}
+
+function initFirebaseSync() {
+  const vehicleId = getFBVehicleId();
+  if (!vehicleId || vehicleId === 'default') return;
+
+  // Отписываемся от предыдущего listener
+  if (_fbRef && _fbListening) {
+    _fbRef.off();
+    _fbListening = false;
+  }
+
+  try {
+    _fbRef = db.ref(`disks/${vehicleId}`);
+    _fbListening = true;
+
+    _fbRef.on('value', snapshot => {
+      if (_fbIgnoreNext) { _fbIgnoreNext = false; return; }
+      const data = snapshot.val();
+      if (data && Array.isArray(data)) {
+        disks = data;
+        diskCounter = disks.length > 0 ? Math.max(...disks.map(d => d.id)) : 0;
+        renderDisks();
+      }
+    });
+
+    showToast(`🔄 Disks synced: ${vehicleId}`);
+  } catch(e) {
+    console.warn('Firebase sync error:', e);
+  }
+}
+
+function saveDiskToFirebase() {
+  const vehicleId = getFBVehicleId();
+  if (!vehicleId || vehicleId === 'default' || !_fbRef) return;
+  try {
+    _fbIgnoreNext = true;
+    _fbRef.set(disks);
+  } catch(e) {
+    console.warn('Firebase save error:', e);
+  }
+}
+
+
 function renderDisks() {
   const list = $('diskList');
   if (!list) return;
@@ -806,6 +856,7 @@ function addDisk() {
   disks.push({ id: ++diskCounter, diskId: '', status: 'empty', percent: '' });
   renderDisks();
   saveState();
+  saveDiskToFirebase();
 }
 
 function removeDisk(id) {
@@ -813,12 +864,13 @@ function removeDisk(id) {
     disks = disks.filter(d => d.id !== id);
     renderDisks();
     saveState();
+    saveDiskToFirebase();
   });
 }
 
 function updateDisk(id, field, value) {
   const dk = disks.find(d => d.id === id);
-  if (dk) { dk[field] = value; saveState(); }
+  if (dk) { dk[field] = value; saveState(); saveDiskToFirebase(); }
 }
 
 function copyDiskStatus() {
@@ -1749,6 +1801,14 @@ document.addEventListener('DOMContentLoaded', () => {
   bindAutoSave();
 
   startEventTimers();
+
+  // Firebase sync — запускаем когда Vehicle ID заполнен
+  setTimeout(() => initFirebaseSync(), 500);
+
+  // Переподключаемся при смене Vehicle ID
+  $('vehicleId').addEventListener('change', () => {
+    initFirebaseSync();
+  });
 
   if (restored) showToast('Shift data restored');
 });

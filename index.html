@@ -17,6 +17,22 @@
   <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAY_VTTI9xIwS8G1hLP_VhVsx6uPV5W7wg",
+      authDomain: "shiftlog-1575f.firebaseapp.com",
+      databaseURL: "https://shiftlog-1575f-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "shiftlog-1575f",
+      storageBucket: "shiftlog-1575f.firebasestorage.app",
+      messagingSenderId: "1061518700733",
+      appId: "1:1061518700733:web:c73464b690ad74ec9f07d4"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
 </head>
 <body>
 
