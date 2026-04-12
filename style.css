@@ -734,9 +734,9 @@ body.dark .btn-manual-ticket { color: #30d158; border-color: rgba(48,209,88,.35)
 .desc-suggestion-btn {
   padding: 5px 10px;
   border-radius: 20px;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--sub);
+  border: 1px solid var(--blue);
+  background: rgba(0,113,227,.06);
+  color: var(--blue);
   font-size: 11px;
   font-weight: 500;
   font-family: inherit;
@@ -746,14 +746,12 @@ body.dark .btn-manual-ticket { color: #30d158; border-color: rgba(48,209,88,.35)
   white-space: normal;
 }
 .desc-suggestion-btn:hover {
-  border-color: var(--blue);
-  color: var(--blue);
-  background: var(--white);
+  background: rgba(0,113,227,.12);
 }
 body.dark .desc-suggestion-btn {
-  background: #2c2c2e;
-  border-color: var(--border);
-  color: var(--sub);
+  border-color: rgba(10,132,255,.5);
+  background: rgba(10,132,255,.1);
+  color: #0a84ff;
 }
 
 /* Highlight секция в Manual (Valeo Windows Login) */
@@ -852,7 +850,10 @@ body.dark .help-section-highlight {
   /* iOS Safari специфичный фикс уже есть через safe-area */
 }
 
-/* Убираем выделение текста при тапе на кнопки */
+/* Убираем часы на мобильном — мало места */
+@media (max-width: 500px) {
+  .header-center { display: none; }
+}
 .q-btn, .nav-btn, .btn-primary, .btn-secondary,
 .btn-add-event, .btn-geo, .btn-remove, .btn-copy-small,
 .desc-suggestion-btn, .btn-tags-toggle, .btn-comment-edit {

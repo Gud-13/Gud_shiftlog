@@ -1,23 +1,25 @@
 {
-  "name": "ShiftLog",
+  "name": "VW ShiftLog",
   "short_name": "ShiftLog",
-  "description": "ADAS VW ShiftLog — shift reporting tool",
+  "description": "ADAS Valeo VW ShiftLog — shift reporting tool",
   "start_url": "/Gud_shiftlog/",
   "scope": "/Gud_shiftlog/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f2f2f7",
-  "theme_color": "#000000",
+  "background_color": "#111111",
+  "theme_color": "#111111",
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
