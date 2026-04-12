@@ -759,10 +759,10 @@ function initFirebaseSync() {
     _fbRef.on('value', snapshot => {
       if (_fbIgnoreNext) { _fbIgnoreNext = false; return; }
       const data = snapshot.val();
-      if (!data) return;
+      if (!data) return; // База пустая — не трогаем локальные данные
       // Поддерживаем оба формата: старый (массив) и новый (объект с meta)
       const diskData = Array.isArray(data) ? data : data.disks;
-      if (diskData && Array.isArray(diskData)) {
+      if (diskData && Array.isArray(diskData) && diskData.length > 0) {
         disks = diskData;
         diskCounter = disks.length > 0 ? Math.max(...disks.map(d => d.id)) : 0;
         renderDisks();
@@ -794,6 +794,7 @@ function saveDiskToFirebase() {
     const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
     const name = getMyName();
     _fbIgnoreNext = true;
+    setTimeout(() => { _fbIgnoreNext = false; }, 2000);
     _fbRef.set({
       disks,
       lastUpdated: timeStr,
