@@ -827,3 +827,35 @@ body.dark .help-section-highlight {
   transition: background .15s, border-color .15s;
 }
 .btn-tags-toggle:hover { border-color: var(--blue); color: var(--blue); }
+
+/* ═══════════════════════════════════════════
+   PWA / STANDALONE MODE FIXES
+═══════════════════════════════════════════ */
+
+/* Когда открыто как PWA — добавляем отступ сверху для status bar */
+@media (display-mode: standalone) {
+  .header {
+    padding-top: env(safe-area-inset-top);
+    height: calc(52px + env(safe-area-inset-top));
+  }
+  .bottom-nav {
+    height: calc(64px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .main {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Фикс для Chrome Android — дополнительный отступ снизу */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari специфичный фикс уже есть через safe-area */
+}
+
+/* Убираем выделение текста при тапе на кнопки */
+.q-btn, .nav-btn, .btn-primary, .btn-secondary,
+.btn-add-event, .btn-geo, .btn-remove, .btn-copy-small,
+.desc-suggestion-btn, .btn-tags-toggle, .btn-comment-edit {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
