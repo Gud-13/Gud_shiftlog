@@ -17,6 +17,8 @@
       <div class="header-brand">
         <span class="header-logo">ADAS</span>
         <div class="header-sep"></div>
+        <span class="header-logo">VW</span>
+        <div class="header-sep"></div>
         <span class="header-logo">ShiftLog</span>
       </div>
       <div class="header-center">
@@ -230,7 +232,10 @@
       <div class="card" data-accent="green">
         <div class="card-header">
           <span class="card-title">Ticket</span>
-          <span class="card-badge green">new ticket</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <button class="btn-manual-ticket" id="btnTicketManual">📖 Manual</button>
+            <span class="card-badge green">new ticket</span>
+          </div>
         </div>
         <div class="card-body">
           <div class="field">
@@ -238,31 +243,39 @@
               <span>Template</span>
               <button class="btn-link" id="btnClearTicket">✕ Clear</button>
             </label>
-            <select id="tkTemplate">
-              <option value="">— select template —</option>
-              <option value="ssd_send">📦 SSD Logistics — Sending</option>
-              <option value="ssd_receive">📦 SSD Logistics — Receiving</option>
-              <option value="ssd_both">📦 SSD Logistics — Sending &amp; Receiving</option>
-            </select>
+            <input type="text" id="tkTemplate" placeholder="— select or type template —" list="tkTemplateList" autocomplete="off">
+            <datalist id="tkTemplateList">
+              <option value="SSD Logistics — Sending">
+              <option value="SSD Logistics — Receiving">
+              <option value="SSD Logistics — Sending &amp; Receiving">
+              <option value="Vehicle Handover">
+              <option value="Vehicle Takeover">
+              <option value="Backpack Handover">
+              <option value="Backpack Takeover">
+            </datalist>
           </div>
           <div class="field">
             <label>Category</label>
             <input type="text" id="tkCategory" placeholder="e.g. Measurement System" list="tkCategoryList">
             <datalist id="tkCategoryList">
               <option value="Measurement System">
-              <option value="ECU">
-              <option value="Recording Tool (VPI)">
-              <option value="Touch Display">
-              <option value="Prelabel Tool">
               <option value="SSD Issue">
               <option value="SSD Logistics">
+              <option value="SCRIVE">
               <option value="Vehicle">
-              <option value="Other">
+              <option value="Vehicle Service">
+              <option value="Vehicle Handover">
+              <option value="Vehicle Takeover">
+              <option value="Logistics">
+              <option value="Transfer">
+              <option value="Organisational">
+              <option value="Backpacks">
             </datalist>
           </div>
           <div class="field">
             <label>Description</label>
             <textarea id="tkDescription" rows="1" placeholder="Short description of the issue…"></textarea>
+            <div id="tkDescSuggestions" class="desc-suggestions"></div>
           </div>
           <div class="field">
             <label>Body text (Dear Partners…)</label>
@@ -279,7 +292,10 @@
       <div class="card" data-accent="amber" style="margin-top:10px">
         <div class="card-header">
           <span class="card-title">Update</span>
-          <span class="card-badge amber">to existing ticket</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <button class="btn-link" id="btnClearUpdate">✕ Clear</button>
+            <span class="card-badge amber">to existing ticket</span>
+          </div>
         </div>
         <div class="card-body">
           <div class="field">

@@ -24,6 +24,74 @@ const TICKET_DEFAULTS = {
 
 const TICKET_FIELDS = ['tkLeader','tkVehicle','tkPlate','tkVwPhone','tkCapPhone','tkLocation'];
 
+// Подсказки Description в зависимости от Category
+const CATEGORY_DESCRIPTIONS = {
+  'Measurement System': [
+    'Measurement System Issues',
+    'ECU — not booting up at startup',
+    'ECU — crash in TeraTerm',
+    'ECU — errors / dummy in TeraTerm',
+    'Recording Tool (VPI) — error at startup',
+    'Recording Tool (VPI) — recording stops by itself',
+    'Recording Tool (VPI) — cannot stop recording',
+    'Recording Tool (VPI) — camera failure',
+    'Recording Tool (VPI) — freeze, record button cannot be pressed',
+    'Touch Display — disconnecting',
+    'Touch Display — not working',
+    'Prelabel Tool — annotation tool freezes',
+    'Network not initializing after PC boot-up',
+    'Disk not available after PC boot-up',
+    'Keyboard stopped working',
+  ],
+  'SSD Issue': [
+    'SSD Issue — LIVE displays "no volume" on Seagate device',
+    'SSD Issue — disk not recognized',
+  ],
+  'SSD Logistics': [
+    'SSD Logistics — Sending',
+    'SSD Logistics — Receiving',
+    'SSD Logistics — Sending & Receiving',
+  ],
+  'Vehicle': [
+    'Vehicle Handover',
+    'Vehicle Takeover',
+    'General vehicle damage',
+    'Vehicle involved in accident',
+  ],
+  'Vehicle Service': [
+    'Inspection required',
+    'Oil change required',
+    'Tire change required',
+    'Wrong or worn tires',
+  ],
+  'Transfer': [
+    'Transfer by test car',
+    'Transfer by train / plane',
+  ],
+  'Organisational': [
+    'No SSD available — standby',
+    'Team member sick leave',
+    'Stopped by police',
+    'Vehicle burglary',
+  ],
+  'Backpacks': [
+    'Backpack — missing equipment',
+    'Backpack — damage',
+  ],
+  'Logistics': [
+    'Backpack handover completed',
+    'Backpack takeover completed',
+  ],
+  'SCRIVE': [
+    'SCRIVE — cannot log in',
+    'SCRIVE — protocol not submitting',
+    'SCRIVE — data missing',
+    'SCRIVE — start city missing',
+    'SCRIVE — route missing',
+    'SCRIVE — SSD missing',
+  ],
+};
+
 const DT_TYPES = new Set([
   'dt_ssd_issue','dt_ssd_logistics','dt_cleaning','dt_standby','dt_low_speed',
   'dt_vpi','dt_display','dt_prelabel','dt_ecu','dt_ssd_change','dt_measurement',
@@ -113,20 +181,40 @@ const DT_COMMENTS = {
 };
 
 const TICKET_TEMPLATES = {
-  ssd_send: {
+  'SSD Logistics — Sending': {
     category: 'SSD Logistics',
-    description: '',
+    description: 'SSD Logistics — Sending',
     body: 'The team has successfully shipped the following cases with SSD storage via UPS:\n• [SSD ID]\nTracking Number: [tracking number]\n\n• [SSD ID]\nTracking Number: [tracking number]',
   },
-  ssd_receive: {
+  'SSD Logistics — Receiving': {
     category: 'SSD Logistics',
-    description: '',
+    description: 'SSD Logistics — Receiving',
     body: 'The team has successfully collected the following SSD storage cases from the UPS access point:\n• [SSD ID]\n• [SSD ID]',
   },
-  ssd_both: {
+  'SSD Logistics — Sending & Receiving': {
     category: 'SSD Logistics',
-    description: '',
+    description: 'SSD Logistics — Sending & Receiving',
     body: 'The team has successfully shipped the following cases with SSD storage via UPS:\n• [SSD ID]\nTracking Number: [tracking number]\n\nThe team has also collected the following SSD storage cases from the UPS access point:\n• [SSD ID]\n• [SSD ID]',
+  },
+  'Vehicle Handover': {
+    category: 'Vehicle',
+    description: 'Vehicle Handover',
+    body: 'The team handed over the vehicle at [location] to [person/company].\nThe vehicle was inspected before the handover. All equipment and items inside the vehicle were checked and documented in the handover protocol.\nThe vehicle was also inspected externally. All visible damages, scratches, and tire tread depth were recorded in the handover protocol.\nThe team completed all required handover procedures.\nThe handover protocol is attached.',
+  },
+  'Vehicle Takeover': {
+    category: 'Vehicle',
+    description: 'Vehicle Takeover',
+    body: 'The team took over the vehicle at [location] from [person/company].\nThe vehicle was inspected during the takeover. All equipment and items inside the vehicle were checked and documented in the handover protocol.\nThe vehicle was also inspected externally. All visible damages, scratches, and tire tread depth were recorded in the handover protocol.\nThe team will proceed with the planned operations.\nThe handover protocol is attached.',
+  },
+  'Backpack Handover': {
+    category: 'Logistics',
+    description: 'Backpack handover completed',
+    body: 'The team handed over the backpack at [location] to [person/company].\nThe backpack and all included equipment were checked before the handover and documented.\nThe handover protocol is attached.',
+  },
+  'Backpack Takeover': {
+    category: 'Logistics',
+    description: 'Backpack takeover completed',
+    body: 'The team took over the backpack at [location] from [person/company].\nThe backpack and all included equipment were checked during the takeover and documented.\nThe takeover protocol is attached.',
   },
 };
 
@@ -379,6 +467,7 @@ function buildEventCard(ev) {
            <option value="">— select comment —</option>
            ${comments.map(c => `<option value="${esc(c)}" ${ev.description === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}
          </select>
+         <button class="btn-comment-edit" onclick="toggleDTEdit(${ev.id})" id="edit-toggle-${ev.id}" title="Edit comment">✏️</button>
        </div>`
     : '';
 
@@ -518,16 +607,24 @@ function applyDTComment(id, val) {
 function toggleDTEdit(id) {
   const row = $(`dt-desc-row-${id}`);
   if (!row) return;
-  const hidden = row.style.display === 'none' || row.style.display === '';
-  // Определяем текущее состояние через data-атрибут
   const isOpen = row.dataset.open === '1';
   if (isOpen) {
     row.style.display = 'none';
     row.dataset.open = '0';
+    const btn = $(`edit-toggle-${id}`);
+    if (btn) btn.style.opacity = '1';
   } else {
+    // Копируем текущее значение select в textarea если textarea пустой
+    const sel = document.querySelector(`[data-eid="${id}"] .dt-comment-select`);
+    const ta = row.querySelector('textarea');
+    if (ta && sel && sel.value && !ta.value) {
+      ta.value = sel.value;
+      autoHeight(ta);
+    }
     row.style.display = '';
     row.dataset.open = '1';
-    const ta = row.querySelector('textarea');
+    const btn = $(`edit-toggle-${id}`);
+    if (btn) btn.style.opacity = '0.5';
     if (ta) { autoHeight(ta); ta.focus(); }
   }
 }
@@ -931,14 +1028,75 @@ function deleteHistory(i) {
 /* ───────────────────────────────────────────
    TICKET
 ─────────────────────────────────────────── */
+function updateDescriptionList() {
+  const category = $('tkCategory')?.value.trim() || '';
+  const suggestions = CATEGORY_DESCRIPTIONS[category] || [];
+  const box = $('tkDescSuggestions');
+  if (!box) return;
+  if (!suggestions.length) { box.innerHTML = ''; return; }
+  box.innerHTML = suggestions.map(s =>
+    `<button type="button" class="desc-suggestion-btn" onclick="pickDescription('${esc(s)}')">${esc(s)}</button>`
+  ).join('');
+}
+
+function pickDescription(val) {
+  const ta = $('tkDescription');
+  if (ta) { ta.value = val; autoHeight(ta); }
+  const box = $('tkDescSuggestions');
+  if (box) box.innerHTML = '';
+}
+
 function initTicket() {
   loadTicketSettings();
-  $('tkTemplate').addEventListener('change', e => {
-    applyTicketTemplate(e.target.value);
-  });
+  const tmplInput = $('tkTemplate');
+  if (tmplInput) {
+    tmplInput.addEventListener('change', e => {
+      const val = e.target.value.trim();
+      if (TICKET_TEMPLATES[val]) applyTicketTemplate(val);
+    });
+    tmplInput.addEventListener('input', e => {
+      const val = e.target.value.trim();
+      if (TICKET_TEMPLATES[val]) applyTicketTemplate(val);
+    });
+  }
   $('btnClearTicket').addEventListener('click', clearTicketFields);
   $('btnCopyTicket').addEventListener('click', copyTicket);
   $('btnCopyUpdate').addEventListener('click', copyUpdate);
+
+  const btnClearUpdate = $('btnClearUpdate');
+  if (btnClearUpdate) {
+    btnClearUpdate.addEventListener('click', () => {
+      $('tkUpdate').value = '';
+      saveTicketSettings();
+    });
+  }
+
+  // Умный datalist для Description — зависит от Category
+  const tkCategory = $('tkCategory');
+  if (tkCategory) {
+    tkCategory.addEventListener('input', updateDescriptionList);
+    tkCategory.addEventListener('change', updateDescriptionList);
+  }
+
+  // Кнопка Manual — открывает мануал на секции Ticket Rules
+  const btnManual = $('btnTicketManual');
+  if (btnManual) {
+    btnManual.addEventListener('click', () => {
+      openHelp();
+      // Скроллим к секции Ticket Rules после открытия
+      setTimeout(() => {
+        const helpContent = $('helpContent');
+        if (!helpContent) return;
+        const sections = helpContent.querySelectorAll('.help-section-title');
+        for (const el of sections) {
+          if (el.textContent.includes('Ticket Rules') || el.textContent.includes('Reguli') || el.textContent.includes('Правила')) {
+            el.closest('.help-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            break;
+          }
+        }
+      }, 150);
+    });
+  }
   TICKET_FIELDS.forEach(id => {
     const el = $(id);
     if (el) el.addEventListener('change', saveTicketSettings);
@@ -978,6 +1136,7 @@ function applyTicketTemplate(val) {
 }
 
 function clearTicketFields() {
+  $('tkTemplate').value    = '';
   $('tkCategory').value    = '';
   $('tkDescription').value = '';
   $('tkBody').value        = '';
@@ -1208,7 +1367,7 @@ const HELP_DATA = {
         steps: [
           ['Fill in Shift Parameters', 'Date · Vehicle ID · Mission ID · City (📍 auto-detect) · Country · Driver & Operator ID'],
           ['Add events via Quick Add', 'Tap a button → event is created with current time. Orange = System DT, Blue = Org DT'],
-          ['Complete each event card', 'Start/End time · KM start→end (Enter copies to end) · Address 📍 · For DT events: pick comment from dropdown, tap ▾ to edit manually'],
+          ['Complete each event card', 'Start/End time · KM start→end (Enter copies to end) · Address 📍 · For DT events: pick comment from dropdown, tap ✏️ to edit the text (e.g. replace A→Frankfurt, B→Paris)'],
           ['Preview & Copy', 'Generates a full formatted report and copies it to clipboard — paste in WhatsApp or email'],
           ['New Shift', 'Saves current shift to History, clears all events. Disk data is preserved.'],
         ],
@@ -1230,6 +1389,7 @@ const HELP_DATA = {
           ['Ticket Settings (once)', 'Fill in Team Leader, Vehicle, Plate, Phones, Location — saved permanently to the device'],
           ['Choose a template', 'SSD Logistics: Sending / Receiving / Both → replace [SSD ID] and [tracking number] placeholders'],
           ['Copy Ticket', 'Tap 📋 Copy Ticket → paste directly into WhatsApp or email. ✕ Clear resets the fields.'],
+          ['Copy Update', 'Type update text in the Update block → 📤 Copy Update. ✕ Clear resets the update field.'],
           ['Copy Update', 'Type the update text → 📤 Copy Update — "Update:" prefix is added automatically'],
         ],
       },
@@ -1240,6 +1400,42 @@ const HELP_DATA = {
           '<b>Manuals</b> — KSS2.0 documentation, ticket guides, driver & labeling manuals',
           '<b>Documents</b> — tap Open to view protocol PDFs in Google Drive',
           '<b>Shift Schedule</b> — S1/S2/S3 timetable, current shift is highlighted automatically',
+        ],
+      },
+      {
+        icon: '📋', title: 'Ticket Rules',
+        items: [
+          'Write from the <b>third person</b> — use "The team", "They". Never use I, we, us',
+          '<b>No signature</b> at the end',
+          'Photos only in <b>.jpg / .jpeg</b> format — attach to message, never embed in text',
+          'Prepare a ticket if the issue is <b>not solved within 15 min</b> of troubleshooting',
+          'Send to the <b>vehicle WhatsApp group</b> and tag: <b>@Nelu Colun, @Kristi Bujor, @Victor Balan</b>',
+        ],
+        tip: 'After sending — wait for confirmation before further actions. Until instructions arrive, continue troubleshooting according to the existing manual.',
+      },
+      {
+        icon: '📸', title: 'Photo Naming Convention',
+        items: [
+          'Format: <b>YYYYMMDD_V-number_title_1</b>',
+          'Example: <b>20240730_556499_measurement-system-issues_1</b>',
+          'All photos must be in <b>.jpg / .jpeg</b> format',
+        ],
+      },
+      {
+        icon: '🖥', title: 'SCRIVE — Shift Protocol',
+        items: [
+          'Web app by Capgemini for filling in the shift protocol',
+          'Link: <b>https://dgjlw5mhq5zna.cloudfront.net/login</b>',
+          'Login: <b>driver@scrive.com</b>',
+          'Password: <b>Capgemini2022!</b>',
+        ],
+      },
+      {
+        icon: '🔐', title: 'Valeo — Windows Login',
+        highlight: true,
+        items: [
+          'System: <b>Valeo</b>',
+          'Windows password: <b>VW-kss2.0</b>',
         ],
       },
       {
@@ -1264,7 +1460,7 @@ const HELP_DATA = {
         steps: [
           ['Completați Shift Parameters', 'Dată · ID vehicul · ID misiune · Oraș (📍 detectare automată) · Țară · ID șofer & operator'],
           ['Adăugați evenimente', 'Apăsați buton → eveniment creat cu ora curentă. Portocaliu = System DT, Albastru = Org DT'],
-          ['Completați cardul evenimentului', 'Ora start/end · KM start→end (Enter copiază) · Adresă 📍 · Selectați comentariu din dropdown, ▾ pentru editare'],
+          ['Completați cardul evenimentului', 'Ora start/end · KM start→end (Enter copiază) · Adresă 📍 · Selectați comentariu din dropdown, apăsați ✏️ pentru a edita textul (ex. înlocuiți A→Frankfurt, B→Paris)'],
           ['Preview & Copy', 'Generează raport complet și îl copiază în clipboard — lipiți în WhatsApp sau email'],
           ['New Shift', 'Salvează în History, șterge evenimentele. Discurile rămân.'],
         ],
@@ -1286,7 +1482,7 @@ const HELP_DATA = {
           ['Ticket Settings (o dată)', 'Team Leader, Vehicul, Înmatriculare, Telefoane, Locație — salvate permanent pe dispozitiv'],
           ['Selectați template', 'SSD Logistics: Sending / Receiving / Both → înlocuiți [SSD ID] și [tracking number]'],
           ['Copy Ticket', 'Apăsați 📋 Copy Ticket → lipiți direct în WhatsApp. ✕ Clear resetează câmpurile.'],
-          ['Copy Update', 'Scrieți textul actualizării → 📤 Copy Update — prefixul "Update:" se adaugă automat'],
+          ['Copy Update', 'Scrieți textul în blocul Update → 📤 Copy Update. ✕ Clear resetează câmpul.'],
         ],
       },
       {
@@ -1296,6 +1492,42 @@ const HELP_DATA = {
           '<b>Manuals</b> — documentație KSS2.0, ghiduri tickete, manuale șofer & etichetare',
           '<b>Documents</b> — Open deschide PDF-ul protocolului în Google Drive',
           '<b>Shift Schedule</b> — S1/S2/S3, schimbul curent evidențiat automat',
+        ],
+      },
+      {
+        icon: '📋', title: 'Reguli Ticket',
+        items: [
+          'Scrieți la <b>persoana a treia</b> — folosiți "The team", "They". Nu folosiți I, we, us',
+          '<b>Fără semnătură</b> la final',
+          'Fotografii doar în format <b>.jpg / .jpeg</b> — atașate la mesaj, niciodată în text',
+          'Pregătiți ticket dacă problema nu este rezolvată în <b>15 minute</b> de troubleshooting',
+          'Trimiteți în <b>grupul WhatsApp al vehiculului</b> și marcați: <b>@Nelu Colun, @Kristi Bujor, @Victor Balan</b>',
+        ],
+        tip: 'După trimitere — așteptați confirmarea înainte de acțiuni ulterioare. Până la primirea instrucțiunilor, continuați troubleshooting conform manualului existent.',
+      },
+      {
+        icon: '📸', title: 'Denumire Fotografii',
+        items: [
+          'Format: <b>YYYYMMDD_V-number_titlu_1</b>',
+          'Exemplu: <b>20240730_556499_measurement-system-issues_1</b>',
+          'Toate fotografiile trebuie să fie în format <b>.jpg / .jpeg</b>',
+        ],
+      },
+      {
+        icon: '🖥', title: 'SCRIVE — Protocol Tură',
+        items: [
+          'Aplicație web Capgemini pentru completarea protocolului de tură',
+          'Link: <b>https://dgjlw5mhq5zna.cloudfront.net/login</b>',
+          'Login: <b>driver@scrive.com</b>',
+          'Parolă: <b>Capgemini2022!</b>',
+        ],
+      },
+      {
+        icon: '🔐', title: 'Valeo — Autentificare Windows',
+        highlight: true,
+        items: [
+          'Sistem: <b>Valeo</b>',
+          'Parolă Windows: <b>VW-kss2.0</b>',
         ],
       },
       {
@@ -1320,7 +1552,7 @@ const HELP_DATA = {
         steps: [
           ['Заполни Shift Parameters', 'Дата · Vehicle ID · Mission ID · Город (📍 автоопределение) · Страна · Driver & Operator ID'],
           ['Добавляй события через Quick Add', 'Нажми кнопку → событие с текущим временем. Оранжевый = System DT, Синий = Org DT'],
-          ['Заполни карточку события', 'Время start/end · KM start→end (Enter копирует) · Адрес 📍 · Для DT: выбери комментарий из dropdown, ▾ для ручного редактирования'],
+          ['Заполни карточку события', 'Время start/end · KM start→end (Enter копирует) · Адрес 📍 · Для DT: выбери комментарий из dropdown, нажми ✏️ для редактирования текста (например замени A→Франкфурт, B→Париж)'],
           ['Preview & Copy', 'Генерирует полный отчёт и копирует в буфер — вставляй в WhatsApp или email'],
           ['New Shift', 'Сохраняет смену в историю, очищает события. Данные дисков сохраняются.'],
         ],
@@ -1342,7 +1574,7 @@ const HELP_DATA = {
           ['Ticket Settings (один раз)', 'Тимлидер, Авто, Номер, Телефоны, Адрес — сохраняются навсегда на устройстве'],
           ['Выбери шаблон', 'SSD Logistics: Sending / Receiving / Both → замени [SSD ID] и [tracking number]'],
           ['Copy Ticket', 'Нажми 📋 Copy Ticket → вставляй напрямую в WhatsApp. ✕ Clear сбрасывает поля.'],
-          ['Copy Update', 'Введи текст обновления → 📤 Copy Update — префикс "Update:" добавляется автоматически'],
+          ['Copy Update', 'Введи текст в блоке Update → 📤 Copy Update. ✕ Clear сбрасывает поле обновления.'],
         ],
       },
       {
@@ -1352,6 +1584,42 @@ const HELP_DATA = {
           '<b>Manuals</b> — документация KSS2.0, гайды по тикетам, мануалы для водителей и разметки',
           '<b>Documents</b> — Open открывает PDF протокола в Google Drive',
           '<b>Shift Schedule</b> — расписание S1/S2/S3, текущая смена подсвечивается автоматически',
+        ],
+      },
+      {
+        icon: '📋', title: 'Правила тикета',
+        items: [
+          'Пишем от <b>третьего лица</b> — "The team", "They". Не использовать I, we, us',
+          '<b>Без подписи</b> в конце',
+          'Фото только в формате <b>.jpg / .jpeg</b> — прикреплять к сообщению, не вставлять в текст',
+          'Готовить тикет если проблема не решена за <b>15 минут</b> траблшутинга',
+          'Отправлять в <b>группу WhatsApp авто</b> и отмечать: <b>@Nelu Colun, @Kristi Bujor, @Victor Balan</b>',
+        ],
+        tip: 'После отправки — дождись подтверждения перед дальнейшими действиями. До получения инструкций продолжать troubleshooting согласно существующему мануалу.',
+      },
+      {
+        icon: '📸', title: 'Именование фотографий',
+        items: [
+          'Формат: <b>YYYYMMDD_V-number_title_1</b>',
+          'Пример: <b>20240730_556499_measurement-system-issues_1</b>',
+          'Все фото должны быть в формате <b>.jpg / .jpeg</b>',
+        ],
+      },
+      {
+        icon: '🖥', title: 'SCRIVE — Протокол смены',
+        items: [
+          'Веб-приложение Capgemini для заполнения протокола смены',
+          'Ссылка: <b>https://dgjlw5mhq5zna.cloudfront.net/login</b>',
+          'Логин: <b>driver@scrive.com</b>',
+          'Пароль: <b>Capgemini2022!</b>',
+        ],
+      },
+      {
+        icon: '🔐', title: 'Valeo — Вход в Windows',
+        highlight: true,
+        items: [
+          'Система: <b>Valeo</b>',
+          'Пароль Windows: <b>VW-kss2.0</b>',
         ],
       },
       {
@@ -1397,8 +1665,9 @@ function renderHelp(lang) {
           `<div class="help-item">${it}</div>`).join('')}</div>`;
 
     const tip = sec.tip ? `<div class="help-tip">${sec.tip}</div>` : '';
+    const highlightClass = sec.highlight ? ' help-section-highlight' : '';
 
-    return `<div class="help-section">
+    return `<div class="help-section${highlightClass}">
       <div class="help-section-header">
         <span class="help-section-icon">${sec.icon}</span>
         <span class="help-section-title">${sec.title}</span>

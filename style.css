@@ -372,10 +372,10 @@ body.dark .event-timer { color: #ff9f0a; }
   background: var(--bg); color: var(--muted);
   font-size: 13px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  transition: border-color .15s, color .15s;
+  transition: border-color .15s, opacity .15s;
   line-height: 1; padding: 0;
 }
-.btn-comment-edit:hover { border-color: var(--green); color: var(--green); }
+.btn-comment-edit:hover { border-color: var(--blue); }
 
 .event-desc {
   font-size: 12px; color: var(--text);
@@ -707,3 +707,76 @@ body.dark .help-tip { background: rgba(10,132,255,.08); }
 }
 body.dark .toast { background: rgba(50,50,52,.95); }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Кнопка Manual в header блока Ticket */
+.btn-manual-ticket {
+  font-size: 11px;
+  font-weight: 600;
+  color: #25a244;
+  background: none;
+  border: 1px solid rgba(48,209,88,.3);
+  border-radius: 20px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s, color .15s;
+}
+.btn-manual-ticket:active { background: rgba(48,209,88,.1); }
+body.dark .btn-manual-ticket { color: #30d158; border-color: rgba(48,209,88,.35); }
+
+/* Description suggestions */
+.desc-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+.desc-suggestion-btn {
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--sub);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color .15s, color .15s, background .15s;
+  text-align: left;
+  white-space: normal;
+}
+.desc-suggestion-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--white);
+}
+body.dark .desc-suggestion-btn {
+  background: #2c2c2e;
+  border-color: var(--border);
+  color: var(--sub);
+}
+
+/* Highlight секция в Manual (Valeo Windows Login) */
+.help-section-highlight {
+  background: rgba(255,59,48,.05);
+  border: 1px solid rgba(255,59,48,.2);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-bottom: 24px;
+}
+.help-section-highlight .help-section-header {
+  border-bottom-color: rgba(255,59,48,.2);
+}
+.help-section-highlight .help-section-title {
+  color: var(--red);
+}
+.help-section-highlight .help-section-icon {
+  filter: none;
+}
+.help-section-highlight .help-item b {
+  color: var(--red);
+}
+body.dark .help-section-highlight {
+  background: rgba(255,69,58,.08);
+  border-color: rgba(255,69,58,.25);
+}
