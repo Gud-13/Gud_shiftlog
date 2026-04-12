@@ -1039,37 +1039,41 @@ function updateDescriptionList() {
   ).join('');
 }
 
-function updateCategoryTags() {
-  const box = $('tkCategoryTags');
-  if (!box) return;
+function openBottomSheet(title, items, onSelect) {
+  $('bottomSheetTitle').textContent = title;
+  $('bottomSheetList').innerHTML = items.map(item =>
+    `<div class="sheet-item" onclick="selectSheetItem(this, '${esc(item)}')">${esc(item)}</div>`
+  ).join('');
+  $('bottomSheetList')._onSelect = onSelect;
+  $('bottomSheetOverlay').classList.add('open');
+}
+
+function selectSheetItem(el, val) {
+  const cb = $('bottomSheetList')._onSelect;
+  if (cb) cb(val);
+  $('bottomSheetOverlay').classList.remove('open');
+}
+
+function openTemplateSheet() {
+  const templates = Object.keys(TICKET_TEMPLATES);
+  openBottomSheet('Select Template', templates, val => {
+    $('tkTemplate').value = val;
+    const lbl = $('btnTemplateLabel');
+    if (lbl) { lbl.textContent = val; lbl.style.color = 'var(--text)'; }
+    applyTicketTemplate(val);
+  });
+}
+
+function openCategorySheet() {
   const categories = [
     'Measurement System','SSD Issue','SSD Logistics','SCRIVE',
     'Vehicle','Vehicle Service','Vehicle Handover','Vehicle Takeover',
     'Logistics','Transfer','Organisational','Backpacks'
   ];
-  box.innerHTML = categories.map(c =>
-    `<button type="button" class="desc-suggestion-btn" onclick="pickCategory('${esc(c)}')">${esc(c)}</button>`
-  ).join('');
-}
-
-function pickCategory(val) {
-  const input = $('tkCategory');
-  if (input) { input.value = val; input.dispatchEvent(new Event('input')); }
-  const box = $('tkCategoryTags');
-  if (box) box.style.display = 'none';
-  updateDescriptionList();
-}
-
-function toggleCategoryTags() {
-  const box = $('tkCategoryTags');
-  if (!box) return;
-  const isHidden = box.style.display === 'none' || !box.style.display;
-  if (isHidden) {
-    updateCategoryTags();
-    box.style.display = 'flex';
-  } else {
-    box.style.display = 'none';
-  }
+  openBottomSheet('Select Category', categories, val => {
+    $('tkCategory').value = val;
+    updateDescriptionList();
+  });
 }
 
 function pickDescription(val) {
@@ -1081,17 +1085,8 @@ function pickDescription(val) {
 
 function initTicket() {
   loadTicketSettings();
-  const tmplInput = $('tkTemplate');
-  if (tmplInput) {
-    tmplInput.addEventListener('change', e => {
-      const val = e.target.value.trim();
-      if (TICKET_TEMPLATES[val]) applyTicketTemplate(val);
-    });
-    tmplInput.addEventListener('input', e => {
-      const val = e.target.value.trim();
-      if (TICKET_TEMPLATES[val]) applyTicketTemplate(val);
-    });
-  }
+  const btnTemplateSheet = $('btnTemplateSheet');
+  if (btnTemplateSheet) btnTemplateSheet.addEventListener('click', openTemplateSheet);
   $('btnClearTicket').addEventListener('click', clearTicketFields);
   $('btnCopyTicket').addEventListener('click', copyTicket);
   $('btnCopyUpdate').addEventListener('click', copyUpdate);
@@ -1169,10 +1164,14 @@ function applyTicketTemplate(val) {
 }
 
 function clearTicketFields() {
-  $('tkTemplate').value    = '';
+  $('tkTemplate').value   = '';
+  const lbl = $('btnTemplateLabel');
+  if (lbl) { lbl.textContent = '— select or type template —'; lbl.style.color = ''; }
   $('tkCategory').value    = '';
   $('tkDescription').value = '';
   $('tkBody').value        = '';
+  const box = $('tkDescSuggestions');
+  if (box) box.innerHTML = '';
   saveTicketSettings();
 }
 
@@ -1376,6 +1375,11 @@ function initModals() {
   $('btnConfirmCancel').addEventListener('click', () => closeConfirm(false));
   $('confirmOverlay').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeConfirm(false);
+  });
+
+  // Bottom Sheet
+  $('bottomSheetOverlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) $('bottomSheetOverlay').classList.remove('open');
   });
 
   // New shift

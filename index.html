@@ -254,38 +254,19 @@
               <span>Template</span>
               <button class="btn-link" id="btnClearTicket">✕ Clear</button>
             </label>
-            <input type="text" id="tkTemplate" placeholder="— select or type template —" list="tkTemplateList" autocomplete="off">
-            <datalist id="tkTemplateList">
-              <option value="SSD Logistics — Sending">
-              <option value="SSD Logistics — Receiving">
-              <option value="SSD Logistics — Sending &amp; Receiving">
-              <option value="Vehicle Handover">
-              <option value="Vehicle Takeover">
-              <option value="Backpack Handover">
-              <option value="Backpack Takeover">
-            </datalist>
+            <button type="button" class="btn-sheet-select" id="btnTemplateSheet">
+              <span id="btnTemplateLabel">— select or type template —</span>
+              <span class="sheet-arrow">▾</span>
+            </button>
+            <input type="hidden" id="tkTemplate">
           </div>
           <div class="field">
             <label>Category</label>
             <div class="input-with-btn">
-              <input type="text" id="tkCategory" placeholder="e.g. Measurement System" list="tkCategoryList" autocomplete="off"
-                oninput="updateDescriptionList()">
-              <button type="button" class="btn-tags-toggle" onclick="toggleCategoryTags()" title="Show categories">▾</button>
+              <input type="text" id="tkCategory" placeholder="e.g. Measurement System"
+                autocomplete="off" oninput="updateDescriptionList()">
+              <button type="button" class="btn-tags-toggle" onclick="openCategorySheet()" title="Show categories">▾</button>
             </div>
-            <datalist id="tkCategoryList">
-              <option value="Measurement System">
-              <option value="SSD Issue">
-              <option value="SSD Logistics">
-              <option value="SCRIVE">
-              <option value="Vehicle">
-              <option value="Vehicle Service">
-              <option value="Vehicle Handover">
-              <option value="Vehicle Takeover">
-              <option value="Logistics">
-              <option value="Transfer">
-              <option value="Organisational">
-              <option value="Backpacks">
-            </datalist>
             <div id="tkCategoryTags" class="desc-suggestions" style="display:none"></div>
           </div>
           <div class="field">
@@ -308,14 +289,14 @@
       <div class="card" data-accent="amber" style="margin-top:10px">
         <div class="card-header">
           <span class="card-title">Update</span>
-          <div style="display:flex;align-items:center;gap:8px">
-            <button class="btn-link" id="btnClearUpdate">✕ Clear</button>
-            <span class="card-badge amber">to existing ticket</span>
-          </div>
+          <span class="card-badge amber">to existing ticket</span>
         </div>
         <div class="card-body">
           <div class="field">
-            <label>Update body</label>
+            <label style="display:flex;justify-content:space-between">
+              <span>Update body</span>
+              <button class="btn-link" id="btnClearUpdate">✕ Clear</button>
+            </label>
             <textarea id="tkUpdate" rows="5" placeholder="After an additional bus sleep cycle…"></textarea>
           </div>
         </div>
@@ -492,6 +473,15 @@
         <button class="btn-secondary" id="btnConfirmCancel">Cancel</button>
         <button class="btn-danger" id="btnConfirmOk">Delete</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Bottom Sheet — выбор из списка -->
+  <div class="modal-overlay" id="bottomSheetOverlay">
+    <div class="modal modal-full" id="bottomSheetModal">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="bottomSheetTitle">Select</div>
+      <div id="bottomSheetList"></div>
     </div>
   </div>
 

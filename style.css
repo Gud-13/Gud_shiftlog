@@ -860,3 +860,38 @@ body.dark .help-section-highlight {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
+
+/* ═══════════════════════════════════════════
+   BOTTOM SHEET
+═══════════════════════════════════════════ */
+.btn-sheet-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  transition: border-color .15s;
+}
+.btn-sheet-select:focus { border-color: var(--blue); outline: none; }
+.btn-sheet-select .sheet-arrow { color: var(--muted); font-size: 12px; flex-shrink: 0; }
+body.dark .btn-sheet-select { background: #2c2c2e; color: var(--muted); }
+
+.sheet-item {
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  transition: color .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.sheet-item:last-child { border-bottom: none; }
+.sheet-item:active { color: var(--blue); }
