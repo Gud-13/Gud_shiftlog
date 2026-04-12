@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShiftLog</title>
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ShiftLog">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       HEADER (sticky, frosted glass)
+  ═══════════════════════════════════════════ -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <span class="header-logo">ADAS</span>
+        <div class="header-sep"></div>
+        <span class="header-logo">VW</span>
+        <div class="header-sep"></div>
+        <span class="header-logo">ShiftLog</span>
+      </div>
+      <div class="header-center">
+        <span class="header-dot"></span>
+        <span id="liveTime" class="header-time">00:00:00</span>
+      </div>
+      <div class="header-actions">
+        <span id="shiftBadge" class="shift-badge">S1</span>
+        <button id="btnHelp" class="header-btn" title="Manual">?</button>
+        <button id="btnTheme" class="header-btn" title="Toggle theme">🌙</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════
+       PAGE: SHIFT
+  ═══════════════════════════════════════════ -->
+  <div class="page active" id="page-shift">
+    <main class="main">
+
+      <!-- Shift Parameters -->
+      <div class="card" data-accent="blue">
+        <div class="card-header">
+          <span class="card-title">Shift Parameters</span>
+          <span class="card-badge">shift</span>
+        </div>
+        <div class="card-body">
+          <div class="fields-grid shift-params-grid">
+            <div class="field">
+              <label>Date</label>
+              <input type="date" id="shiftDate">
+            </div>
+            <div class="field">
+              <label>Vehicle ID</label>
+              <input type="text" id="vehicleId" placeholder="DC-205">
+            </div>
+            <div class="field">
+              <label>Mission ID</label>
+              <input type="text" id="missionId" placeholder="Mission ID">
+            </div>
+            <div class="field">
+              <label>City</label>
+              <div class="input-geo">
+                <input type="text" id="cityField" placeholder="e.g. Berlin">
+                <button class="btn-geo" id="btnGeoCity" title="Detect city">📍</button>
+              </div>
+            </div>
+            <div class="field">
+              <label>Country</label>
+              <select id="country">
+                <option value="Germany">Germany</option>
+                <option value="Denmark">Denmark</option>
+                <option value="Sweden">Sweden</option>
+                <option value="France">France</option>
+                <option value="Netherlands">Netherlands</option>
+                <option value="Belgium">Belgium</option>
+                <option value="Austria">Austria</option>
+                <option value="Switzerland">Switzerland</option>
+                <option value="Czech Republic">Czech Republic</option>
+                <option value="Poland">Poland</option>
+                <option value="Hungary">Hungary</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Driver ID</label>
+              <input type="text" id="driverId" placeholder="1009">
+            </div>
+            <div class="field">
+              <label>Operator ID</label>
+              <input type="text" id="operatorId" placeholder="1108">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Add -->
+      <div class="card" data-accent="gray">
+        <div class="card-header">
+          <span class="card-title">Quick Add</span>
+          <span class="card-badge">tap to add event</span>
+        </div>
+        <div class="card-body">
+          <div class="quick-group-label sys">System</div>
+          <div class="quick-group" id="quickSys">
+            <button class="q-btn q-sys" data-type="dt_startup">⏻ Startup / Shutdown</button>
+            <button class="q-btn q-sys" data-type="dt_cleaning">🧹 Sensors Cleaning</button>
+            <button class="q-btn q-sys" data-type="dt_vpi">🎬 Recording Tool (VPI)</button>
+            <button class="q-btn q-sys" data-type="dt_ecu">💻 ECU</button>
+            <button class="q-btn q-sys" data-type="dt_display">🖥 Touch Display</button>
+            <button class="q-btn q-sys" data-type="dt_prelabel">🏷 Prelabel Tool</button>
+            <button class="q-btn q-sys" data-type="dt_measurement">📡 Measurement System</button>
+            <button class="q-btn q-sys" data-type="dt_low_speed">🐢 &lt; 35 km/h</button>
+            <button class="q-btn q-sys" data-type="dt_ssd_issue">⚠ SSD Issue</button>
+            <button class="q-btn q-sys" data-type="dt_ssd_logistics">📦 SSD Logistics</button>
+            <button class="q-btn q-sys" data-type="dt_ssd_change">💾 SSD Change</button>
+            <button class="q-btn q-sys" data-type="dt_standby">⏸ Stand-by System</button>
+            <button class="q-btn q-sys" data-type="other">+ Others</button>
+          </div>
+          <div class="quick-group-label org">Organisational</div>
+          <div class="quick-group" id="quickOrg">
+            <button class="q-btn q-org" data-type="dt_handover">⇄ Handover</button>
+            <button class="q-btn q-org" data-type="dt_protocol">📄 Protocol / Documentation</button>
+            <button class="q-btn q-org" data-type="dt_route_doc">🗺 Driven Route Documentation</button>
+            <button class="q-btn q-org" data-type="dt_refuelling">⛽ Refuelling</button>
+            <button class="q-btn q-org" data-type="dt_transfer">🚗 Transfer</button>
+            <button class="q-btn q-org" data-type="dt_maintenance">🔧 Vehicle Maintenance</button>
+            <button class="q-btn q-org" data-type="dt_service">🏪 Vehicle Service</button>
+            <button class="q-btn q-org" data-type="dt_no_storage">💿 No Storage Medium</button>
+            <button class="q-btn q-org" data-type="dt_police">🚔 Official / Police</button>
+            <button class="q-btn q-org" data-type="break">◯ Break</button>
+            <button class="q-btn q-org" data-type="dt_standby_wait">⏳ Standby / Waiting</button>
+            <button class="q-btn q-org" data-type="dt_other_org">+ Others</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Events -->
+      <div class="card" data-accent="green">
+        <div class="card-header">
+          <span class="card-title">Events</span>
+          <span class="card-badge green">shift log</span>
+        </div>
+        <div class="card-body">
+          <div id="eventsList"></div>
+          <button class="btn-add-event" id="btnAddEvent">+ Add event</button>
+        </div>
+      </div>
+
+      <!-- Disk Status -->
+      <div class="card" data-accent="amber">
+        <div class="card-header">
+          <span class="card-title">Disk Status</span>
+          <button class="btn-copy-small" id="btnCopyDisks">📋 Copy report</button>
+        </div>
+        <div class="card-body">
+          <div id="diskList"></div>
+          <button class="btn-add-event" id="btnAddDisk">+ Add disk</button>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="card" data-accent="gray">
+        <div class="card-header">
+          <span class="card-title">Notes</span>
+          <span class="card-badge">optional</span>
+        </div>
+        <div class="card-body">
+          <textarea id="notes" placeholder="Additional observations…" rows="3"></textarea>
+        </div>
+      </div>
+
+      <!-- Footer buttons -->
+      <div class="footer-row">
+        <button class="btn-secondary btn-danger" id="btnNewShift">⟳ New Shift</button>
+        <button class="btn-primary btn-green" id="btnPreview">Preview &amp; Copy</button>
+      </div>
+
+      <div class="page-credit">Designed &amp; built by <strong>Gud</strong></div>
+
+    </main>
+  </div><!-- /page-shift -->
+
+
+  <!-- ═══════════════════════════════════════════
+       PAGE: TICKET
+  ═══════════════════════════════════════════ -->
+  <div class="page" id="page-ticket">
+    <main class="main">
+
+      <!-- Ticket Settings -->
+      <div class="card card-glass" data-accent="green">
+        <div class="card-header">
+          <span class="card-title">Ticket Settings</span>
+          <span class="card-badge green">saved permanently</span>
+        </div>
+        <div class="card-body">
+          <div class="fields-grid ticket-settings-grid">
+            <div class="field">
+              <label>Team Leader Name</label>
+              <input type="text" id="tkLeader" placeholder="Bumbac Ilie">
+            </div>
+            <div class="field">
+              <label>Vehicle Nr.</label>
+              <input type="text" id="tkVehicle" placeholder="DC #205">
+            </div>
+            <div class="field">
+              <label>License Plate</label>
+              <input type="text" id="tkPlate" placeholder="BSZY 986">
+            </div>
+            <div class="field">
+              <label>VW Phone</label>
+              <input type="text" id="tkVwPhone" placeholder="-">
+            </div>
+            <div class="field">
+              <label>Capgemini Phone</label>
+              <input type="text" id="tkCapPhone" placeholder="+4917617783147">
+            </div>
+          </div>
+          <div class="field" style="margin-top:10px">
+            <label>Location / Address (hotel etc.)</label>
+            <div class="input-geo">
+              <input type="text" id="tkLocation" placeholder="Address, City, Country">
+              <button class="btn-geo" id="btnGeoTicket" title="Get location">📍</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ticket -->
+      <div class="card" data-accent="green">
+        <div class="card-header">
+          <span class="card-title">Ticket</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <button class="btn-manual-ticket" id="btnTicketManual">📖 Manual</button>
+            <span class="card-badge green">new ticket</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label style="display:flex;justify-content:space-between">
+              <span>Template</span>
+              <button class="btn-link" id="btnClearTicket">✕ Clear</button>
+            </label>
+            <input type="text" id="tkTemplate" placeholder="— select or type template —" list="tkTemplateList" autocomplete="off">
+            <datalist id="tkTemplateList">
+              <option value="SSD Logistics — Sending">
+              <option value="SSD Logistics — Receiving">
+              <option value="SSD Logistics — Sending &amp; Receiving">
+              <option value="Vehicle Handover">
+              <option value="Vehicle Takeover">
+              <option value="Backpack Handover">
+              <option value="Backpack Takeover">
+            </datalist>
+          </div>
+          <div class="field">
+            <label>Category</label>
+            <div class="input-with-btn">
+              <input type="text" id="tkCategory" placeholder="e.g. Measurement System" list="tkCategoryList" autocomplete="off"
+                oninput="updateDescriptionList()">
+              <button type="button" class="btn-tags-toggle" onclick="toggleCategoryTags()" title="Show categories">▾</button>
+            </div>
+            <datalist id="tkCategoryList">
+              <option value="Measurement System">
+              <option value="SSD Issue">
+              <option value="SSD Logistics">
+              <option value="SCRIVE">
+              <option value="Vehicle">
+              <option value="Vehicle Service">
+              <option value="Vehicle Handover">
+              <option value="Vehicle Takeover">
+              <option value="Logistics">
+              <option value="Transfer">
+              <option value="Organisational">
+              <option value="Backpacks">
+            </datalist>
+            <div id="tkCategoryTags" class="desc-suggestions" style="display:none"></div>
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <textarea id="tkDescription" rows="1" placeholder="Short description of the issue…"></textarea>
+            <div id="tkDescSuggestions" class="desc-suggestions"></div>
+          </div>
+          <div class="field">
+            <label>Body text (Dear Partners…)</label>
+            <textarea id="tkBody" rows="10" placeholder="During vehicle operation…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-row">
+        <button class="btn-primary btn-green" id="btnCopyTicket">📋 Copy Ticket</button>
+      </div>
+
+      <!-- Update -->
+      <div class="card" data-accent="amber" style="margin-top:10px">
+        <div class="card-header">
+          <span class="card-title">Update</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <button class="btn-link" id="btnClearUpdate">✕ Clear</button>
+            <span class="card-badge amber">to existing ticket</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label>Update body</label>
+            <textarea id="tkUpdate" rows="5" placeholder="After an additional bus sleep cycle…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-row">
+        <button class="btn-primary btn-amber" id="btnCopyUpdate">📤 Copy Update</button>
+      </div>
+
+    </main>
+  </div><!-- /page-ticket -->
+
+
+  <!-- ═══════════════════════════════════════════
+       PAGE: DOCS
+  ═══════════════════════════════════════════ -->
+  <div class="page" id="page-docs">
+    <main class="main">
+
+      <!-- Quick Links -->
+      <div class="card" data-accent="blue">
+        <div class="card-header">
+          <span class="card-title">Quick Links</span>
+          <span class="card-badge blue">open in browser</span>
+        </div>
+        <div class="card-body">
+          <div id="quickLinksList"></div>
+        </div>
+      </div>
+
+      <!-- Manuals -->
+      <div class="card" data-accent="blue">
+        <div class="card-header">
+          <span class="card-title">Manuals</span>
+          <span class="card-badge blue">open in browser</span>
+        </div>
+        <div class="card-body">
+          <div id="manualLinksList"></div>
+        </div>
+      </div>
+
+      <!-- Documents -->
+      <div class="card" data-accent="green">
+        <div class="card-header">
+          <span class="card-title">Documents</span>
+          <span class="card-badge green">PDF &amp; Files</span>
+        </div>
+        <div class="card-body">
+          <div id="presetDocsList"></div>
+        </div>
+      </div>
+
+      <!-- Shift Schedule -->
+      <div class="card" data-accent="gray">
+        <div class="card-header">
+          <span class="card-title">Shift Schedule</span>
+          <span class="card-badge">3 shifts</span>
+        </div>
+        <div class="card-body">
+          <table class="schedule-table" id="scheduleTable">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Prep</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Post</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr id="sched-row-1">
+                <td class="sched-label">S1</td>
+                <td>06:50</td>
+                <td>07:00</td>
+                <td>15:00</td>
+                <td>15:10</td>
+              </tr>
+              <tr id="sched-row-2">
+                <td class="sched-label">S2</td>
+                <td>14:50</td>
+                <td>15:00</td>
+                <td>23:00</td>
+                <td>23:10</td>
+              </tr>
+              <tr id="sched-row-3">
+                <td class="sched-label">S3</td>
+                <td>22:50</td>
+                <td>23:00</td>
+                <td>07:00</td>
+                <td>07:10</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div><!-- /page-docs -->
+
+
+  <!-- ═══════════════════════════════════════════
+       BOTTOM NAVIGATION
+  ═══════════════════════════════════════════ -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <button class="nav-btn active" data-page="shift">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">SHIFT</span>
+      </button>
+      <button class="nav-btn" data-page="ticket">
+        <span class="nav-icon">🎫</span>
+        <span class="nav-label">TICKET</span>
+      </button>
+      <button class="nav-btn" data-page="docs">
+        <span class="nav-icon">📁</span>
+        <span class="nav-label">DOCS</span>
+      </button>
+      <button class="nav-btn" data-page="history">
+        <span class="nav-icon">🕐</span>
+        <span class="nav-label">HISTORY</span>
+      </button>
+    </div>
+  </nav>
+
+
+  <!-- ═══════════════════════════════════════════
+       MODALS
+  ═══════════════════════════════════════════ -->
+
+  <!-- Preview modal -->
+  <div class="modal-overlay" id="previewOverlay">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Shift Report</div>
+      <div class="preview-text" id="previewText"></div>
+      <button class="btn-primary btn-green" id="btnCopyReport">📋 Copy to clipboard</button>
+    </div>
+  </div>
+
+  <!-- History modal -->
+  <div class="modal-overlay" id="historyOverlay">
+    <div class="modal modal-full">
+      <div class="modal-handle"></div>
+      <div class="modal-title">
+        Shift History
+        <button class="modal-close" id="btnCloseHistory">✕</button>
+      </div>
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+  <!-- Manual modal -->
+  <div class="modal-overlay" id="helpOverlay">
+    <div class="modal modal-full">
+      <div class="modal-handle"></div>
+      <div class="modal-title">
+        Manual
+        <button class="modal-close" id="btnCloseHelp">✕</button>
+      </div>
+      <div class="help-lang-switcher">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="ro">RO</button>
+        <button class="lang-btn" data-lang="ru">RU</button>
+      </div>
+      <div id="helpContent"></div>
+    </div>
+  </div>
+
+  <!-- Confirm modal -->
+  <div class="modal-overlay" id="confirmOverlay" style="align-items:center">
+    <div class="modal modal-confirm">
+      <div id="confirmText" class="confirm-text"></div>
+      <div class="confirm-btns">
+        <button class="btn-secondary" id="btnConfirmCancel">Cancel</button>
+        <button class="btn-danger" id="btnConfirmOk">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
