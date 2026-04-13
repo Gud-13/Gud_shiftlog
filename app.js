@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.9
+   Version: 5.10
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.9';
+const APP_VERSION = '5.10';
 
 /* ───────────────────────────────────────────
    DATA
@@ -909,17 +909,17 @@ function buildDiskRow(dk) {
 
 function addDisk() {
   disks.push({ id: ++diskCounter, diskId: '', status: 'empty', percent: '' });
-  renderDisks();
   saveState();
   saveDiskToFirebase();
+  renderDisks();
 }
 
 function removeDisk(id) {
   showConfirm('Delete this disk?', () => {
     disks = disks.filter(d => d.id !== id);
-    renderDisks();
     saveState();
     saveDiskToFirebase();
+    renderDisks();
   });
 }
 
