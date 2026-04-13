@@ -655,6 +655,16 @@ body.dark .modal { background: #1c1c1e; }
 }
 .lang-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
 
+.help-version {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: .5px;
+  text-align: right;
+  margin-bottom: 16px;
+  margin-top: -8px;
+}
+
 .help-section { margin-bottom: 24px; }
 
 .help-section-header {

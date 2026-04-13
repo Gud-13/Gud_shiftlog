@@ -6,6 +6,8 @@
 
 'use strict';
 
+const APP_VERSION = '5.4';
+
 /* ───────────────────────────────────────────
    DATA
 ─────────────────────────────────────────── */
@@ -1737,7 +1739,7 @@ function renderHelp(lang) {
     b.classList.toggle('active', b.dataset.lang === lang);
   });
 
-  $('helpContent').innerHTML = data.sections.map(sec => {
+  $('helpContent').innerHTML = `<div class="help-version">ShiftLog v${APP_VERSION}</div>` + data.sections.map(sec => {
     const body = sec.steps
       ? `<div class="help-steps">${sec.steps.map((s, i) => `
           <div class="help-step">
