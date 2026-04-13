@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.10
+   Version: 5.11
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -486,7 +486,55 @@ body.dark .btn-copy-small { border-color: rgba(10,132,255,.3); }
 .page-credit { text-align: center; padding: 8px 0 4px; font-size: 11px; color: var(--muted); letter-spacing: .5px; }
 .page-credit strong { color: var(--sub); }
 
-/* Disk meta — last updated info */
+/* Photo Naming */
+.photo-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  min-height: 38px;
+}
+.photo-name-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  font-family: 'SF Mono', 'Menlo', monospace;
+  word-break: break-all;
+  flex: 1;
+}
+body.dark .photo-name-row { background: #2c2c2e; }
+.photo-name-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.btn-photo-count {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+  transition: border-color .15s, color .15s;
+  font-family: inherit;
+}
+.btn-photo-count:active { border-color: var(--blue); color: var(--blue); }
+.photo-count-val {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sub);
+  min-width: 16px;
+  text-align: center;
+}
 .disk-meta {
   font-size: 11px;
   color: var(--muted);

@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.10
+   Version: 5.11
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.10';
+const APP_VERSION = '5.11';
 
 /* ───────────────────────────────────────────
    DATA
@@ -1193,6 +1193,7 @@ function pickDescription(val) {
   if (ta) { ta.value = val; autoHeight(ta); }
   const box = $('tkDescSuggestions');
   if (box) box.innerHTML = '';
+  updatePhotoName();
 }
 
 function initTicket() {
@@ -1241,6 +1242,69 @@ function initTicket() {
     const el = $(id);
     if (el) el.addEventListener('change', saveTicketSettings);
   });
+
+  // Photo naming
+  initPhotoName();
+}
+
+/* ───────────────────────────────────────────
+   PHOTO NAMING
+─────────────────────────────────────────── */
+let _photoCount = 1;
+
+function slugify(str) {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')   // убираем спецсимволы
+    .replace(/\s+/g, '-')            // пробелы → дефисы
+    .replace(/-+/g, '-')             // множественные дефисы → один
+    .replace(/^-|-$/g, '');          // убираем дефисы по краям
+}
+
+function updatePhotoName() {
+  const display = $('photoNameDisplay');
+  if (!display) return;
+
+  const date = ($('shiftDate')?.value || '').replace(/-/g, '');
+  const vehicle = ($('tkVehicle')?.value || $('vehicleId')?.value || '').replace(/\s+/g, '-');
+  const desc = $('tkDescription')?.value || '';
+  const title = slugify(desc) || 'issue';
+
+  if (!date || !vehicle) {
+    display.textContent = '— fill Date and Vehicle ID —';
+    return;
+  }
+
+  display.textContent = `${date}_${vehicle}_${title}_${_photoCount}`;
+}
+
+function initPhotoName() {
+  // Обновляем при изменении даты и Vehicle
+  const watchIds = ['shiftDate', 'tkVehicle', 'vehicleId'];
+  watchIds.forEach(id => {
+    const el = $(id);
+    if (el) el.addEventListener('input', updatePhotoName);
+    if (el) el.addEventListener('change', updatePhotoName);
+  });
+
+  $('btnPhotoMinus').addEventListener('click', () => {
+    if (_photoCount > 1) { _photoCount--; updatePhotoName(); }
+  });
+
+  $('btnPhotoPlus').addEventListener('click', () => {
+    _photoCount++;
+    updatePhotoName();
+  });
+
+  $('btnCopyPhotoName').addEventListener('click', () => {
+    const name = $('photoNameDisplay')?.textContent;
+    if (!name || name.startsWith('—')) { showToast('Fill in Description first'); return; }
+    navigator.clipboard.writeText(name).then(() => showToast('File name copied'));
+  });
+
+  // Первоначальная генерация
+  updatePhotoName();
 }
 
 function loadTicketSettings() {
@@ -1272,6 +1336,7 @@ function applyTicketTemplate(val) {
   $('tkDescription').value = t.description;
   $('tkBody').value        = t.body;
   saveTicketSettings();
+  updatePhotoName();
   showToast('Template applied');
 }
 
