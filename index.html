@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ShiftLog v5.7 -->
+<!-- ShiftLog v5.9 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -507,5 +507,24 @@
   <div class="toast" id="toast"></div>
 
   <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/Gud_shiftlog/sw.js')
+        .then(reg => {
+          // Проверяем обновления при каждом открытии
+          reg.update();
+          // Если новая версия готова — перезагружаем страницу автоматически
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'activated') {
+                window.location.reload();
+              }
+            });
+          });
+        })
+        .catch(err => console.warn('SW registration failed:', err));
+    }
+  </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.7
+   Version: 5.9
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -234,7 +234,7 @@ body.dark .card-badge.amber { color: #ff9f0a; }
 .ticket-settings-grid .field:nth-child(4) { grid-column: span 3; }
 .ticket-settings-grid .field:nth-child(5) { grid-column: span 3; }
 
-@media (max-width: 400px) {
+@media (max-width: 500px) {
   .fields-grid { grid-template-columns: 1fr; }
   .shift-params-grid .field  { grid-column: span 6 !important; }
   .ticket-settings-grid .field { grid-column: span 6 !important; }
@@ -415,7 +415,7 @@ body.dark .event-desc:focus { background: #3a3a3c; }
   gap: 8px; align-items: center; padding: 10px 0;
   border-bottom: 1px solid var(--border);
 }
-.disk-row:last-of-type { border-bottom: none; }
+.disk-row:last-child { border-bottom: none; }
 
 .disk-row input[type=text] {
   font-weight: 600; font-size: 12px; padding: 5px 8px;
