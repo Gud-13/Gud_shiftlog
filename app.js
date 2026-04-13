@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.11
+   Version: 5.13
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.11';
+const APP_VERSION = '5.13';
 
 /* ───────────────────────────────────────────
    DATA
@@ -1267,7 +1267,10 @@ function updatePhotoName() {
   if (!display) return;
 
   const date = ($('shiftDate')?.value || '').replace(/-/g, '');
-  const vehicle = ($('tkVehicle')?.value || $('vehicleId')?.value || '').replace(/\s+/g, '-');
+  const vehicle = ($('tkVehicle')?.value || $('vehicleId')?.value || '')
+    .replace(/[#\s]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
   const desc = $('tkDescription')?.value || '';
   const title = slugify(desc) || 'issue';
 
@@ -1629,8 +1632,9 @@ const HELP_DATA = {
         icon: '📸', title: 'Photo Naming Convention',
         items: [
           'Format: <b>YYYYMMDD_V-number_title_1</b>',
-          'Example: <b>20240730_556499_measurement-system-issues_1</b>',
+          'Example: <b>20240730_DC-205_measurement-system-issues_1</b>',
           'All photos must be in <b>.jpg / .jpeg</b> format',
+          'In the <b>Ticket block</b>, the file name is generated automatically from Date, Vehicle ID and Description — tap 📋 to copy. Use <b>− / +</b> buttons to change the photo number.',
         ],
       },
       {
@@ -1725,8 +1729,9 @@ const HELP_DATA = {
         icon: '📸', title: 'Denumire Fotografii',
         items: [
           'Format: <b>YYYYMMDD_V-number_titlu_1</b>',
-          'Exemplu: <b>20240730_556499_measurement-system-issues_1</b>',
+          'Exemplu: <b>20240730_DC-205_measurement-system-issues_1</b>',
           'Toate fotografiile trebuie să fie în format <b>.jpg / .jpeg</b>',
+          'În blocul <b>Ticket</b>, numele fișierului se generează automat din Dată, Vehicle ID și Description — apăsați 📋 pentru copiere. Folosiți butoanele <b>− / +</b> pentru a schimba numărul fotografiei.',
         ],
       },
       {
@@ -1821,8 +1826,9 @@ const HELP_DATA = {
         icon: '📸', title: 'Именование фотографий',
         items: [
           'Формат: <b>YYYYMMDD_V-number_title_1</b>',
-          'Пример: <b>20240730_556499_measurement-system-issues_1</b>',
+          'Пример: <b>20240730_DC-205_measurement-system-issues_1</b>',
           'Все фото должны быть в формате <b>.jpg / .jpeg</b>',
+          'В блоке <b>Ticket</b> имя файла генерируется автоматически из Даты, Vehicle ID и Description — нажми 📋 чтобы скопировать. Кнопки <b>− / +</b> меняют номер фото.',
         ],
       },
       {
