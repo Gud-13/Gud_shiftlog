@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.4
+   Version: 5.5
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.4';
+const APP_VERSION = '5.5';
 
 /* ───────────────────────────────────────────
    DATA
@@ -1004,19 +1004,24 @@ function _doNewShift() {
   saveToHistory();
   const savedDisks       = disks.slice();
   const savedDiskCounter = diskCounter;
+  const savedVehicle     = $('vehicleId').value;
+  const savedDriver      = $('driverId').value;
+  const savedOperator    = $('operatorId').value;
+  const savedCountry     = $('country').value;
   localStorage.removeItem('shiftState');
   events = []; eventCounter = 0;
   disks = savedDisks; diskCounter = savedDiskCounter;
-  $('shiftDate').value  = new Date().toISOString().slice(0,10);
-  $('missionId').value  = '';
-  $('cityField').value  = '';
-  $('vehicleId').value  = 'DC-205';
-  $('country').value    = 'Germany';
-  $('driverId').value   = '1009';
-  $('operatorId').value = '1108';
-  $('notes').value      = '';
+  $('shiftDate').value   = new Date().toISOString().slice(0,10);
+  $('vehicleId').value   = savedVehicle;
+  $('missionId').value   = '';
+  $('cityField').value   = '';
+  $('country').value     = savedCountry;
+  $('driverId').value    = savedDriver;
+  $('operatorId').value  = savedOperator;
+  $('notes').value       = '';
   renderEvents();
   renderDisks();
+  saveState();
   showToast('New shift started');
 }
 
