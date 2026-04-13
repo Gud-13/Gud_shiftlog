@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ShiftLog v5.15 -->
+<!-- ShiftLog v5.16 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -281,35 +281,48 @@
               <span>Template</span>
               <button class="btn-link" id="btnClearTicket">✕ Clear</button>
             </label>
-            <button type="button" class="btn-sheet-select" id="btnTemplateSheet">
-              <span id="btnTemplateLabel">— select or type template —</span>
-              <span class="sheet-arrow">▾</span>
-            </button>
-            <input type="hidden" id="tkTemplate">
+            <select id="tkTemplate" onchange="applyTicketTemplate(this.value)">
+              <option value="">— select template —</option>
+              <option value="SSD Logistics — Sending">SSD Logistics — Sending</option>
+              <option value="SSD Logistics — Receiving">SSD Logistics — Receiving</option>
+              <option value="SSD Logistics — Sending &amp; Receiving">SSD Logistics — Sending &amp; Receiving</option>
+              <option value="Vehicle Handover">Vehicle Handover</option>
+              <option value="Vehicle Takeover">Vehicle Takeover</option>
+              <option value="Backpack Handover">Backpack Handover</option>
+              <option value="Backpack Takeover">Backpack Takeover</option>
+            </select>
           </div>
           <div class="field">
             <label>Category</label>
-            <select id="tkCategory" onchange="updateDescriptionSelect();updatePhotoName()">
-              <option value="">— select category —</option>
-              <option value="Measurement System">Measurement System</option>
-              <option value="SSD Issue">SSD Issue</option>
-              <option value="SSD Logistics">SSD Logistics</option>
-              <option value="SCRIVE">SCRIVE</option>
-              <option value="Vehicle">Vehicle</option>
-              <option value="Vehicle Service">Vehicle Service</option>
-              <option value="Vehicle Handover">Vehicle Handover</option>
-              <option value="Vehicle Takeover">Vehicle Takeover</option>
-              <option value="Logistics">Logistics</option>
-              <option value="Transfer">Transfer</option>
-              <option value="Organisational">Organisational</option>
-              <option value="Backpacks">Backpacks</option>
-            </select>
+            <div class="select-edit-row">
+              <select id="tkCategorySelect" onchange="updateDescriptionSelect();updatePhotoName()">
+                <option value="">— select category —</option>
+                <option value="Measurement System">Measurement System</option>
+                <option value="SSD Issue">SSD Issue</option>
+                <option value="SSD Logistics">SSD Logistics</option>
+                <option value="SCRIVE">SCRIVE</option>
+                <option value="Vehicle">Vehicle</option>
+                <option value="Vehicle Service">Vehicle Service</option>
+                <option value="Vehicle Handover">Vehicle Handover</option>
+                <option value="Vehicle Takeover">Vehicle Takeover</option>
+                <option value="Logistics">Logistics</option>
+                <option value="Transfer">Transfer</option>
+                <option value="Organisational">Organisational</option>
+                <option value="Backpacks">Backpacks</option>
+              </select>
+              <input type="text" id="tkCategoryInput" placeholder="Type category…" style="display:none">
+              <button type="button" class="btn-field-edit" id="btnCategoryEdit" title="Edit manually">✏️</button>
+            </div>
           </div>
           <div class="field">
             <label>Description</label>
-            <select id="tkDescription" onchange="updatePhotoName()">
-              <option value="">— select category first —</option>
-            </select>
+            <div class="select-edit-row">
+              <select id="tkDescriptionSelect" onchange="updatePhotoName()">
+                <option value="">— select category first —</option>
+              </select>
+              <textarea id="tkDescriptionInput" rows="2" placeholder="Type description…" style="display:none" oninput="updatePhotoName()"></textarea>
+              <button type="button" class="btn-field-edit" id="btnDescriptionEdit" title="Edit manually">✏️</button>
+            </div>
           </div>
 
           <!-- Photo Naming -->

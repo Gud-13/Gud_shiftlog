@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.15
+   Version: 5.16
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.15';
+const APP_VERSION = '5.16';
 
 /* ───────────────────────────────────────────
    DATA
@@ -17,15 +17,15 @@ let eventCounter = 0;
 let diskCounter  = 0;
 
 const TICKET_DEFAULTS = {
-  tkLeader:   'Bumbac Ilie',
-  tkVehicle:  'DC #205',
-  tkPlate:    'BSZY 986',
-  tkVwPhone:  '-',
-  tkCapPhone: '+4917617783147',
-  tkLocation: 'Sydhavns Plads 15, 2450 København SV, Danmark',
+  tkLeader:   '',
+  tkVehicle:  '',
+  tkPlate:    '',
+  tkVwPhone:  '',
+  tkCapPhone: '',
+  tkLocation: '',
 };
 
-const TICKET_FIELDS = ['tkLeader','tkVehicle','tkPlate','tkVwPhone','tkCapPhone','tkLocation'];
+const TICKET_FIELDS = ['tkLeader','tkVehicle','tkPlate','tkVwPhone','tkCapPhone','tkLocation','tkTemplate'];
 
 // Подсказки Description в зависимости от Category
 const CATEGORY_DESCRIPTIONS = {
@@ -1143,10 +1143,83 @@ function deleteHistory(i) {
    TICKET
 ─────────────────────────────────────────── */
 
+// Возвращает актуальное значение Category (select или input)
+function getCategoryValue() {
+  const input = $('tkCategoryInput');
+  if (input && input.style.display !== 'none') return input.value.trim();
+  return $('tkCategorySelect')?.value || '';
+}
+
+// Возвращает актуальное значение Description (select или textarea)
+function getDescriptionValue() {
+  const input = $('tkDescriptionInput');
+  if (input && input.style.display !== 'none') return input.value.trim();
+  return $('tkDescriptionSelect')?.value || '';
+}
+
+// Переключает Category между select и input режимами
+function toggleCategoryEdit() {
+  const sel   = $('tkCategorySelect');
+  const inp   = $('tkCategoryInput');
+  const btn   = $('btnCategoryEdit');
+  const isEdit = inp.style.display !== 'none';
+
+  if (isEdit) {
+    // Закрываем edit — сохраняем значение
+    sel.style.display = '';
+    inp.style.display = 'none';
+    btn.textContent = '✏️';
+    btn.classList.remove('active');
+    // Если введённое значение совпадает с опцией в select — выбираем её
+    const val = inp.value.trim();
+    const opt = Array.from(sel.options).find(o => o.value === val);
+    if (opt) { sel.value = val; }
+    updateDescriptionSelect();
+  } else {
+    // Открываем edit — копируем текущее значение
+    inp.value = sel.value;
+    sel.style.display = 'none';
+    inp.style.display = '';
+    btn.textContent = '✓';
+    btn.classList.add('active');
+    inp.focus();
+  }
+  updatePhotoName();
+}
+
+// Переключает Description между select и textarea режимами
+function toggleDescriptionEdit() {
+  const sel   = $('tkDescriptionSelect');
+  const inp   = $('tkDescriptionInput');
+  const btn   = $('btnDescriptionEdit');
+  const isEdit = inp.style.display !== 'none';
+
+  if (isEdit) {
+    // Закрываем edit
+    sel.style.display = '';
+    inp.style.display = 'none';
+    btn.textContent = '✏️';
+    btn.classList.remove('active');
+    // Если введённое значение совпадает с опцией — выбираем её
+    const val = inp.value.trim();
+    const opt = Array.from(sel.options).find(o => o.value === val);
+    if (opt) { sel.value = val; }
+  } else {
+    // Открываем edit — копируем текущее значение
+    inp.value = sel.value;
+    sel.style.display = 'none';
+    inp.style.display = '';
+    btn.textContent = '✓';
+    btn.classList.add('active');
+    inp.focus();
+  }
+  updatePhotoName();
+}
+
 // Обновляет options в Description select при смене Category
 function updateDescriptionSelect() {
-  const category = $('tkCategory')?.value || '';
-  const sel = $('tkDescription');
+  const category = getCategoryValue();
+  const sel = $('tkDescriptionSelect');
   if (!sel) return;
   const descriptions = CATEGORY_DESCRIPTIONS[category] || [];
   if (!descriptions.length) {
@@ -1173,23 +1246,59 @@ function selectSheetItem(el, val) {
   $('bottomSheetOverlay').classList.remove('open');
 }
 
-function openTemplateSheet() {
-  const templates = Object.keys(TICKET_TEMPLATES);
-  openBottomSheet('Select Template', templates, val => {
-    $('tkTemplate').value = val;
-    const lbl = $('btnTemplateLabel');
-    if (lbl) { lbl.textContent = val; lbl.style.color = 'var(--text)'; }
-    applyTicketTemplate(val);
-  });
+// Helpers — принудительно устанавливают режим select/edit
+function _setCategoryMode(mode) {
+  const sel = $('tkCategorySelect');
+  const inp = $('tkCategoryInput');
+  const btn = $('btnCategoryEdit');
+  if (!sel || !inp || !btn) return;
+  if (mode === 'select') {
+    sel.style.display = ''; inp.style.display = 'none';
+    btn.textContent = '✏️'; btn.classList.remove('active');
+  } else {
+    sel.style.display = 'none'; inp.style.display = '';
+    btn.textContent = '✓'; btn.classList.add('active');
+  }
+}
+
+function _setDescriptionMode(mode) {
+  const sel = $('tkDescriptionSelect');
+  const inp = $('tkDescriptionInput');
+  const btn = $('btnDescriptionEdit');
+  if (!sel || !inp || !btn) return;
+  if (mode === 'select') {
+    sel.style.display = ''; inp.style.display = 'none';
+    btn.textContent = '✏️'; btn.classList.remove('active');
+  } else {
+    sel.style.display = 'none'; inp.style.display = '';
+    btn.textContent = '✓'; btn.classList.add('active');
+  }
+}
+
+function applyTicketTemplate(val) {
+  if (!val) return;
+  const t = TICKET_TEMPLATES[val];
+  if (!t) return;
+  // Сбрасываем edit режимы
+  _setCategoryMode('select');
+  _setDescriptionMode('select');
+  // Устанавливаем значения
+  $('tkCategorySelect').value = t.category;
+  updateDescriptionSelect();
+  $('tkDescriptionSelect').value = t.description;
+  $('tkBody').value = t.body;
+  saveTicketSettings();
+  updatePhotoName();
+  showToast('Template applied');
 }
 
 function initTicket() {
   loadTicketSettings();
-  const btnTemplateSheet = $('btnTemplateSheet');
-  if (btnTemplateSheet) btnTemplateSheet.addEventListener('click', openTemplateSheet);
   $('btnClearTicket').addEventListener('click', clearTicketFields);
   $('btnCopyTicket').addEventListener('click', copyTicket);
   $('btnCopyUpdate').addEventListener('click', copyUpdate);
+  $('btnCategoryEdit').addEventListener('click', toggleCategoryEdit);
+  $('btnDescriptionEdit').addEventListener('click', toggleDescriptionEdit);
 
   const btnClearUpdate = $('btnClearUpdate');
   if (btnClearUpdate) {
@@ -1199,7 +1308,7 @@ function initTicket() {
     });
   }
 
-  // Кнопка Manual — открывает мануал на секции Ticket Rules
+  // Кнопка Manual
   const btnManual = $('btnTicketManual');
   if (btnManual) {
     btnManual.addEventListener('click', () => {
@@ -1218,7 +1327,7 @@ function initTicket() {
     });
   }
 
-  // Инициализируем Description select при загрузке
+  // Инициализируем Description select
   updateDescriptionSelect();
 
   TICKET_FIELDS.forEach(id => {
@@ -1254,7 +1363,7 @@ function updatePhotoName() {
     .replace(/[#\s]+/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
-  const desc = $('tkDescription')?.value || '';
+  const desc = getDescriptionValue();
   const title = slugify(desc);
 
   if (!date || !vehicle) {
@@ -1300,24 +1409,46 @@ function loadTicketSettings() {
     const s = JSON.parse(localStorage.getItem('ticketSettings') || '{}');
     TICKET_FIELDS.forEach(id => {
       const el = $(id);
-      if (el) el.value = (s[id] !== undefined) ? s[id] : (TICKET_DEFAULTS[id] || '');
+      if (el) el.value = s[id] || '';
     });
-  } catch(e) {
-    TICKET_FIELDS.forEach(id => {
-      const el = $(id);
-      if (el) el.value = TICKET_DEFAULTS[id] || '';
-    });
-  }
-  // После загрузки Category — обновляем Description select
-  const savedDesc = $('tkDescription')?.value || '';
-  updateDescriptionSelect();
-  // Восстанавливаем выбранное Description
-  if (savedDesc && $('tkDescription')) $('tkDescription').value = savedDesc;
+    // Восстанавливаем Category
+    if (s.tkCategoryValue) {
+      const sel = $('tkCategorySelect');
+      const inp = $('tkCategoryInput');
+      if (s.tkCategoryMode === 'edit' && inp) {
+        inp.value = s.tkCategoryValue;
+        _setCategoryMode('edit');
+      } else if (sel) {
+        sel.value = s.tkCategoryValue;
+      }
+    }
+    // Обновляем Description select после загрузки Category
+    updateDescriptionSelect();
+    // Восстанавливаем Description
+    if (s.tkDescriptionValue) {
+      const sel = $('tkDescriptionSelect');
+      const inp = $('tkDescriptionInput');
+      if (s.tkDescriptionMode === 'edit' && inp) {
+        inp.value = s.tkDescriptionValue;
+        _setDescriptionMode('edit');
+      } else if (sel) {
+        sel.value = s.tkDescriptionValue;
+      }
+    }
+  } catch(e) {}
 }
 
 function saveTicketSettings() {
   const s = {};
   TICKET_FIELDS.forEach(id => { const el = $(id); if (el) s[id] = el.value || ''; });
+  // Сохраняем Category
+  const catInp = $('tkCategoryInput');
+  s.tkCategoryMode  = catInp?.style.display !== 'none' ? 'edit' : 'select';
+  s.tkCategoryValue = getCategoryValue();
+  // Сохраняем Description
+  const descInp = $('tkDescriptionInput');
+  s.tkDescriptionMode  = descInp?.style.display !== 'none' ? 'edit' : 'select';
+  s.tkDescriptionValue = getDescriptionValue();
   try { localStorage.setItem('ticketSettings', JSON.stringify(s)); } catch(e) {}
 }
 
@@ -1336,11 +1467,13 @@ function applyTicketTemplate(val) {
 
 function clearTicketFields() {
   $('tkTemplate').value = '';
-  const lbl = $('btnTemplateLabel');
-  if (lbl) { lbl.textContent = '— select or type template —'; lbl.style.color = ''; }
-  $('tkCategory').value    = '';
-  $('tkDescription').value = '';
-  $('tkBody').value        = '';
+  _setCategoryMode('select');
+  _setDescriptionMode('select');
+  $('tkCategorySelect').value    = '';
+  $('tkCategoryInput').value     = '';
+  $('tkDescriptionSelect').value = '';
+  $('tkDescriptionInput').value  = '';
+  $('tkBody').value              = '';
   updateDescriptionSelect();
   _photoCount = 1;
   updatePhotoName();
@@ -1355,8 +1488,8 @@ function copyTicket() {
   out += `Team Leader Name: ${v('tkLeader')}${NL}`;
   out += `Vehicle Nr.: ${vehicle}${NL}`;
   out += `License Plate: ${v('tkPlate')}${NL}`;
-  out += `Category: ${v('tkCategory')}${NL}`;
-  out += `Description: ${v('tkDescription').trim()}${NL}`;
+  out += `Category: ${getCategoryValue()}${NL}`;
+  out += `Description: ${getDescriptionValue()}${NL}`;
   out += `Location, address: ${v('tkLocation')}${NL}`;
   out += `VW Phone: ${v('tkVwPhone') || '-'}${NL}`;
   out += `Capgemini phone: ${v('tkCapPhone')}${NL}`;

@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.15
+   Version: 5.16
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -149,12 +149,12 @@ body {
   border: 1px solid transparent;
   letter-spacing: .5px;
 }
-.shift-badge.s1 { background: rgba(0,113,227,.1);  color: #0071e3; border-color: rgba(0,113,227,.2); }
-.shift-badge.s2 { background: rgba(255,159,10,.1); color: #c47b00; border-color: rgba(255,159,10,.25); }
-.shift-badge.s3 { background: rgba(147,51,234,.1); color: #9333ea; border-color: rgba(147,51,234,.2); }
-body.dark .shift-badge.s1 { background: rgba(10,132,255,.18);  color: #0a84ff; border-color: rgba(10,132,255,.35); }
-body.dark .shift-badge.s2 { background: rgba(255,159,10,.18);  color: #ff9f0a; border-color: rgba(255,159,10,.35); }
-body.dark .shift-badge.s3 { background: rgba(191,90,242,.18);  color: #bf5af2; border-color: rgba(191,90,242,.35); }
+.shift-badge.s1 { background: rgba(48,209,88,.12); color: #25a244; border-color: rgba(48,209,88,.3); }
+.shift-badge.s2 { background: rgba(48,209,88,.12); color: #25a244; border-color: rgba(48,209,88,.3); }
+.shift-badge.s3 { background: rgba(48,209,88,.12); color: #25a244; border-color: rgba(48,209,88,.3); }
+body.dark .shift-badge.s1 { background: rgba(48,209,88,.18); color: #30d158; border-color: rgba(48,209,88,.4); }
+body.dark .shift-badge.s2 { background: rgba(48,209,88,.18); color: #30d158; border-color: rgba(48,209,88,.4); }
+body.dark .shift-badge.s3 { background: rgba(48,209,88,.18); color: #30d158; border-color: rgba(48,209,88,.4); }
 
 /* ═══════════════════════════════════════════
    PAGES & MAIN
@@ -889,6 +889,38 @@ body.dark .help-section-highlight {
 }
 
 /* Input с кнопкой ▾ для Category */
+/* Select + Edit row */
+.select-edit-row {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+.select-edit-row select,
+.select-edit-row input,
+.select-edit-row textarea { flex: 1; }
+
+.btn-field-edit {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color .15s, background .15s;
+  line-height: 1;
+  padding: 0;
+}
+.btn-field-edit:active { background: var(--border); }
+.btn-field-edit.active {
+  border-color: var(--green);
+  background: rgba(48,209,88,.08);
+}
+
 .input-with-btn {
   display: flex;
   gap: 6px;
