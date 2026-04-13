@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.18
+   Version: 5.20
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.18';
+const APP_VERSION = '5.20';
 
 /* ───────────────────────────────────────────
    DATA
@@ -460,7 +460,7 @@ function buildEventCard(ev) {
   if (isOrg) cardClass = 'dt-org';
 
   const timerHtml = (!ev.timeEnd && ev.timeStart)
-    ? `<div class="event-timer" data-start="${ev.timeStart}" id="timer-${ev.id}">⏱ <span>...</span></div>`
+    ? `<div class="event-timer" data-start="${ev.timeStart}" id="timer-${ev.id}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> <span>...</span></div>`
     : '';
 
   const comments = DT_COMMENTS[ev.type] || [];
@@ -472,7 +472,7 @@ function buildEventCard(ev) {
            <option value="">— select comment —</option>
            ${comments.map(c => `<option value="${esc(c)}" ${ev.description === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}
          </select>
-         <button class="btn-comment-edit" onclick="toggleDTEdit(${ev.id})" id="edit-toggle-${ev.id}" title="Edit comment">✏️</button>
+         <button class="btn-comment-edit" onclick="toggleDTEdit(${ev.id})" id="edit-toggle-${ev.id}" title="Edit comment"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></button>
        </div>`
     : '';
 
@@ -493,7 +493,7 @@ function buildEventCard(ev) {
         <select onchange="updateEvent(${ev.id},'type',this.value);updateEvent(${ev.id},'description','');renderEvents()">
           ${buildTypeOptions(ev.type)}
         </select>
-        <button class="btn-remove" onclick="removeEvent(${ev.id})">✕</button>
+        <button class="btn-remove" onclick="removeEvent(${ev.id})"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
       ${timerHtml}
       ${hasComments ? `<div id="dt-comment-row-${ev.id}">${commentHtml}</div>` : ''}
@@ -511,7 +511,7 @@ function buildEventCard(ev) {
       <div class="event-row-addr">
         <input type="text" placeholder="Address" value="${esc(ev.address || '')}"
           onchange="updateEvent(${ev.id},'address',this.value)">
-        <button class="btn-geo" onclick="geoFillEvent(${ev.id}, this)" title="Get address">📍</button>
+        <button class="btn-geo" onclick="geoFillEvent(${ev.id}, this)" title="Get address"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></button>
       </div>
     </div>
   </div>`;
@@ -904,7 +904,7 @@ function buildDiskRow(dk) {
       <option value="in use" ${dk.status==='in use'?'selected':''}>in use</option>
       <option value="full" ${dk.status==='full'?'selected':''}>full</option>
     </select>
-    <button class="btn-remove" onclick="removeDisk(${dk.id})">✕</button>
+    <button class="btn-remove" onclick="removeDisk(${dk.id})"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     ${pctInfo}
   </div>`;
 }
@@ -1113,7 +1113,7 @@ function openHistory() {
         </div>
         <div class="history-btns">
           <button class="btn-history-copy" onclick="copyHistory(${i})">Copy</button>
-          <button class="btn-history-del"  onclick="deleteHistory(${i})">✕</button>
+          <button class="btn-history-del"  onclick="deleteHistory(${i})"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
       </div>`;
     }).join('');
@@ -1168,7 +1168,7 @@ function toggleCategoryEdit() {
     // Закрываем edit — сохраняем значение
     sel.style.display = '';
     inp.style.display = 'none';
-    btn.textContent = '✏️';
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>';
     btn.classList.remove('active');
     // Если введённое значение совпадает с опцией в select — выбираем её
     const val = inp.value.trim();
@@ -1180,7 +1180,7 @@ function toggleCategoryEdit() {
     inp.value = sel.value;
     sel.style.display = 'none';
     inp.style.display = '';
-    btn.textContent = '✓';
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
     btn.classList.add('active');
     inp.focus();
   }
@@ -1198,7 +1198,7 @@ function toggleDescriptionEdit() {
     // Закрываем edit
     sel.style.display = '';
     inp.style.display = 'none';
-    btn.textContent = '✏️';
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>';
     btn.classList.remove('active');
     // Если введённое значение совпадает с опцией — выбираем её
     const val = inp.value.trim();
@@ -1209,7 +1209,7 @@ function toggleDescriptionEdit() {
     inp.value = sel.value;
     sel.style.display = 'none';
     inp.style.display = '';
-    btn.textContent = '✓';
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
     btn.classList.add('active');
     inp.focus();
   }
@@ -1254,10 +1254,10 @@ function _setCategoryMode(mode) {
   if (!sel || !inp || !btn) return;
   if (mode === 'select') {
     sel.style.display = ''; inp.style.display = 'none';
-    btn.textContent = '✏️'; btn.classList.remove('active');
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>'; btn.classList.remove('active');
   } else {
     sel.style.display = 'none'; inp.style.display = '';
-    btn.textContent = '✓'; btn.classList.add('active');
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'; btn.classList.add('active');
   }
 }
 
@@ -1268,10 +1268,10 @@ function _setDescriptionMode(mode) {
   if (!sel || !inp || !btn) return;
   if (mode === 'select') {
     sel.style.display = ''; inp.style.display = 'none';
-    btn.textContent = '✏️'; btn.classList.remove('active');
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>'; btn.classList.remove('active');
   } else {
     sel.style.display = 'none'; inp.style.display = '';
-    btn.textContent = '✓'; btn.classList.add('active');
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'; btn.classList.add('active');
   }
 }
 
@@ -1541,8 +1541,8 @@ function renderDocs() {
 ─────────────────────────────────────────── */
 async function geoFetch(btn, onResult) {
   if (!navigator.geolocation) { showToast('Geolocation not supported'); return; }
-  const orig = btn.textContent;
-  btn.textContent = '⏳';
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>';
   navigator.geolocation.getCurrentPosition(
     async pos => {
       try {
@@ -1553,9 +1553,9 @@ async function geoFetch(btn, onResult) {
         const data = await res.json();
         onResult(data.address || {});
       } catch(e) { showToast('Could not get location'); }
-      btn.textContent = orig;
+      btn.innerHTML = orig;
     },
-    () => { showToast('Location denied'); btn.textContent = orig; },
+    () => { showToast('Location denied'); btn.innerHTML = orig; },
     { timeout: 8000, enableHighAccuracy: true }
   );
 }

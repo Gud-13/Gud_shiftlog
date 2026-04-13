@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ShiftLog v5.18 -->
+<!-- ShiftLog v5.20 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -55,8 +55,12 @@
       </div>
       <div class="header-actions">
         <span id="shiftBadge" class="shift-badge">Shift 1</span>
-        <button id="btnHelp" class="header-btn" title="Manual">?</button>
-        <button id="btnTheme" class="header-btn" title="Toggle theme">🌙</button>
+        <button id="btnHelp" class="header-btn" title="Manual">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </button>
+        <button id="btnTheme" class="header-btn" title="Toggle theme">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
       </div>
     </div>
   </header>
@@ -95,7 +99,9 @@
               <label>Country</label>
               <div class="input-geo">
                 <input type="text" id="country" placeholder="e.g. Germany" autocomplete="off">
-                <button class="btn-geo" id="btnGeoCity" title="Detect city & country">📍</button>
+                <button class="btn-geo" id="btnGeoCity" title="Detect city & country">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                </button>
               </div>
             </div>
             <div class="field">
@@ -119,34 +125,34 @@
         <div class="card-body">
           <div class="quick-group-label sys">System</div>
           <div class="quick-group" id="quickSys">
-            <button class="q-btn q-sys" data-type="dt_startup">⏻ Startup / Shutdown</button>
-            <button class="q-btn q-sys" data-type="dt_cleaning">🧹 Sensors Cleaning</button>
-            <button class="q-btn q-sys" data-type="dt_vpi">🎬 Recording Tool (VPI)</button>
-            <button class="q-btn q-sys" data-type="dt_ecu">💻 ECU</button>
-            <button class="q-btn q-sys" data-type="dt_display">🖥 Touch Display</button>
-            <button class="q-btn q-sys" data-type="dt_prelabel">🏷 Prelabel Tool</button>
-            <button class="q-btn q-sys" data-type="dt_measurement">📡 Measurement System</button>
-            <button class="q-btn q-sys" data-type="dt_low_speed">🐢 &lt; 35 km/h</button>
-            <button class="q-btn q-sys" data-type="dt_ssd_issue">⚠ SSD Issue</button>
-            <button class="q-btn q-sys" data-type="dt_ssd_logistics">📦 SSD Logistics</button>
-            <button class="q-btn q-sys" data-type="dt_ssd_change">💾 SSD Change</button>
-            <button class="q-btn q-sys" data-type="dt_standby">⏸ Stand-by System</button>
-            <button class="q-btn q-sys" data-type="other">+ Others</button>
+            <button class="q-btn q-sys" data-type="dt_startup"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg> Startup / Shutdown</button>
+            <button class="q-btn q-sys" data-type="dt_cleaning"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> Sensors Cleaning</button>
+            <button class="q-btn q-sys" data-type="dt_vpi"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg> Recording Tool (VPI)</button>
+            <button class="q-btn q-sys" data-type="dt_ecu"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg> ECU</button>
+            <button class="q-btn q-sys" data-type="dt_display"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> Touch Display</button>
+            <button class="q-btn q-sys" data-type="dt_prelabel"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg> Prelabel Tool</button>
+            <button class="q-btn q-sys" data-type="dt_measurement"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Measurement System</button>
+            <button class="q-btn q-sys" data-type="dt_low_speed"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg> &lt; 35 km/h</button>
+            <button class="q-btn q-sys" data-type="dt_ssd_issue"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> SSD Issue</button>
+            <button class="q-btn q-sys" data-type="dt_ssd_logistics"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg> SSD Logistics</button>
+            <button class="q-btn q-sys" data-type="dt_ssd_change"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/></svg> SSD Change</button>
+            <button class="q-btn q-sys" data-type="dt_standby"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/></svg> Stand-by System</button>
+            <button class="q-btn q-sys" data-type="other"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Others</button>
           </div>
           <div class="quick-group-label org">Organisational</div>
           <div class="quick-group" id="quickOrg">
-            <button class="q-btn q-org" data-type="dt_handover">⇄ Handover</button>
-            <button class="q-btn q-org" data-type="dt_protocol">📄 Protocol / Documentation</button>
-            <button class="q-btn q-org" data-type="dt_route_doc">🗺 Driven Route Documentation</button>
-            <button class="q-btn q-org" data-type="dt_refuelling">⛽ Refuelling</button>
-            <button class="q-btn q-org" data-type="dt_transfer">🚗 Transfer</button>
-            <button class="q-btn q-org" data-type="dt_maintenance">🔧 Vehicle Maintenance</button>
-            <button class="q-btn q-org" data-type="dt_service">🏪 Vehicle Service</button>
-            <button class="q-btn q-org" data-type="dt_no_storage">💿 No Storage Medium</button>
-            <button class="q-btn q-org" data-type="dt_police">🚔 Official / Police</button>
-            <button class="q-btn q-org" data-type="break">◯ Break</button>
-            <button class="q-btn q-org" data-type="dt_standby_wait">⏳ Standby / Waiting</button>
-            <button class="q-btn q-org" data-type="dt_other_org">+ Others</button>
+            <button class="q-btn q-org" data-type="dt_handover"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8L22 12L18 16"/><path d="M6 8L2 12L6 16"/><line x1="2" y1="12" x2="22" y2="12"/></svg> Handover</button>
+            <button class="q-btn q-org" data-type="dt_protocol"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Protocol / Documentation</button>
+            <button class="q-btn q-org" data-type="dt_route_doc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg> Driven Route Documentation</button>
+            <button class="q-btn q-org" data-type="dt_refuelling"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V8a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v14"/><path d="M20 9.5V6a2 2 0 0 0-2-2h-1"/><path d="M14 22H3"/><path d="M3 6h11"/><path d="M18 9.5a1.5 1.5 0 0 1 3 0v7.5a2 2 0 0 1-2 2v0a2 2 0 0 1-2-2V14"/></svg> Refuelling</button>
+            <button class="q-btn q-org" data-type="dt_transfer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17H5a2 2 0 0 1 0-4h1a2 2 0 0 0 0-4H3"/><path d="M14 6h7"/><path d="M17 3l3 3-3 3"/></svg> Transfer</button>
+            <button class="q-btn q-org" data-type="dt_maintenance"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Vehicle Maintenance</button>
+            <button class="q-btn q-org" data-type="dt_service"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg> Vehicle Service</button>
+            <button class="q-btn q-org" data-type="dt_no_storage"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="2" x2="22" y2="22"/><path d="M10.5 6H19a2 2 0 0 1 2 2v8a2 2 0 0 1-1 1.73"/><path d="M5 6H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9.5"/></svg> No Storage Medium</button>
+            <button class="q-btn q-org" data-type="dt_police"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Official / Police</button>
+            <button class="q-btn q-org" data-type="break"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg> Break</button>
+            <button class="q-btn q-org" data-type="dt_standby_wait"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg> Standby / Waiting</button>
+            <button class="q-btn q-org" data-type="dt_other_org"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Others</button>
           </div>
         </div>
       </div>
@@ -167,7 +173,10 @@
       <div class="card" data-accent="amber">
         <div class="card-header">
           <span class="card-title">Disk Status</span>
-          <button class="btn-copy-small" id="btnCopyDisks">📋 Copy report</button>
+          <button class="btn-copy-small" id="btnCopyDisks">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy report
+          </button>
         </div>
         <div class="card-body">
           <div id="diskList"></div>
@@ -189,8 +198,14 @@
 
       <!-- Footer buttons -->
       <div class="footer-row">
-        <button class="btn-secondary btn-danger" id="btnNewShift">⟳ New Shift</button>
-        <button class="btn-primary btn-green" id="btnPreview">Preview &amp; Copy</button>
+        <button class="btn-secondary btn-danger" id="btnNewShift">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          New Shift
+        </button>
+        <button class="btn-primary btn-green" id="btnPreview">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Preview &amp; Copy
+        </button>
       </div>
 
       <div class="page-credit">Designed &amp; built by <strong>Gud</strong></div>
@@ -238,7 +253,9 @@
             <label>Location / Address (hotel etc.)</label>
             <div class="input-geo">
               <input type="text" id="tkLocation" placeholder="Address, City, Country">
-              <button class="btn-geo" id="btnGeoTicket" title="Get location">📍</button>
+              <button class="btn-geo" id="btnGeoTicket" title="Get location">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              </button>
             </div>
           </div>
         </div>
@@ -257,7 +274,9 @@
           <div class="field">
             <label style="display:flex;justify-content:space-between">
               <span>Template</span>
-              <button class="btn-link" id="btnClearTicket">✕ Clear</button>
+              <button class="btn-link" id="btnClearTicket">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Clear
+              </button>
             </label>
             <select id="tkTemplate" onchange="applyTicketTemplate(this.value)">
               <option value="">— select template —</option>
@@ -289,7 +308,9 @@
                 <option value="Backpacks">Backpacks</option>
               </select>
               <input type="text" id="tkCategoryInput" placeholder="Type category…" style="display:none">
-              <button type="button" class="btn-field-edit" id="btnCategoryEdit" title="Edit manually">✏️</button>
+              <button type="button" class="btn-field-edit" id="btnCategoryEdit" title="Edit manually">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+              </button>
             </div>
           </div>
           <div class="field">
@@ -299,7 +320,9 @@
                 <option value="">— select category first —</option>
               </select>
               <textarea id="tkDescriptionInput" rows="2" placeholder="Type description…" style="display:none" oninput="updatePhotoName()"></textarea>
-              <button type="button" class="btn-field-edit" id="btnDescriptionEdit" title="Edit manually">✏️</button>
+              <button type="button" class="btn-field-edit" id="btnDescriptionEdit" title="Edit manually">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+              </button>
             </div>
           </div>
 
@@ -312,7 +335,9 @@
                 <button type="button" class="btn-photo-count" id="btnPhotoMinus">−</button>
                 <span class="photo-count-val" id="photoCountVal">1</span>
                 <button type="button" class="btn-photo-count" id="btnPhotoPlus">+</button>
-                <button type="button" class="btn-copy-small" id="btnCopyPhotoName">📋</button>
+                <button type="button" class="btn-copy-small" id="btnCopyPhotoName">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
               </div>
             </div>
           </div>
@@ -324,7 +349,10 @@
       </div>
 
       <div class="footer-row">
-        <button class="btn-primary btn-green" id="btnCopyTicket">📋 Copy Ticket</button>
+        <button class="btn-primary btn-green" id="btnCopyTicket">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy Ticket
+        </button>
       </div>
 
       <!-- Update -->
@@ -337,7 +365,9 @@
           <div class="field">
             <label style="display:flex;justify-content:space-between">
               <span>Update body</span>
-              <button class="btn-link" id="btnClearUpdate">✕ Clear</button>
+              <button class="btn-link" id="btnClearUpdate">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Clear
+              </button>
             </label>
             <textarea id="tkUpdate" rows="5" placeholder="After an additional bus sleep cycle…"></textarea>
           </div>
@@ -345,7 +375,10 @@
       </div>
 
       <div class="footer-row">
-        <button class="btn-primary btn-amber" id="btnCopyUpdate">📤 Copy Update</button>
+        <button class="btn-primary btn-amber" id="btnCopyUpdate">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Copy Update
+        </button>
       </div>
 
     </main>
@@ -490,7 +523,10 @@
       <div class="modal-handle"></div>
       <div class="modal-title">Shift Report</div>
       <div class="preview-text" id="previewText"></div>
-      <button class="btn-primary btn-green" id="btnCopyReport">📋 Copy to clipboard</button>
+      <button class="btn-primary btn-green" id="btnCopyReport">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy to clipboard
+      </button>
     </div>
   </div>
 
@@ -500,7 +536,9 @@
       <div class="modal-handle"></div>
       <div class="modal-title">
         Shift History
-        <button class="modal-close" id="btnCloseHistory">✕</button>
+        <button class="modal-close" id="btnCloseHistory">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
       <div id="historyList"></div>
     </div>
@@ -512,7 +550,9 @@
       <div class="modal-handle"></div>
       <div class="modal-title">
         Manual
-        <button class="modal-close" id="btnCloseHelp">✕</button>
+        <button class="modal-close" id="btnCloseHelp">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
       <div class="help-lang-switcher">
         <button class="lang-btn active" data-lang="en">EN</button>
