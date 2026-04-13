@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.16
+   Version: 5.17
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.16';
+const APP_VERSION = '5.17';
 
 /* ───────────────────────────────────────────
    DATA
@@ -410,7 +410,7 @@ function loadState() {
     $('vehicleId').value  = s.vehicleId  || 'DC-205';
     $('missionId').value  = s.missionId  || '';
     $('cityField').value  = s.cityField  || '';
-    $('country').value    = s.country    || 'Germany';
+    $('country').value    = s.country    || '';
     $('driverId').value   = s.driverId   || '1009';
     $('operatorId').value = s.operatorId || '1108';
     $('notes').value      = s.notes      || '';
@@ -1366,13 +1366,13 @@ function updatePhotoName() {
   const desc = getDescriptionValue();
   const title = slugify(desc);
 
-  if (!date || !vehicle) {
+  if (!date || !vehicle || !title) {
     display.textContent = 'YYYYMMDD_V-number_title_1';
     display.classList.add('photo-name-placeholder');
     return;
   }
 
-  display.textContent = `${date}_${vehicle}_${title || 'title'}_${_photoCount}`;
+  display.textContent = `${date}_${vehicle}_${title}_${_photoCount}`;
   display.classList.remove('photo-name-placeholder');
 }
 
@@ -1450,19 +1450,6 @@ function saveTicketSettings() {
   s.tkDescriptionMode  = descInp?.style.display !== 'none' ? 'edit' : 'select';
   s.tkDescriptionValue = getDescriptionValue();
   try { localStorage.setItem('ticketSettings', JSON.stringify(s)); } catch(e) {}
-}
-
-function applyTicketTemplate(val) {
-  if (!val) return;
-  const t = TICKET_TEMPLATES[val];
-  if (!t) return;
-  $('tkCategory').value = t.category;
-  updateDescriptionSelect();
-  $('tkDescription').value = t.description;
-  $('tkBody').value = t.body;
-  saveTicketSettings();
-  updatePhotoName();
-  showToast('Template applied');
 }
 
 function clearTicketFields() {
@@ -1576,8 +1563,11 @@ async function geoFetch(btn, onResult) {
 function initGeo() {
   $('btnGeoCity').addEventListener('click', function() {
     geoFetch(this, a => {
-      const city = a.city || a.town || a.village || a.county || '';
-      if (city) { $('cityField').value = city; saveState(); showToast('City: ' + city); }
+      const city    = a.city || a.town || a.village || a.county || '';
+      const country = a.country || '';
+      if (city)    { $('cityField').value = city; }
+      if (country) { $('country').value   = country; }
+      if (city || country) { saveState(); showToast('City & Country updated'); }
     });
   });
 
@@ -1703,7 +1693,7 @@ const HELP_DATA = {
       {
         icon: '📋', title: 'Shift Report',
         steps: [
-          ['Fill in Shift Parameters', 'Date · Vehicle ID · Mission ID · City (📍 auto-detect) · Country · Driver & Operator ID'],
+          ['Fill in Shift Parameters', 'Date · Vehicle ID · Mission ID · City + Country (📍 auto-detect both) · Driver & Operator ID'],
           ['Add events via Quick Add', 'Tap a button → event is created with current time. Orange = System DT, Blue = Org DT'],
           ['Complete each event card', 'Start/End time · KM start→end (Enter copies to end) · Address 📍 · For DT events: pick comment from dropdown, tap ✏️ to edit the text (e.g. replace A→Frankfurt, B→Paris)'],
           ['Preview & Copy', 'Generates a full formatted report and copies it to clipboard — paste in WhatsApp or email'],
@@ -1800,7 +1790,7 @@ const HELP_DATA = {
       {
         icon: '📋', title: 'Shift Report',
         steps: [
-          ['Completați Shift Parameters', 'Dată · ID vehicul · ID misiune · Oraș (📍 detectare automată) · Țară · ID șofer & operator'],
+          ['Completați Shift Parameters', 'Dată · ID vehicul · ID misiune · Oraș + Țară (📍 detectare automată ambele) · ID șofer & operator'],
           ['Adăugați evenimente', 'Apăsați buton → eveniment creat cu ora curentă. Portocaliu = System DT, Albastru = Org DT'],
           ['Completați cardul evenimentului', 'Ora start/end · KM start→end (Enter copiază) · Adresă 📍 · Selectați comentariu din dropdown, apăsați ✏️ pentru a edita textul (ex. înlocuiți A→Frankfurt, B→Paris)'],
           ['Preview & Copy', 'Generează raport complet și îl copiază în clipboard — lipiți în WhatsApp sau email'],
@@ -1897,7 +1887,7 @@ const HELP_DATA = {
       {
         icon: '📋', title: 'Shift Report',
         steps: [
-          ['Заполни Shift Parameters', 'Дата · Vehicle ID · Mission ID · Город (📍 автоопределение) · Страна · Driver & Operator ID'],
+          ['Заполни Shift Parameters', 'Дата · Vehicle ID · Mission ID · Город + Страна (📍 автоопределение обоих) · Driver & Operator ID'],
           ['Добавляй события через Quick Add', 'Нажми кнопку → событие с текущим временем. Оранжевый = System DT, Синий = Org DT'],
           ['Заполни карточку события', 'Время start/end · KM start→end (Enter копирует) · Адрес 📍 · Для DT: выбери комментарий из dropdown, нажми ✏️ для редактирования текста (например замени A→Франкфурт, B→Париж)'],
           ['Preview & Copy', 'Генерирует полный отчёт и копирует в буфер — вставляй в WhatsApp или email'],
