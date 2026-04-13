@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ShiftLog v5.17 -->
+<!-- ShiftLog v5.18 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -89,14 +89,14 @@
             </div>
             <div class="field">
               <label>City</label>
-              <div class="input-geo">
-                <input type="text" id="cityField" placeholder="e.g. Berlin">
-                <button class="btn-geo" id="btnGeoCity" title="Detect city">📍</button>
-              </div>
+              <input type="text" id="cityField" placeholder="e.g. Berlin">
             </div>
             <div class="field">
               <label>Country</label>
-              <input type="text" id="country" placeholder="e.g. Germany" autocomplete="off">
+              <div class="input-geo">
+                <input type="text" id="country" placeholder="e.g. Germany" autocomplete="off">
+                <button class="btn-geo" id="btnGeoCity" title="Detect city & country">📍</button>
+              </div>
             </div>
             <div class="field">
               <label>Driver ID</label>
@@ -440,25 +440,41 @@
 
 
   <!-- ═══════════════════════════════════════════
-       BOTTOM NAVIGATION
+       BOTTOM NAVIGATION — Floating
   ═══════════════════════════════════════════ -->
   <nav class="bottom-nav">
     <div class="bottom-nav-inner">
       <button class="nav-btn active" data-page="shift">
-        <span class="nav-icon">📋</span>
-        <span class="nav-label">SHIFT</span>
+        <span class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>
+          </svg>
+        </span>
+        <span class="nav-label">Shift</span>
       </button>
       <button class="nav-btn" data-page="ticket">
-        <span class="nav-icon">🎫</span>
-        <span class="nav-label">TICKET</span>
+        <span class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/>
+          </svg>
+        </span>
+        <span class="nav-label">Ticket</span>
       </button>
       <button class="nav-btn" data-page="docs">
-        <span class="nav-icon">📁</span>
-        <span class="nav-label">DOCS</span>
+        <span class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+        </span>
+        <span class="nav-label">Docs</span>
       </button>
       <button class="nav-btn" data-page="history">
-        <span class="nav-icon">🕐</span>
-        <span class="nav-label">HISTORY</span>
+        <span class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </span>
+        <span class="nav-label">History</span>
       </button>
     </div>
   </nav>
