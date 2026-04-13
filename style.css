@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.22
+   Version: 5.23
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -557,6 +557,40 @@ body.dark .photo-name-row { background: #2c2c2e; }
   color: var(--muted);
   padding: 6px 2px 2px;
   letter-spacing: .2px;
+}
+
+/* ═══════════════════════════════════════════
+   CONTACTS
+═══════════════════════════════════════════ */
+.contact-card { padding: 4px 0; }
+.contact-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.contact-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 0.5px solid var(--border);
+  font-size: 13px;
+  color: var(--sub);
+  line-height: 1.4;
+}
+.contact-row:last-child { border-bottom: none; }
+.contact-row svg { flex-shrink: 0; margin-top: 2px; color: var(--muted); }
+.contact-link { color: var(--blue); text-decoration: none; word-break: break-all; }
+.contact-link:active { opacity: .7; }
+body.dark .contact-link { color: #0a84ff; }
+.contact-empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  padding: 16px 0 8px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-sm);
 }
 .quick-link-item {
   display: flex; align-items: center; padding: 11px 0;
