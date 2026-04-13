@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.21
+   Version: 5.22
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.21';
+const APP_VERSION = '5.22';
 
 /* ───────────────────────────────────────────
    DATA
@@ -1783,6 +1783,19 @@ const HELP_DATA = {
           '<b>Change SSD drive letter (Windows):</b> Win+R → <b>diskmgmt.msc</b> → find D: → right-click → Change Drive Letter → select X → OK',
         ],
       },
+      {
+        icon: '⚖️', title: 'About & Legal',
+        highlight: true,
+        items: [
+          '<b>ShiftLog</b> — developed by <b>Eugeniu Gud</b>',
+          'Copyright © 2024–2026 Eugeniu Gud. All rights reserved.',
+          'This application is an original work of the Author and is protected by applicable copyright law.',
+          '<b>Permitted use:</b> personal and operational use within the ADAS Valeo/VW Capgemini KSS2.0 team only.',
+          '<b>Restrictions:</b> copying, redistribution, commercial use, or transfer to third parties without written permission from the Author is strictly prohibited.',
+          '<b>Data:</b> shift data is stored locally on your device. Disk status is synced via Firebase Realtime Database for team use only.',
+          '<b>Disclaimer:</b> the application is provided without warranties of any kind. The Author is not liable for any damages arising from its use.',
+        ],
+      },
     ],
   },
   ro: {
@@ -1875,9 +1888,22 @@ const HELP_DATA = {
           '<b>History</b> — ultimele 14 schimburi salvate, Copy retrimite orice raport',
           'Reîncărcarea paginii este sigură — salvare automată la fiecare 5 secunde',
           '<b>Aplicația se actualizează automat</b> — nu este nevoie de reinstalare. Deschideți aplicația și se va actualiza în fundal',
-          '<b>Instalare pe iPhone:</b> Safari → buton Share → "Add to Home Screen" — funcționează ca o aplicație nativă',
-          '<b>Instalare pe Android:</b> Chrome → meniu ⋮ → "Add to Home Screen"',
+          '<b>Instalare pe iPhone:</b> Safari → buton Share → Add to Home Screen — funcționează ca o aplicație nativă',
+          '<b>Instalare pe Android:</b> Chrome → meniu ⋮ → Add to Home Screen',
           '<b>Schimbare literă disc (Windows):</b> Win+R → <b>diskmgmt.msc</b> → D: click dreapta → Change Drive Letter → X → OK',
+        ],
+      },
+      {
+        icon: '⚖️', title: 'Despre & Legal',
+        highlight: true,
+        items: [
+          '<b>ShiftLog</b> — dezvoltat de <b>Eugeniu Gud</b>',
+          'Copyright © 2024–2026 Eugeniu Gud. Toate drepturile rezervate.',
+          'Această aplicație este o operă originală a Autorului și este protejată de legislația privind drepturile de autor.',
+          '<b>Utilizare permisă:</b> exclusiv pentru uz personal și operațional în cadrul echipei ADAS Valeo/VW Capgemini KSS2.0.',
+          '<b>Restricții:</b> copierea, redistribuirea, utilizarea comercială sau transferul către terți fără permisiunea scrisă a Autorului este strict interzisă.',
+          '<b>Date:</b> datele turelor sunt stocate local pe dispozitiv. Statusul discurilor este sincronizat prin Firebase Realtime Database exclusiv pentru echipă.',
+          '<b>Declinare de responsabilitate:</b> aplicația este furnizată fără garanții de nicio natură. Autorul nu este responsabil pentru niciun prejudiciu rezultat din utilizarea sa.',
         ],
       },
     ],
@@ -1977,6 +2003,19 @@ const HELP_DATA = {
           '<b>Смена буквы диска (Windows):</b> Win+R → <b>diskmgmt.msc</b> → D: правая кнопка → Change Drive Letter → X → OK',
         ],
       },
+      {
+        icon: '⚖️', title: 'О приложении и правовая информация',
+        highlight: true,
+        items: [
+          '<b>ShiftLog</b> — разработано <b>Eugeniu Gud</b>',
+          'Copyright © 2024–2026 Eugeniu Gud. Все права защищены.',
+          'Приложение является оригинальным произведением Автора и защищено действующим законодательством об авторском праве.',
+          '<b>Разрешённое использование:</b> исключительно для личного и служебного использования в команде ADAS Valeo/VW Capgemini KSS2.0.',
+          '<b>Ограничения:</b> копирование, распространение, коммерческое использование или передача третьим лицам без письменного разрешения Автора строго запрещены.',
+          '<b>Данные:</b> данные смен хранятся локально на устройстве. Статус дисков синхронизируется через Firebase Realtime Database исключительно для командного использования.',
+          '<b>Отказ от ответственности:</b> приложение предоставляется без каких-либо гарантий без каких-либо гарантий. Автор не несёт ответственности за любой ущерб, возникший в результате его использования.',
+        ],
+      },
     ],
   },
 };
@@ -1994,6 +2033,7 @@ const HELP_ICONS = {
   '🖥': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
   '🔐': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
   '💡': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>',
+  '⚖️': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>',
 };
 
 function renderHelp(lang) {
