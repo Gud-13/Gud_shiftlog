@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.5
+   Version: 5.6
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.5';
+const APP_VERSION = '5.6';
 
 /* ───────────────────────────────────────────
    DATA
@@ -753,6 +753,7 @@ function initFirebaseSync() {
   try {
     _fbRef = db.ref(`disks/${vehicleId}`);
     _fbListening = true;
+    let _firstResponse = true;
 
     _fbRef.on('value', snapshot => {
       if (_fbIgnoreNext) { _fbIgnoreNext = false; return; }
@@ -761,10 +762,16 @@ function initFirebaseSync() {
         disks = data;
         diskCounter = disks.length > 0 ? Math.max(...disks.map(d => d.id)) : 0;
         renderDisks();
+        if (_firstResponse) {
+          showToast(`🔄 Disks synced: ${vehicleId}`);
+        }
       }
+      _firstResponse = false;
+    }, err => {
+      console.warn('Firebase sync error:', err);
+      showToast('⚠ Sync failed — check connection');
     });
 
-    showToast(`🔄 Disks synced: ${vehicleId}`);
   } catch(e) {
     console.warn('Firebase sync error:', e);
   }
