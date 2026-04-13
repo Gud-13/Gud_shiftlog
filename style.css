@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.6
+   Version: 5.7
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -486,9 +486,13 @@ body.dark .btn-copy-small { border-color: rgba(10,132,255,.3); }
 .page-credit { text-align: center; padding: 8px 0 4px; font-size: 11px; color: var(--muted); letter-spacing: .5px; }
 .page-credit strong { color: var(--sub); }
 
-/* ═══════════════════════════════════════════
-   QUICK LINKS
-═══════════════════════════════════════════ */
+/* Disk meta — last updated info */
+.disk-meta {
+  font-size: 11px;
+  color: var(--muted);
+  padding: 6px 2px 2px;
+  letter-spacing: .2px;
+}
 .quick-link-item {
   display: flex; align-items: center; padding: 11px 0;
   border-bottom: 1px solid var(--border);

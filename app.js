@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.6
+   Version: 5.7
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.6';
+const APP_VERSION = '5.7';
 
 /* ───────────────────────────────────────────
    DATA
@@ -740,6 +740,18 @@ function getFBVehicleId() {
   return ($('vehicleId')?.value || 'default').replace(/[.#$\[\]\/]/g, '_');
 }
 
+// Возвращает "Dr. 1009" или "Op. 1108" в зависимости от заполненных полей
+function getMyName() {
+  const driverId   = $('driverId')?.value.trim();
+  const operatorId = $('operatorId')?.value.trim();
+  if (driverId)   return `Dr. ${driverId}`;
+  if (operatorId) return `Op. ${operatorId}`;
+  return 'Unknown';
+}
+
+// Хранит метаданные последнего обновления
+let _diskMeta = { lastUpdated: '', updatedBy: '' };
+
 function initFirebaseSync() {
   const vehicleId = getFBVehicleId();
   if (!vehicleId || vehicleId === 'default') return;
@@ -758,8 +770,21 @@ function initFirebaseSync() {
     _fbRef.on('value', snapshot => {
       if (_fbIgnoreNext) { _fbIgnoreNext = false; return; }
       const data = snapshot.val();
+
+      // Обратная совместимость: поддерживаем старый формат (массив) и новый (объект)
+      let incoming = null;
       if (data && Array.isArray(data)) {
-        disks = data;
+        // Старый формат — просто массив
+        incoming = data;
+      } else if (data && Array.isArray(data.disks)) {
+        // Новый формат — объект с метаданными
+        incoming = data.disks;
+        _diskMeta.lastUpdated = data.lastUpdated || '';
+        _diskMeta.updatedBy   = data.updatedBy   || '';
+      }
+
+      if (incoming) {
+        disks = incoming;
         diskCounter = disks.length > 0 ? Math.max(...disks.map(d => d.id)) : 0;
         renderDisks();
         if (_firstResponse) {
@@ -781,8 +806,16 @@ function saveDiskToFirebase() {
   const vehicleId = getFBVehicleId();
   if (!vehicleId || vehicleId === 'default' || !_fbRef) return;
   try {
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    _diskMeta.lastUpdated = timeStr;
+    _diskMeta.updatedBy   = getMyName();
     _fbIgnoreNext = true;
-    _fbRef.set(disks);
+    _fbRef.set({
+      disks,
+      lastUpdated: _diskMeta.lastUpdated,
+      updatedBy:   _diskMeta.updatedBy,
+    });
   } catch(e) {
     console.warn('Firebase save error:', e);
   }
@@ -796,6 +829,17 @@ function renderDisks() {
   const order = { 'in use': 0, 'empty': 1, 'full': 2 };
   const sorted = [...disks].sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
   list.innerHTML = sorted.map(dk => buildDiskRow(dk)).join('');
+
+  // Строка метаданных — показываем только если есть данные
+  const meta = $('diskMeta');
+  if (meta) {
+    if (_diskMeta.lastUpdated && _diskMeta.updatedBy) {
+      meta.textContent = `Last updated: ${_diskMeta.lastUpdated} by ${_diskMeta.updatedBy}`;
+      meta.style.display = '';
+    } else {
+      meta.style.display = 'none';
+    }
+  }
 }
 
 function buildDiskRow(dk) {
