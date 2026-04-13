@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.14
+   Version: 5.15
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -518,6 +518,11 @@ body.dark .btn-copy-small { border-color: rgba(10,132,255,.3); }
   word-break: break-all;
   flex: 1;
 }
+.photo-name-value.photo-name-placeholder {
+  font-family: inherit;
+  font-weight: 400;
+  color: var(--muted);
+}
 body.dark .photo-name-row { background: #2c2c2e; }
 .photo-name-controls {
   display: flex;
@@ -607,9 +612,14 @@ body.dark .doc-item { background: rgba(255,159,10,.06); border-color: rgba(255,1
 .schedule-table td:first-child { border-left: none; }
 .sched-label { font-size: 11px; font-weight: 700; color: var(--sub); letter-spacing: .5px; }
 
-.schedule-table tr.active-shift td { background: rgba(0,113,227,.06); color: var(--blue); }
-body.dark .schedule-table tr.active-shift td { background: rgba(10,132,255,.12); color: #0a84ff; }
-.schedule-table tr.active-shift .sched-label { color: var(--blue); }
+.schedule-table tr.active-shift td { background: rgba(48,209,88,.08); color: var(--text); }
+.schedule-table tr.active-shift td:first-child {
+  color: #25a244;
+  font-weight: 700;
+  border-left: 3px solid #30d158;
+}
+body.dark .schedule-table tr.active-shift td { background: rgba(48,209,88,.1); color: var(--text); }
+body.dark .schedule-table tr.active-shift td:first-child { color: #30d158; border-left-color: #30d158; }
 
 /* ═══════════════════════════════════════════
    BOTTOM NAVIGATION

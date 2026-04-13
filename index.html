@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ShiftLog v5.14 -->
+<!-- ShiftLog v5.15 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -54,7 +54,7 @@
         <span id="liveTime" class="header-time">00:00:00</span>
       </div>
       <div class="header-actions">
-        <span id="shiftBadge" class="shift-badge">S1</span>
+        <span id="shiftBadge" class="shift-badge">Shift 1</span>
         <button id="btnHelp" class="header-btn" title="Manual">?</button>
         <button id="btnTheme" class="header-btn" title="Toggle theme">🌙</button>
       </div>
@@ -96,20 +96,29 @@
             </div>
             <div class="field">
               <label>Country</label>
-              <select id="country">
-                <option value="Germany">Germany</option>
-                <option value="Denmark">Denmark</option>
-                <option value="Sweden">Sweden</option>
-                <option value="France">France</option>
-                <option value="Netherlands">Netherlands</option>
-                <option value="Belgium">Belgium</option>
-                <option value="Austria">Austria</option>
-                <option value="Switzerland">Switzerland</option>
-                <option value="Czech Republic">Czech Republic</option>
-                <option value="Poland">Poland</option>
-                <option value="Hungary">Hungary</option>
-                <option value="Other">Other</option>
-              </select>
+              <input type="text" id="country" placeholder="e.g. Germany" list="countryList" autocomplete="off">
+              <datalist id="countryList">
+                <option value="Germany">
+                <option value="Denmark">
+                <option value="Sweden">
+                <option value="France">
+                <option value="Netherlands">
+                <option value="Belgium">
+                <option value="Austria">
+                <option value="Switzerland">
+                <option value="Czech Republic">
+                <option value="Poland">
+                <option value="Hungary">
+                <option value="Norway">
+                <option value="Finland">
+                <option value="Spain">
+                <option value="Italy">
+                <option value="Portugal">
+                <option value="Romania">
+                <option value="Slovakia">
+                <option value="Slovenia">
+                <option value="Croatia">
+              </datalist>
             </div>
             <div class="field">
               <label>Driver ID</label>
@@ -228,11 +237,11 @@
           <div class="fields-grid ticket-settings-grid">
             <div class="field">
               <label>Team Leader Name</label>
-              <input type="text" id="tkLeader" placeholder="Bumbac Ilie">
+              <input type="text" id="tkLeader" placeholder="Eugeniu Gud">
             </div>
             <div class="field">
               <label>Vehicle Nr.</label>
-              <input type="text" id="tkVehicle" placeholder="DC #205">
+              <input type="text" id="tkVehicle" placeholder="DC-205">
             </div>
             <div class="field">
               <label>License Plate</label>
@@ -280,18 +289,27 @@
           </div>
           <div class="field">
             <label>Category</label>
-            <div class="input-with-btn">
-              <input type="text" id="tkCategory" placeholder="e.g. Measurement System"
-                autocomplete="off" oninput="updateDescriptionList()">
-              <button type="button" class="btn-tags-toggle" onclick="openCategorySheet()" title="Show categories">▾</button>
-            </div>
-            <div id="tkCategoryTags" class="desc-suggestions" style="display:none"></div>
+            <select id="tkCategory" onchange="updateDescriptionSelect();updatePhotoName()">
+              <option value="">— select category —</option>
+              <option value="Measurement System">Measurement System</option>
+              <option value="SSD Issue">SSD Issue</option>
+              <option value="SSD Logistics">SSD Logistics</option>
+              <option value="SCRIVE">SCRIVE</option>
+              <option value="Vehicle">Vehicle</option>
+              <option value="Vehicle Service">Vehicle Service</option>
+              <option value="Vehicle Handover">Vehicle Handover</option>
+              <option value="Vehicle Takeover">Vehicle Takeover</option>
+              <option value="Logistics">Logistics</option>
+              <option value="Transfer">Transfer</option>
+              <option value="Organisational">Organisational</option>
+              <option value="Backpacks">Backpacks</option>
+            </select>
           </div>
           <div class="field">
             <label>Description</label>
-            <textarea id="tkDescription" rows="1" placeholder="Short description of the issue…"
-              oninput="updateDescriptionList();updatePhotoName()"></textarea>
-            <div id="tkDescSuggestions" class="desc-suggestions"></div>
+            <select id="tkDescription" onchange="updatePhotoName()">
+              <option value="">— select category first —</option>
+            </select>
           </div>
 
           <!-- Photo Naming -->
@@ -401,21 +419,21 @@
             </thead>
             <tbody>
               <tr id="sched-row-1">
-                <td class="sched-label">S1</td>
+                <td class="sched-label">Shift 1</td>
                 <td>06:50</td>
                 <td>07:00</td>
                 <td>15:00</td>
                 <td>15:10</td>
               </tr>
               <tr id="sched-row-2">
-                <td class="sched-label">S2</td>
+                <td class="sched-label">Shift 2</td>
                 <td>14:50</td>
                 <td>15:00</td>
                 <td>23:00</td>
                 <td>23:10</td>
               </tr>
               <tr id="sched-row-3">
-                <td class="sched-label">S3</td>
+                <td class="sched-label">Shift 3</td>
                 <td>22:50</td>
                 <td>23:00</td>
                 <td>07:00</td>
@@ -499,7 +517,7 @@
   </div>
 
   <!-- Confirm modal -->
-  <div class="modal-overlay" id="confirmOverlay" style="align-items:center">
+  <div class="modal-overlay" id="confirmOverlay">
     <div class="modal modal-confirm">
       <div id="confirmText" class="confirm-text"></div>
       <div class="confirm-btns">

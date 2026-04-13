@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.14
+   Version: 5.15
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.14';
+const APP_VERSION = '5.15';
 
 /* ───────────────────────────────────────────
    DATA
@@ -325,21 +325,23 @@ function tick() {
 function getShift(now) {
   const h = now.getHours(), m = now.getMinutes();
   const mins = h * 60 + m;
-  if (mins >= 7*60  && mins < 15*60) return 'S1';
-  if (mins >= 15*60 && mins < 23*60) return 'S2';
-  return 'S3';
+  if (mins >= 7*60  && mins < 15*60) return 'Shift 1';
+  if (mins >= 15*60 && mins < 23*60) return 'Shift 2';
+  return 'Shift 3';
 }
 
 function updateShiftBadge(now) {
   const badge = $('shiftBadge');
   const s = getShift(now);
   badge.textContent = s;
-  badge.className = 'shift-badge ' + s.toLowerCase();
+  // s1/s2/s3 классы для CSS
+  const cls = s.replace('Shift ', 's');
+  badge.className = 'shift-badge ' + cls;
 }
 
 function updateScheduleHighlight(now) {
   const s = getShift(now);
-  const map = { S1: 1, S2: 2, S3: 3 };
+  const map = { 'Shift 1': 1, 'Shift 2': 2, 'Shift 3': 3 };
   [1,2,3].forEach(i => {
     const row = $(`sched-row-${i}`);
     if (row) row.classList.toggle('active-shift', i === map[s]);
@@ -1140,15 +1142,20 @@ function deleteHistory(i) {
 /* ───────────────────────────────────────────
    TICKET
 ─────────────────────────────────────────── */
-function updateDescriptionList() {
-  const category = $('tkCategory')?.value.trim() || '';
-  const suggestions = CATEGORY_DESCRIPTIONS[category] || [];
-  const box = $('tkDescSuggestions');
-  if (!box) return;
-  if (!suggestions.length) { box.innerHTML = ''; return; }
-  box.innerHTML = suggestions.map(s =>
-    `<button type="button" class="desc-suggestion-btn" onclick="pickDescription('${esc(s)}')">${esc(s)}</button>`
-  ).join('');
+
+// Обновляет options в Description select при смене Category
+function updateDescriptionSelect() {
+  const category = $('tkCategory')?.value || '';
+  const sel = $('tkDescription');
+  if (!sel) return;
+  const descriptions = CATEGORY_DESCRIPTIONS[category] || [];
+  if (!descriptions.length) {
+    sel.innerHTML = '<option value="">— no options for this category —</option>';
+  } else {
+    sel.innerHTML = '<option value="">— select description —</option>' +
+      descriptions.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('');
+  }
+  updatePhotoName();
 }
 
 function openBottomSheet(title, items, onSelect) {
@@ -1176,26 +1183,6 @@ function openTemplateSheet() {
   });
 }
 
-function openCategorySheet() {
-  const categories = [
-    'Measurement System','SSD Issue','SSD Logistics','SCRIVE',
-    'Vehicle','Vehicle Service','Vehicle Handover','Vehicle Takeover',
-    'Logistics','Transfer','Organisational','Backpacks'
-  ];
-  openBottomSheet('Select Category', categories, val => {
-    $('tkCategory').value = val;
-    updateDescriptionList();
-  });
-}
-
-function pickDescription(val) {
-  const ta = $('tkDescription');
-  if (ta) { ta.value = val; autoHeight(ta); }
-  const box = $('tkDescSuggestions');
-  if (box) box.innerHTML = '';
-  updatePhotoName();
-}
-
 function initTicket() {
   loadTicketSettings();
   const btnTemplateSheet = $('btnTemplateSheet');
@@ -1212,19 +1199,11 @@ function initTicket() {
     });
   }
 
-  // Умный datalist для Description — зависит от Category
-  const tkCategory = $('tkCategory');
-  if (tkCategory) {
-    tkCategory.addEventListener('input', updateDescriptionList);
-    tkCategory.addEventListener('change', updateDescriptionList);
-  }
-
   // Кнопка Manual — открывает мануал на секции Ticket Rules
   const btnManual = $('btnTicketManual');
   if (btnManual) {
     btnManual.addEventListener('click', () => {
       openHelp();
-      // Скроллим к секции Ticket Rules после открытия
       setTimeout(() => {
         const helpContent = $('helpContent');
         if (!helpContent) return;
@@ -1238,6 +1217,10 @@ function initTicket() {
       }, 150);
     });
   }
+
+  // Инициализируем Description select при загрузке
+  updateDescriptionSelect();
+
   TICKET_FIELDS.forEach(id => {
     const el = $(id);
     if (el) el.addEventListener('change', saveTicketSettings);
@@ -1272,14 +1255,16 @@ function updatePhotoName() {
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
   const desc = $('tkDescription')?.value || '';
-  const title = slugify(desc) || 'issue';
+  const title = slugify(desc);
 
   if (!date || !vehicle) {
-    display.textContent = '— fill Date and Vehicle ID —';
+    display.textContent = 'YYYYMMDD_V-number_title_1';
+    display.classList.add('photo-name-placeholder');
     return;
   }
 
-  display.textContent = `${date}_${vehicle}_${title}_${_photoCount}`;
+  display.textContent = `${date}_${vehicle}_${title || 'title'}_${_photoCount}`;
+  display.classList.remove('photo-name-placeholder');
 }
 
 function initPhotoName() {
@@ -1323,6 +1308,11 @@ function loadTicketSettings() {
       if (el) el.value = TICKET_DEFAULTS[id] || '';
     });
   }
+  // После загрузки Category — обновляем Description select
+  const savedDesc = $('tkDescription')?.value || '';
+  updateDescriptionSelect();
+  // Восстанавливаем выбранное Description
+  if (savedDesc && $('tkDescription')) $('tkDescription').value = savedDesc;
 }
 
 function saveTicketSettings() {
@@ -1335,23 +1325,25 @@ function applyTicketTemplate(val) {
   if (!val) return;
   const t = TICKET_TEMPLATES[val];
   if (!t) return;
-  $('tkCategory').value    = t.category;
+  $('tkCategory').value = t.category;
+  updateDescriptionSelect();
   $('tkDescription').value = t.description;
-  $('tkBody').value        = t.body;
+  $('tkBody').value = t.body;
   saveTicketSettings();
   updatePhotoName();
   showToast('Template applied');
 }
 
 function clearTicketFields() {
-  $('tkTemplate').value   = '';
+  $('tkTemplate').value = '';
   const lbl = $('btnTemplateLabel');
   if (lbl) { lbl.textContent = '— select or type template —'; lbl.style.color = ''; }
   $('tkCategory').value    = '';
   $('tkDescription').value = '';
   $('tkBody').value        = '';
-  const box = $('tkDescSuggestions');
-  if (box) box.innerHTML = '';
+  updateDescriptionSelect();
+  _photoCount = 1;
+  updatePhotoName();
   saveTicketSettings();
 }
 
