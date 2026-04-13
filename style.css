@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.20
+   Version: 5.21
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -650,18 +650,18 @@ body.dark .schedule-table tr.active-shift td:first-child { color: #30d158; borde
   padding: 0 6px;
   gap: 2px;
   pointer-events: all;
-  background: rgba(22,22,24,0.82);
+  background: rgba(22,22,24,0.88);
   backdrop-filter: saturate(180%) blur(24px);
   -webkit-backdrop-filter: saturate(180%) blur(24px);
-  border-radius: 30px;
+  border-radius: var(--radius);
   border: 0.5px solid rgba(255,255,255,0.1);
   will-change: transform;
   transform: translateZ(0);
 }
 body:not(.dark) .bottom-nav-inner {
-  background: rgba(210,210,215,0.82);
-  border-color: rgba(0,0,0,0.1);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.1), 0 1px 4px rgba(0,0,0,0.06);
+  background: rgba(255,255,255,0.92);
+  border-color: rgba(0,0,0,0.08);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06);
 }
 
 .nav-btn {
@@ -672,24 +672,24 @@ body:not(.dark) .bottom-nav-inner {
   justify-content: center;
   gap: 3px;
   height: 48px;
-  border-radius: 24px;
+  border-radius: calc(var(--radius) - 4px);
   background: none;
   border: none;
   cursor: pointer;
-  color: rgba(255,255,255,0.38);
+  color: rgba(255,255,255,0.4);
   transition: color .2s, background .2s;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
 body:not(.dark) .nav-btn {
-  color: rgba(60,60,67,0.45);
+  color: #aeaeb2;
 }
 .nav-btn.active {
   background: rgba(255,255,255,0.1);
   color: #30d158;
 }
 body:not(.dark) .nav-btn.active {
-  background: rgba(255,255,255,0.55);
+  background: rgba(48,209,88,0.1);
   color: #25a244;
 }
 .nav-btn svg {
@@ -813,7 +813,12 @@ body.dark .modal { background: #1c1c1e; }
   margin-bottom: 12px; padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
 }
-.help-section-icon { font-size: 20px; line-height: 1; }
+.help-section-icon {
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--sub);
+  flex-shrink: 0;
+}
 .help-section-title { font-size: 14px; font-weight: 700; color: var(--text); }
 
 .help-steps { display: flex; flex-direction: column; gap: 10px; }
