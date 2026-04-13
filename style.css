@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.13
+   Version: 5.14
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -235,9 +235,21 @@ body.dark .card-badge.amber { color: #ff9f0a; }
 .ticket-settings-grid .field:nth-child(5) { grid-column: span 3; }
 
 @media (max-width: 500px) {
-  .fields-grid { grid-template-columns: 1fr; }
-  .shift-params-grid .field  { grid-column: span 6 !important; }
-  .ticket-settings-grid .field { grid-column: span 6 !important; }
+  /* Shift Parameters: верхний ряд 3 col → 1 col, нижний ряд → 2 col */
+  .shift-params-grid .field:nth-child(1) { grid-column: span 4; }
+  .shift-params-grid .field:nth-child(2) { grid-column: span 4; }
+  .shift-params-grid .field:nth-child(3) { grid-column: span 4; }
+  .shift-params-grid .field:nth-child(4) { grid-column: span 6; }
+  .shift-params-grid .field:nth-child(5) { grid-column: span 6; }
+  .shift-params-grid .field:nth-child(6) { grid-column: span 6; }
+  .shift-params-grid .field:nth-child(7) { grid-column: span 6; }
+
+  /* Ticket Settings: 3 col → 2 col */
+  .ticket-settings-grid .field:nth-child(1) { grid-column: span 3; }
+  .ticket-settings-grid .field:nth-child(2) { grid-column: span 3; }
+  .ticket-settings-grid .field:nth-child(3) { grid-column: span 6; }
+  .ticket-settings-grid .field:nth-child(4) { grid-column: span 3; }
+  .ticket-settings-grid .field:nth-child(5) { grid-column: span 3; }
 }
 
 .field { display: flex; flex-direction: column; gap: 4px; }
