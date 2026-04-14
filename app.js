@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.50
+   Version: 5.52
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.50';
+const APP_VERSION = '5.52';
 
 /* ───────────────────────────────────────────
    DATA
@@ -16,7 +16,7 @@ let disks       = [];
 let eventCounter = 0;
 let diskCounter  = 0;
 
-const TICKET_FIELDS = ['tkLeader','tkVehicle','tkPlate','tkVwPhone','tkCapPhone','tkLocation','tkTemplate'];
+const TICKET_FIELDS = ['tkLeader','tkPlate','tkVwPhone','tkCapPhone','tkLocation','tkTemplate'];
 
 // Подсказки Description в зависимости от Category
 const CATEGORY_DESCRIPTIONS = {
@@ -431,6 +431,13 @@ function initShiftParams() {
     spUpdateDateChip();
     spCheckStatus();
   });
+  // Desktop: showPicker() opens native date picker on click
+  const chip = $('spDateChip');
+  if (chip) {
+    chip.addEventListener('click', () => {
+      try { $('shiftDate').showPicker(); } catch(e) {}
+    });
+  }
   $('missionInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') spAddMission();
     if (e.key === 'Escape') spToggleMissionInput();
@@ -710,9 +717,16 @@ function trySortEvent(id) {
 }
 
 function sortEventsIfNeeded(changedId) {
-  // Events without timeStart go to the end
-  const toTime = t => (t && t.length === 5) ? t : '99:99';
-  const sorted = [...events].sort((a, b) => toTime(a.timeStart).localeCompare(toTime(b.timeStart)));
+  const isShift3 = getShift(new Date()) === 'Shift 3';
+  const toSortMins = t => {
+    if (!t || t.length !== 5) return 99 * 60;
+    const [h, m] = t.split(':').map(Number);
+    const mins = h * 60 + m;
+    // Shift 3: 23:00–23:59 is start of shift → treat as negative so it sorts first
+    if (isShift3 && mins >= 23 * 60) return mins - 1440;
+    return mins;
+  };
+  const sorted = [...events].sort((a, b) => toSortMins(a.timeStart) - toSortMins(b.timeStart));
 
   // Check if order actually changed
   const changed = sorted.some((ev, i) => ev.id !== events[i].id);
@@ -1543,7 +1557,7 @@ function updatePhotoName() {
   if (!display) return;
 
   const date = ($('shiftDate')?.value || '').replace(/-/g, '');
-  const vehicle = ($('tkVehicle')?.value || $('vehicleId')?.value || '')
+  const vehicle = ($('vehicleId')?.value || '')
     .replace(/[#\s]+/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
@@ -1562,7 +1576,7 @@ function updatePhotoName() {
 
 function initPhotoName() {
   // Обновляем при изменении даты и Vehicle
-  const watchIds = ['shiftDate', 'tkVehicle', 'vehicleId'];
+  const watchIds = ['shiftDate', 'vehicleId'];
   watchIds.forEach(id => {
     const el = $(id);
     if (el) el.addEventListener('input', updatePhotoName);
@@ -1653,7 +1667,7 @@ function clearTicketFields() {
 
 function copyTicket() {
   const v = id => $(id)?.value || '';
-  const vehicle = v('tkVehicle') || $('vehicleId').value;
+  const vehicle = $('vehicleId').value || v('tkPlate') || 'N/A';
   const NL = '\n';
   let out = '';
   out += `Team Leader Name: ${v('tkLeader')}${NL}`;

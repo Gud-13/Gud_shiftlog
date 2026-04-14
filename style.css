@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.50
+   Version: 5.52
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -391,19 +391,17 @@ body.dark .sp-mission-add-btn { background: var(--blue-light); color: var(--blue
 }
 
 .ticket-settings-grid { grid-template-columns: repeat(6, 1fr); }
-.ticket-settings-grid .field:nth-child(1) { grid-column: span 2; }
-.ticket-settings-grid .field:nth-child(2) { grid-column: span 2; }
-.ticket-settings-grid .field:nth-child(3) { grid-column: span 2; }
+.ticket-settings-grid .field:nth-child(1) { grid-column: span 3; }
+.ticket-settings-grid .field:nth-child(2) { grid-column: span 3; }
+.ticket-settings-grid .field:nth-child(3) { grid-column: span 3; }
 .ticket-settings-grid .field:nth-child(4) { grid-column: span 3; }
-.ticket-settings-grid .field:nth-child(5) { grid-column: span 3; }
 
 @media (max-width: 500px) {
-  /* Ticket Settings: 3 col → 2 col */
+  /* Ticket Settings: 4 fields → stacked 2x2 */
   .ticket-settings-grid .field:nth-child(1) { grid-column: span 3; }
   .ticket-settings-grid .field:nth-child(2) { grid-column: span 3; }
-  .ticket-settings-grid .field:nth-child(3) { grid-column: span 6; }
+  .ticket-settings-grid .field:nth-child(3) { grid-column: span 3; }
   .ticket-settings-grid .field:nth-child(4) { grid-column: span 3; }
-  .ticket-settings-grid .field:nth-child(5) { grid-column: span 3; }
 }
 
 .field { display: flex; flex-direction: column; gap: 4px; }
@@ -1095,6 +1093,42 @@ body.dark .help-tip { background: var(--blue-light); }
   z-index: 300; backdrop-filter: blur(10px);
 }
 body.dark .toast { background: rgba(50,50,52,.95); }
+
+/* ── Dark mode: buttons and inputs that use --bg need elevation ── */
+body.dark .btn-geo,
+body.dark .btn-remove,
+body.dark .btn-comment-edit,
+body.dark .btn-field-edit {
+  background: var(--white);
+  border-color: var(--border);
+  color: var(--sub);
+}
+body.dark .btn-comment-edit:hover { border-color: var(--blue); color: var(--blue); }
+body.dark .btn-field-edit:active  { background: var(--border); }
+body.dark .btn-field-edit.active  { background: var(--green-light); border-color: var(--green); }
+
+/* More buttons */
+body.dark .q-more-btn {
+  background: var(--white);
+  border-color: var(--border);
+  color: var(--sub);
+}
+body.dark .q-more-btn.open { background: var(--border); color: var(--text); border-color: var(--muted); }
+
+/* Disk ID input */
+body.dark .disk-row input[type=text] {
+  background: var(--white);
+  color: var(--text);
+  border-color: var(--border);
+}
+body.dark .disk-row input[type=text]:focus { border-color: var(--blue); }
+
+/* Disk select */
+body.dark .disk-row select {
+  background: var(--white);
+  color: var(--text);
+  border-color: var(--border);
+}
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* Кнопка Manual в header блока Ticket */
@@ -1172,12 +1206,11 @@ body.dark .help-section-highlight {
    MOBILE ADAPTATIONS (max-width: 500px)
 ═══════════════════════════════════════════ */
 @media (max-width: 500px) {
-  /* Ticket Settings: 3 col → 2 col */
+  /* Ticket Settings: 4 fields → 2x2 */
   .ticket-settings-grid .field:nth-child(1) { grid-column: span 3; }
   .ticket-settings-grid .field:nth-child(2) { grid-column: span 3; }
-  .ticket-settings-grid .field:nth-child(3) { grid-column: span 6; }
+  .ticket-settings-grid .field:nth-child(3) { grid-column: span 3; }
   .ticket-settings-grid .field:nth-child(4) { grid-column: span 3; }
-  .ticket-settings-grid .field:nth-child(5) { grid-column: span 3; }
 
   /* Body textarea — меньше на мобильном */
   #tkBody { min-height: 120px; }
