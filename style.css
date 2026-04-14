@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.40
+   Version: 5.48
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -490,6 +490,19 @@ body.dark .q-org { background: rgba(10,132,255,.1);  border-color: rgba(10,132,2
   background: var(--white); border-radius: var(--radius-sm);
   border: 1px solid var(--border); margin-bottom: 10px;
   overflow: hidden; display: flex;
+  transition: opacity .2s, transform .2s;
+}
+.event-card.event-sorting {
+  opacity: 0.3;
+  transform: scale(0.98);
+}
+@keyframes sortedPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(0,113,227,.4); }
+  60%  { box-shadow: 0 0 0 6px rgba(0,113,227,.0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,113,227,.0); }
+}
+.event-card.event-sorted {
+  animation: sortedPulse .8s ease-out;
 }
 .event-card.dt-sys { background: #fffbeb; border-color: #fde68a; }
 .event-card.dt-org { background: #eff6ff; border-color: #bfdbfe; }

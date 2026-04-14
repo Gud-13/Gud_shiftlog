@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.40
+   Version: 5.48
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.40';
+const APP_VERSION = '5.48';
 
 /* ───────────────────────────────────────────
    DATA
@@ -182,7 +182,7 @@ const DT_COMMENTS = {
   dt_no_storage:    ['Standby due to no empty SSD sets available'],
   dt_police:        ['Vehicle stopped by Police','Vehicle stopped by customs for inspection'],
   dt_other_org:     ["Unloading luggage's at the hotel.","Accommodation check-in.","Accommodation check-out."],
-  dt_other_sys:     ['xxxyyy'],
+  dt_other_sys:     ['Other system event'],
   break:            ['Break'],
 };
 
@@ -597,8 +597,8 @@ function buildEventCard(ev) {
     <div class="event-bar"></div>
     <div class="event-inner">
       <div class="event-row-main">
-        <input type="time" value="${ev.timeStart}" onchange="updateEvent(${ev.id},'timeStart',this.value)">
-        <input type="time" value="${ev.timeEnd || ''}" onchange="updateEvent(${ev.id},'timeEnd',this.value)">
+        <input type="time" value="${ev.timeStart}" onchange="updateEvent(${ev.id},'timeStart',this.value)" onblur="trySortEvent(${ev.id})">
+        <input type="time" value="${ev.timeEnd || ''}" onchange="updateEvent(${ev.id},'timeEnd',this.value)" onblur="trySortEvent(${ev.id})">
         <select onchange="updateEvent(${ev.id},'type',this.value);updateEvent(${ev.id},'description','');renderEvents()">
           ${buildTypeOptions(ev.type)}
         </select>
@@ -662,7 +662,6 @@ function buildTypeOptions(selected) {
 
   const opt = ([v,l]) => `<option value="${v}" ${v===selected?'selected':''}>${l}</option>`;
   return `
-    <option value="other" ${selected==='other'?'selected':''}>Other</option>
     <optgroup label="── System DT ──">${sys.map(opt).join('')}</optgroup>
     <optgroup label="── Org DT ──">${org.map(opt).join('')}</optgroup>
   `;
@@ -672,7 +671,7 @@ function buildTypeOptions(selected) {
 /* ───────────────────────────────────────────
    EVENTS — ACTIONS
 ─────────────────────────────────────────── */
-function addEvent(type = 'other', description = '') {
+function addEvent(type = 'dt_other_sys', description = '') {
   const id = ++eventCounter;
   events.push({ id, type, timeStart: nowHM(), timeEnd: '', kmStart: '', kmFinish: '', description, address: '' });
   renderEvents();
@@ -705,6 +704,49 @@ function updateEvent(id, field, value) {
   const ev = events.find(e => e.id === id);
   if (ev) { ev[field] = value; saveState(); }
   if (field === 'timeEnd') updateTimerDisplay(id);
+  // Sort only when timeStart field loses focus (user finished entering both times)
+}
+
+function trySortEvent(id) {
+  const ev = events.find(e => e.id === id);
+  if (!ev || !ev.timeStart || !ev.timeEnd) return;
+  // Small delay so focus can shift between the two time fields
+  setTimeout(() => {
+    const card = document.querySelector(`[data-eid="${id}"]`);
+    if (!card) return;
+    if (card.querySelector('input[type="time"]:focus')) return;
+    sortEventsIfNeeded(id);
+  }, 50);
+}
+
+function sortEventsIfNeeded(changedId) {
+  // Events without timeStart go to the end
+  const toTime = t => (t && t.length === 5) ? t : '99:99';
+  const sorted = [...events].sort((a, b) => toTime(a.timeStart).localeCompare(toTime(b.timeStart)));
+
+  // Check if order actually changed
+  const changed = sorted.some((ev, i) => ev.id !== events[i].id);
+  if (!changed) return;
+
+  events = sorted;
+  saveState();
+
+  // Animate: flash the moved card, then re-render
+  const card = document.querySelector(`[data-eid="${changedId}"]`);
+  if (card) {
+    card.classList.add('event-sorting');
+    setTimeout(() => {
+      renderEvents();
+      // After render, highlight the card in its new position
+      const newCard = document.querySelector(`[data-eid="${changedId}"]`);
+      if (newCard) {
+        newCard.classList.add('event-sorted');
+        setTimeout(() => newCard.classList.remove('event-sorted'), 800);
+      }
+    }, 250);
+  } else {
+    renderEvents();
+  }
 }
 
 function applyDTComment(id, val) {
@@ -838,7 +880,7 @@ function initQuickAdd() {
   document.querySelectorAll('.q-btn').forEach(btn => {
     btn.addEventListener('click', () => addEvent(btn.dataset.type, ''));
   });
-  $('btnAddEvent').addEventListener('click', () => addEvent('other', ''));
+  $('btnAddEvent').addEventListener('click', () => addEvent('dt_other_sys', ''));
 
   // Helper: init one More/Less toggle
   function initMoreToggle(btnId, panelId, iconId, labelId, storageKey) {
@@ -973,8 +1015,8 @@ function saveDiskToFirebase() {
 function renderDisks() {
   const list = $('diskList');
   if (!list) return;
-  // Auto-sort: in use → empty → full
-  const order = { 'in use': 0, 'empty': 1, 'full': 2 };
+  // Auto-sort: in use → empty → full → faulty
+  const order = { 'in use': 0, 'empty': 1, 'full': 2, 'faulty': 3 };
   const sorted = [...disks].sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
   list.innerHTML = sorted.map(dk => buildDiskRow(dk)).join('');
 
@@ -1020,8 +1062,9 @@ function buildDiskRow(dk) {
   }
 
   let barStyle = '';
-  if (dk.status === 'empty') barStyle = `width:100%;background:#30d158`;
-  else if (dk.status === 'full') barStyle = `width:100%;background:#ff453a`;
+  if (dk.status === 'empty')  barStyle = `width:100%;background:#30d158`;
+  else if (dk.status === 'full')   barStyle = `width:100%;background:#ff453a`;
+  else if (dk.status === 'faulty') barStyle = `width:100%;background:#8e8e93`;
   else barStyle = `width:${pct}%;background:${gradColor(pct)}`;
 
   // Цвет для TB input и label совпадает с цветом бара
@@ -1045,9 +1088,10 @@ function buildDiskRow(dk) {
       <div class="disk-fill" style="${barStyle}"></div>
     </div>
     <select onchange="updateDisk(${dk.id},'status',this.value);renderDisks();saveState()">
-      <option value="empty" ${dk.status==='empty'?'selected':''}>empty</option>
+      <option value="empty"  ${dk.status==='empty' ?'selected':''}>empty</option>
       <option value="in use" ${dk.status==='in use'?'selected':''}>in use</option>
-      <option value="full" ${dk.status==='full'?'selected':''}>full</option>
+      <option value="full"   ${dk.status==='full'  ?'selected':''}>full</option>
+      <option value="faulty" ${dk.status==='faulty'?'selected':''}>faulty</option>
     </select>
     <button class="btn-remove" onclick="removeDisk(${dk.id})"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     ${pctInfo}
@@ -1079,14 +1123,16 @@ function copyDiskStatus() {
   const vehicle = $('vehicleId').value || 'N/A';
   const city    = $('cityField').value  || $('country').value;
   let out = `Please find below the Storage Box status for vehicle ${vehicle} in ${city}:\n\n`;
-  disks.forEach(dk => {
+  const diskOrder = { 'in use': 0, 'empty': 1, 'full': 2, 'faulty': 3 };
+  const sorted = [...disks].sort((a, b) => (diskOrder[a.status] ?? 9) - (diskOrder[b.status] ?? 9));
+  sorted.forEach(dk => {
     if (!dk.diskId) return;
     let s = dk.status;
     if (dk.status === 'in use' && dk.percent) {
       const pct = Math.round((1 - parseFloat(dk.percent) / 90) * 100);
       s = `in use (${pct}% full, ${dk.percent} TB available)`;
     }
-    out += `${dk.diskId} - ${s}\n`;
+    out += `${dk.diskId} - ${s};\n`;
   });
   navigator.clipboard.writeText(out.trimEnd()).then(() => showToast('Disk report copied'));
 }
@@ -1139,17 +1185,21 @@ function generateReport() {
   if (city) out += `City: ${city}.\n`;
 
   if (disks.length) {
-    out += `Disk Status — Vehicle ${vehicle}`;
-    if (country) out += `, ${country}`;
-    out += ':\n\n';
-    disks.forEach(dk => {
+    const diskOrder = { 'in use': 0, 'empty': 1, 'full': 2, 'faulty': 3 };
+    const sortedDisks = [...disks].sort((a, b) => (diskOrder[a.status] ?? 9) - (diskOrder[b.status] ?? 9));
+    out += `Please find below the Storage Box status for vehicle ${vehicle}`;
+    if (city || country) out += ` in ${city || country}`;
+    out += ':\n';
+    sortedDisks.forEach(dk => {
+      if (!dk.diskId) return;
       let s = dk.status;
       if (dk.status === 'in use' && dk.percent) {
         const pct = Math.round((1 - parseFloat(dk.percent) / 90) * 100);
         s += ` (${pct}% full, ${dk.percent} TB available)`;
       }
-      out += `${dk.diskId} - ${s}.\n`;
+      out += `${dk.diskId} - ${s};\n`;
     });
+    out += '\n';
   }
 
   // Shift Summary
@@ -1853,10 +1903,10 @@ const HELP_DATA = {
         icon: '💾', title: 'Disk Status',
         items: [
           'Tap <b>+ Add disk</b> for each SSD in the storage box',
-          'Status: <b style="color:#30d158">empty</b> — <b style="color:#ff9f0a">in use</b> — <b style="color:#ff453a">full</b>',
+          'Status: <b style="color:#30d158">empty</b> — <b style="color:#ff9f0a">in use</b> — <b style="color:#ff453a">full</b> — <b style="color:#8e8e93">faulty</b>',
           'For <b>in use</b>: enter available TB → fill % is calculated from 90 TB total capacity',
           'Progress bar color: green → yellow → red as disk fills up',
-          'Disks are sorted automatically: <b>in use → empty → full</b>',
+          'Disks are sorted automatically: <b>in use → empty → full → faulty</b>',
           '<b>🔄 Real-time sync</b> — disk status is shared between all devices with the same Vehicle ID instantly',
           '<b>Last updated</b> line shows who and when last changed the disk data',
           '<b>📋 Copy report</b> — formatted text ready to paste in WhatsApp',
@@ -1963,10 +2013,10 @@ const HELP_DATA = {
         icon: '💾', title: 'Disk Status',
         items: [
           'Apăsați <b>+ Add disk</b> pentru fiecare SSD din cutie',
-          'Status: <b style="color:#30d158">empty</b> — <b style="color:#ff9f0a">in use</b> — <b style="color:#ff453a">full</b>',
+          'Status: <b style="color:#30d158">empty</b> — <b style="color:#ff9f0a">in use</b> — <b style="color:#ff453a">full</b> — <b style="color:#8e8e93">faulty</b>',
           'Pentru <b>in use</b>: introduceți TB disponibili → % se calculează din 90 TB total',
           'Bara de progres: verde → galben → roșu pe măsură ce discul se umple',
-          'Discurile sunt sortate automat: <b>in use → empty → full</b>',
+          'Discurile sunt sortate automat: <b>in use → empty → full → faulty</b>',
           '<b>🔄 Sincronizare în timp real</b> — statusul discurilor este partajat între toate dispozitivele cu același Vehicle ID instantaneu',
           '<b>Last updated</b> arată cine și când a modificat ultima dată datele discurilor',
           '<b>📋 Copy report</b> — text formatat gata de lipit în WhatsApp',
@@ -2073,10 +2123,10 @@ const HELP_DATA = {
         icon: '💾', title: 'Disk Status',
         items: [
           'Нажми <b>+ Add disk</b> для каждого SSD в боксе',
-          'Статус: <b style="color:#30d158">empty</b> — <b style="color:#ff9f0a">in use</b> — <b style="color:#ff453a">full</b>',
+          'Статус: <b style="color:#30d158">empty</b> — <b style="color:#ff9f0a">in use</b> — <b style="color:#ff453a">full</b> — <b style="color:#8e8e93">faulty</b>',
           'Для <b>in use</b>: введи доступные TB → % заполненности считается от 90 TB',
           'Цвет прогресс-бара: зелёный → жёлтый → красный по мере заполнения',
-          'Диски сортируются автоматически: <b>in use → empty → full</b>',
+          'Диски сортируются автоматически: <b>in use → empty → full → faulty</b>',
           '<b>🔄 Синхронизация в реальном времени</b> — статус дисков виден на всех устройствах с одинаковым Vehicle ID мгновенно',
           '<b>Last updated</b> показывает кто и когда последний раз менял данные дисков',
           '<b>📋 Copy report</b> — форматированный текст для вставки в WhatsApp',

@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — Service Worker
-   Version: 5.40
+   Version: 5.48
    Стратегия: Network First — всегда пробуем
    получить свежую версию с сервера,
    кэш используем только если нет сети.
 ═══════════════════════════════════════════ */
 
-const CACHE_NAME = 'shiftlog-v5.40';
+const CACHE_NAME = 'shiftlog-v5.48';
 
 const ASSETS = [
   '/Gud_shiftlog/',
