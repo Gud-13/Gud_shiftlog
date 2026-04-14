@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ShiftLog v5.28 -->
+<!-- ShiftLog v5.29 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -526,7 +526,7 @@
             </div>
             <div class="contact-row">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-              <a class="contact-link" href="mailto:vlad-alexandru.pana.ext@valeo.com">vlad-alexandru.pana.ext@valeo.com</a>
+              <a class="contact-link" href="/cdn-cgi/l/email-protection#592f35383d7438353c2138373d2b2c7729383738773c212d192f38353c36773a3634"><span class="__cf_email__" data-cfemail="3e48525f5a135f525b465f505a4c4b104e5f505f105b464a7e485f525b51105d5153">[email&#160;protected]</span></a>
             </div>
           </div>
         </div>
@@ -680,7 +680,7 @@
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
-  <script src="app.js"></script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="app.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/Gud_shiftlog/sw.js')
@@ -690,15 +690,4 @@
           // Если новая версия готова — перезагружаем страницу автоматически
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'activated') {
-                window.location.reload();
-              }
-            });
-          });
-        })
-        .catch(err => console.warn('SW registration failed:', err));
-    }
-  </script>
-</body>
-</html>
+            newWorker.addEventListener('statec

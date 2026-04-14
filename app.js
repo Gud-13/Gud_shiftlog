@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.28
+   Version: 5.29
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.28';
+const APP_VERSION = '5.29';
 
 /* ───────────────────────────────────────────
    DATA
@@ -390,6 +390,10 @@ function spCheckStatus() {
   const ready = vehicle && city && country && myId;
   badge.textContent = ready ? 'Ready' : 'Fill in';
   badge.className = 'sp-status ' + (ready ? 'ready' : 'incomplete');
+  ['vehicleId','driverId','operatorId','cityField','country'].forEach(id => {
+    const el = $(id);
+    if (el) el.classList.toggle('has-value', !!el.value.trim());
+  });
 }
 
 function spToggleMissionInput() {
