@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.31
+   Version: 5.39
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -553,6 +553,8 @@ body.dark .event-timer { color: #ff9f0a; }
 }
 .event-desc:focus { border-color: var(--border); background: var(--white); }
 body.dark .event-desc:focus { background: #3a3a3c; }
+.dt-sys .event-desc, .dt-org .event-desc { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+body.dark .dt-sys .event-desc, body.dark .dt-org .event-desc { background: #2c2c2e; }
 
 /* Row KM */
 .event-row-km { display: flex; align-items: center; gap: 6px; }

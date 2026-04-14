@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.31
+   Version: 5.39
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.31';
+const APP_VERSION = '5.39';
 
 /* ───────────────────────────────────────────
    DATA
@@ -100,7 +100,7 @@ const DT_TYPES = new Set([
   'dt_vpi','dt_display','dt_prelabel','dt_ecu','dt_ssd_change','dt_measurement',
   'dt_startup','dt_protocol','dt_route_doc','dt_handover','dt_refuelling',
   'dt_transfer','dt_standby_wait','dt_maintenance','dt_service','dt_no_storage',
-  'dt_police','dt_other_org',
+  'dt_police','dt_other_org','dt_other_sys',
 ]);
 
 const DT_LABELS = {
@@ -127,6 +127,7 @@ const DT_LABELS = {
   dt_no_storage:    'No Storage Medium',
   dt_police:        'Official / Police',
   dt_other_org:     'Others Org',
+  dt_other_sys:     'Others Sys',
 };
 
 const DT_COMMENTS = {
@@ -181,6 +182,7 @@ const DT_COMMENTS = {
   dt_no_storage:    ['Standby due to no empty SSD sets available'],
   dt_police:        ['Vehicle stopped by Police','Vehicle stopped by customs for inspection'],
   dt_other_org:     ["Unloading luggage's at the hotel.","Accommodation check-in.","Accommodation check-out."],
+  dt_other_sys:     ['xxxyyy'],
 };
 
 const TICKET_TEMPLATES = {
@@ -318,8 +320,8 @@ function initClock() {
 function tick() {
   const now = new Date();
   $('liveTime').textContent = now.toTimeString().slice(0, 8);
-  updateShiftBadge(now);
   updateScheduleHighlight(now);
+  spCheckStatus();
 }
 
 function getShift(now) {
@@ -328,15 +330,6 @@ function getShift(now) {
   if (mins >= 7*60  && mins < 15*60) return 'Shift 1';
   if (mins >= 15*60 && mins < 23*60) return 'Shift 2';
   return 'Shift 3';
-}
-
-function updateShiftBadge(now) {
-  const badge = $('shiftBadge');
-  const s = getShift(now);
-  badge.textContent = s;
-  // s1/s2/s3 классы для CSS
-  const cls = s.replace('Shift ', 's');
-  badge.className = 'shift-badge ' + cls;
 }
 
 function updateScheduleHighlight(now) {
@@ -395,7 +388,8 @@ function spCheckStatus() {
   const badge = $('shiftStatusBadge');
   if (!badge) return;
   const ready = vehicle && city && country && myId;
-  badge.textContent = ready ? 'Ready' : 'Fill in';
+  const shift = getShift(new Date());
+  badge.textContent = ready ? `${shift} · Ready` : `Fill in · ${shift}`;
   badge.className = 'sp-status ' + (ready ? 'ready' : 'incomplete');
   spUpdateHasValue();
 }
@@ -578,6 +572,7 @@ function buildEventCard(ev) {
 
   const comments = DT_COMMENTS[ev.type] || [];
   const hasComments = isDT(ev.type) && comments.length > 0;
+  const isFreeTextDT = isDT(ev.type) && comments.length === 0;
 
   const commentHtml = hasComments
     ? `<div class="dt-comment-row">
@@ -610,7 +605,7 @@ function buildEventCard(ev) {
       </div>
       ${timerHtml}
       ${hasComments ? `<div id="dt-comment-row-${ev.id}">${commentHtml}</div>` : ''}
-      <div id="dt-desc-row-${ev.id}" style="display:none" data-open="0">${descHtml}</div>
+      <div id="dt-desc-row-${ev.id}" style="${isFreeTextDT ? '' : 'display:none'}" data-open="${isFreeTextDT ? '1' : '0'}">${descHtml}</div>
       <div class="event-row-km">
         <input type="number" placeholder="start" value="${ev.kmStart || ''}"
           onchange="updateEvent(${ev.id},'kmStart',this.value)"
@@ -843,29 +838,33 @@ function initQuickAdd() {
   });
   $('btnAddEvent').addEventListener('click', () => addEvent('other', ''));
 
-  // More toggle — restore state from localStorage
-  const panel = $('quickMorePanel');
-  const btn   = $('btnQuickMore');
-  const icon  = $('quickMoreIcon');
-  const label = $('quickMoreLabel');
-  let open = localStorage.getItem('quickMoreOpen') === '1';
+  // Helper: init one More/Less toggle
+  function initMoreToggle(btnId, panelId, iconId, labelId, storageKey) {
+    const panel = $(panelId);
+    const btn   = $(btnId);
+    const icon  = $(iconId);
+    const label = $(labelId);
+    let open = localStorage.getItem(storageKey) === '1';
 
-  function applyMoreState() {
-    panel.style.display = open ? 'block' : 'none';
-    btn.classList.toggle('open', open);
-    label.textContent = open ? 'Less' : 'More';
-    // rotate icon: + becomes ×
-    icon.style.transform = open ? 'rotate(45deg)' : 'rotate(0deg)';
-    icon.style.transition = 'transform .2s';
+    function applyState() {
+      panel.style.display = open ? 'block' : 'none';
+      btn.classList.toggle('open', open);
+      label.textContent = open ? 'Less' : 'More';
+      icon.style.transform = open ? 'rotate(45deg)' : 'rotate(0deg)';
+      icon.style.transition = 'transform .2s';
+    }
+
+    btn.addEventListener('click', () => {
+      open = !open;
+      localStorage.setItem(storageKey, open ? '1' : '0');
+      applyState();
+    });
+
+    applyState();
   }
 
-  btn.addEventListener('click', () => {
-    open = !open;
-    localStorage.setItem('quickMoreOpen', open ? '1' : '0');
-    applyMoreState();
-  });
-
-  applyMoreState();
+  initMoreToggle('btnQuickMoreSys', 'quickMoreSysPanel', 'quickMoreSysIcon', 'quickMoreSysLabel', 'quickMoreSysOpen');
+  initMoreToggle('btnQuickMoreOrg', 'quickMoreOrgPanel', 'quickMoreOrgIcon', 'quickMoreOrgLabel', 'quickMoreOrgOpen');
 }
 
 
