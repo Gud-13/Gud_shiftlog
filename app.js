@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.48
+   Version: 5.50
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.48';
+const APP_VERSION = '5.50';
 
 /* ───────────────────────────────────────────
    DATA
@@ -15,15 +15,6 @@ let events      = [];
 let disks       = [];
 let eventCounter = 0;
 let diskCounter  = 0;
-
-const TICKET_DEFAULTS = {
-  tkLeader:   '',
-  tkVehicle:  '',
-  tkPlate:    '',
-  tkVwPhone:  '',
-  tkCapPhone: '',
-  tkLocation: '',
-};
 
 const TICKET_FIELDS = ['tkLeader','tkVehicle','tkPlate','tkVwPhone','tkCapPhone','tkLocation','tkTemplate'];
 
@@ -322,7 +313,6 @@ function tick() {
   const now = new Date();
   $('liveTime').textContent = now.toTimeString().slice(0, 8);
   updateScheduleHighlight(now);
-  spCheckStatus();
 }
 
 function getShift(now) {
@@ -347,7 +337,7 @@ function updateScheduleHighlight(now) {
    NAVIGATION
 ─────────────────────────────────────────── */
 /* ───────────────────────────────────────────
-   SHIFT PARAMETERS — новый блок
+   SHIFT PARAMETERS
 ─────────────────────────────────────────── */
 let _spActiveRole = 'driver';
 let _spMissions   = [];
@@ -752,13 +742,11 @@ function sortEventsIfNeeded(changedId) {
 function applyDTComment(id, val) {
   if (!val) return;
   updateEvent(id, 'description', val);
-  // Обновляем textarea в фоне, но не показываем его
   const descRow = $(`dt-desc-row-${id}`);
   if (descRow) {
     const ta = descRow.querySelector('textarea');
     if (ta) { ta.value = val; autoHeight(ta); }
   }
-  saveState();
 }
 
 function toggleDTEdit(id) {
@@ -803,8 +791,8 @@ document.addEventListener('keydown', e => {
       const endInput = card.querySelector('.km-end');
       if (endInput) endInput.value = val;
     }
-    const endInput = card.querySelector('.km-end');
-    if (endInput) endInput.focus();
+    const endInput2 = card.querySelector('.km-end');
+    if (endInput2) endInput2.focus();
   }
 });
 
@@ -1074,7 +1062,7 @@ function buildDiskRow(dk) {
     ? `<div class="disk-pct-row">
          <input type="number" value="${dk.percent}" min="0" max="90" step="0.1" class="disk-pct-input"
            style="color:${inUseColor}"
-           onchange="updateDisk(${dk.id},'percent',this.value);renderDisks();saveState()"
+           onchange="updateDisk(${dk.id},'percent',this.value);renderDisks()"
            placeholder="TB">
          <span class="disk-pct-label" style="color:${inUseColor}">TB available · <b>${pct}%</b> full</span>
        </div>`
@@ -1087,7 +1075,7 @@ function buildDiskRow(dk) {
     <div class="disk-track">
       <div class="disk-fill" style="${barStyle}"></div>
     </div>
-    <select onchange="updateDisk(${dk.id},'status',this.value);renderDisks();saveState()">
+    <select onchange="updateDisk(${dk.id},'status',this.value);renderDisks()">
       <option value="empty"  ${dk.status==='empty' ?'selected':''}>empty</option>
       <option value="in use" ${dk.status==='in use'?'selected':''}>in use</option>
       <option value="full"   ${dk.status==='full'  ?'selected':''}>full</option>
@@ -1203,7 +1191,7 @@ function generateReport() {
   }
 
   // Shift Summary
-  let dtMins = 0, recMins = 0;
+  let dtMins = 0;
   let shiftStart = '', shiftEnd = '';
   events.forEach(ev => {
     if (!ev.timeStart || !ev.timeEnd) return;
@@ -1211,8 +1199,7 @@ function generateReport() {
     const [eh,em] = ev.timeEnd.split(':').map(Number);
     let diff = (eh*60+em) - (sh*60+sm);
     if (diff < 0) diff += 1440;
-    if (isDT(ev.type)) dtMins  += diff;
-    if (ev.type === 'recording') recMins += diff;
+    if (isDT(ev.type)) dtMins += diff;
   });
   if (events.length) shiftStart = events[0].timeStart || '';
   for (let i = events.length-1; i >= 0; i--) {
@@ -1221,10 +1208,9 @@ function generateReport() {
 
   const fmt = min => min >= 60 ? `${Math.floor(min/60)}h ${min%60}min` : `${min}min`;
 
-  if (dtMins > 0 || recMins > 0 || shiftStart) {
+  if (dtMins > 0 || shiftStart) {
     out += '\n── Shift Summary ──\n';
     if (shiftStart) out += `Shift: ${shiftStart}${shiftEnd ? ' - '+shiftEnd : ''}\n`;
-    if (recMins > 0) out += `Recording time: ${fmt(recMins)}\n`;
     if (dtMins  > 0) out += `Total Downtime: ${fmt(dtMins)}\n`;
   }
 
@@ -1809,9 +1795,9 @@ function showConfirm(msg, onOk, okLabel = 'Delete') {
   const btn = $('btnConfirmOk');
   btn.textContent = okLabel;
   const isDestructive = okLabel === 'Delete';
-  btn.style.borderColor  = isDestructive ? 'rgba(239,68,68,.4)' : 'rgba(37,99,235,.4)';
-  btn.style.background   = isDestructive ? 'rgba(239,68,68,.08)' : 'rgba(37,99,235,.08)';
-  btn.style.color        = isDestructive ? '#ef4444' : '#2563eb';
+  btn.style.borderColor  = isDestructive ? 'rgba(239,68,68,.4)' : 'rgba(59,130,246,.4)';
+  btn.style.background   = isDestructive ? 'rgba(239,68,68,.08)' : 'rgba(59,130,246,.08)';
+  btn.style.color        = isDestructive ? '#EF4444' : '#3B82F6';
   _confirmCb = onOk;
   $('confirmOverlay').classList.add('open');
   document.addEventListener('keydown', _confirmKey);
@@ -2211,7 +2197,7 @@ const HELP_DATA = {
           '<b>Разрешённое использование:</b> исключительно для личного и служебного использования в команде ADAS Valeo/VW Capgemini KSS2.0.',
           '<b>Ограничения:</b> копирование, распространение, коммерческое использование или передача третьим лицам без письменного разрешения Автора строго запрещены.',
           '<b>Данные:</b> данные смен хранятся локально на устройстве. Статус дисков синхронизируется через Firebase Realtime Database исключительно для командного использования.',
-          '<b>Отказ от ответственности:</b> приложение предоставляется без каких-либо гарантий без каких-либо гарантий. Автор не несёт ответственности за любой ущерб, возникший в результате его использования.',
+          '<b>Отказ от ответственности:</b> приложение предоставляется без каких-либо гарантий. Автор не несёт ответственности за любой ущерб, возникший в результате его использования.',
         ],
       },
     ],
