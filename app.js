@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.24
+   Version: 5.25
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.24';
+const APP_VERSION = '5.25';
 
 /* ───────────────────────────────────────────
    DATA

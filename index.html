@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ShiftLog v5.24 -->
+<!-- ShiftLog v5.25 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -90,8 +90,7 @@
               <input type="date" id="shiftDate" class="sp-date-hidden">
             </div>
             <div class="sp-float-wrap">
-              <span class="sp-float-label">Vehicle ID</span>
-              <input type="text" class="sp-float-input" id="vehicleId" autocomplete="off">
+              <input type="text" class="sp-float-input sp-plain-vehicle" id="vehicleId" placeholder="e.g. DC-205" autocomplete="off">
             </div>
           </div>
 
@@ -107,7 +106,6 @@
           <div class="sp-section">Role & ID</div>
           <div class="sp-role-row">
             <div class="sp-role-item active" id="spRoleDriver">
-              <div class="sp-role-bar"></div>
               <div class="sp-role-content">
                 <span class="sp-role-name" onclick="spSetRole('driver')">Driver</span>
                 <input type="text" class="sp-role-input" id="driverId" placeholder="e.g. 1009"
@@ -115,7 +113,6 @@
               </div>
             </div>
             <div class="sp-role-item" id="spRoleOperator">
-              <div class="sp-role-bar"></div>
               <div class="sp-role-content">
                 <span class="sp-role-name" onclick="spSetRole('operator')">Operator</span>
                 <input type="text" class="sp-role-input" id="operatorId" placeholder="e.g. 1108"

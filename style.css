@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.24
+   Version: 5.25
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -265,16 +265,10 @@ body.dark .sp-status.ready { background: rgba(48,209,88,.15); color: #30d158; bo
   cursor: pointer; width: 100%; height: 100%;
 }
 
-/* Float input (Vehicle ID) */
+/* Float input (Vehicle ID) — без floating label */
 .sp-float-wrap { flex: 1; position: relative; }
-.sp-float-label {
-  position: absolute; top: 6px; left: 11px;
-  font-size: 9px; font-weight: 700; letter-spacing: .5px;
-  text-transform: uppercase; color: var(--muted);
-  pointer-events: none;
-}
 .sp-float-input {
-  width: 100%; padding: 20px 11px 7px;
+  width: 100%; padding: 11px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   font-size: 14px; font-weight: 500;
@@ -283,6 +277,7 @@ body.dark .sp-status.ready { background: rgba(48,209,88,.15); color: #30d158; bo
   transition: border-color .15s;
 }
 .sp-float-input:focus { border-color: var(--blue); }
+.sp-float-input::placeholder { color: var(--muted); font-weight: 400; }
 
 /* Plain inputs (City, Country) */
 .sp-plain-input {
@@ -304,19 +299,13 @@ body.dark .sp-status.ready { background: rgba(48,209,88,.15); color: #30d158; bo
   cursor: pointer; color: var(--sub);
 }
 
-/* Role selector */
-.sp-role-row { display: flex; gap: 20px; margin-bottom: 8px; }
+/* Role selector — без полоски, рамка вокруг поля */
+.sp-role-row { display: flex; gap: 12px; margin-bottom: 8px; }
 .sp-role-item {
-  flex: 1; display: flex; flex-direction: row;
-  align-items: stretch; gap: 10px;
+  flex: 1; display: flex; flex-direction: column;
+  gap: 6px;
 }
-.sp-role-bar {
-  width: 2.5px; border-radius: 2px; flex-shrink: 0;
-  background: var(--border); align-self: stretch;
-  transition: background .2s;
-}
-.sp-role-item.active .sp-role-bar { background: var(--blue); }
-.sp-role-content { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+.sp-role-content { flex: 1; display: flex; flex-direction: column; gap: 6px; }
 .sp-role-name {
   font-size: 10px; font-weight: 700; letter-spacing: .5px;
   text-transform: uppercase; color: var(--muted);
@@ -324,15 +313,24 @@ body.dark .sp-status.ready { background: rgba(48,209,88,.15); color: #30d158; bo
 }
 .sp-role-item.active .sp-role-name { color: var(--blue); }
 .sp-role-input {
-  width: 100%; border: none;
-  border-bottom: 1px solid var(--border);
-  background: transparent;
-  font-size: 15px; font-weight: 500;
+  width: 100%;
+  padding: 10px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  font-size: 14px; font-weight: 500;
   font-family: inherit; color: var(--text);
-  outline: none; padding: 2px 0 6px;
-  transition: border-color .15s;
+  outline: none;
+  transition: border-color .2s, border-width .2s;
 }
-.sp-role-input:focus { border-bottom-color: var(--blue); }
+.sp-role-item.active .sp-role-input {
+  border-color: var(--blue);
+  border-width: 1.5px;
+}
+.sp-role-item:not(.active) .sp-role-input {
+  color: var(--muted);
+  background: var(--bg);
+}
 .sp-role-input::placeholder { color: var(--muted); font-weight: 400; font-size: 13px; }
 
 /* Mission ID */
