@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ShiftLog v5.27 -->
+<!-- ShiftLog v5.28 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -79,8 +79,8 @@
         </div>
         <div class="card-body">
 
-          <div class="sp-section">Vehicle</div>
-          <div class="sp-row-main">
+          <!-- Строка 1: Дата -->
+          <div class="sp-date-row">
             <div class="sp-date-chip" id="spDateChip">
               <span class="sp-date-day" id="spDateDay">—</span>
               <div class="sp-date-meta">
@@ -89,34 +89,44 @@
               </div>
               <input type="date" id="shiftDate" class="sp-date-hidden">
             </div>
-            <div class="sp-float-wrap">
-              <input type="text" class="sp-float-input sp-plain-vehicle" id="vehicleId" placeholder="e.g. DC-205" autocomplete="off">
+          </div>
+
+          <!-- Строка 2: Vehicle + Driver + Operator -->
+          <div class="sp-fields-row-3">
+            <div class="sp-col">
+              <span class="sp-col-label">Vehicle</span>
+              <input type="text" class="sp-field-input" id="vehicleId" placeholder="e.g. DC-205" autocomplete="off">
             </div>
-            <div class="sp-role-item active" id="spRoleDriver">
-              <div class="sp-role-content">
-                <span class="sp-role-name" onclick="spSetRole('driver')">Driver</span>
-                <input type="text" class="sp-role-input" id="driverId" placeholder="e.g. 1009"
-                  onfocus="spSetRole('driver')" autocomplete="off">
-              </div>
+            <div class="sp-col sp-role-col" id="spRoleDriver">
+              <span class="sp-col-label" onclick="spSetRole('driver')">Driver</span>
+              <input type="text" class="sp-field-input sp-role-field" id="driverId" placeholder="e.g. 1009"
+                onfocus="spSetRole('driver')" autocomplete="off">
             </div>
-            <div class="sp-role-item" id="spRoleOperator">
-              <div class="sp-role-content">
-                <span class="sp-role-name" onclick="spSetRole('operator')">Operator</span>
-                <input type="text" class="sp-role-input" id="operatorId" placeholder="e.g. 1108"
-                  onfocus="spSetRole('operator')" autocomplete="off">
+            <div class="sp-col sp-role-col" id="spRoleOperator">
+              <span class="sp-col-label" onclick="spSetRole('operator')">Operator</span>
+              <input type="text" class="sp-field-input sp-role-field" id="operatorId" placeholder="e.g. 1108"
+                onfocus="spSetRole('operator')" autocomplete="off">
+            </div>
+          </div>
+
+          <!-- Строка 3: City + Country + 📍 -->
+          <div class="sp-fields-row">
+            <div class="sp-col">
+              <span class="sp-col-label">City</span>
+              <input type="text" class="sp-field-input" id="cityField" placeholder="e.g. Berlin" autocomplete="off">
+            </div>
+            <div class="sp-col">
+              <span class="sp-col-label">Country</span>
+              <div class="sp-country-wrap">
+                <input type="text" class="sp-field-input" id="country" placeholder="e.g. Germany" autocomplete="off">
+                <button class="sp-geo-btn" id="btnGeoCity" title="Detect city & country">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                </button>
               </div>
             </div>
           </div>
 
-          <div class="sp-section">Location</div>
-          <div class="sp-location-row">
-            <input type="text" class="sp-plain-input" id="cityField" placeholder="City" autocomplete="off">
-            <input type="text" class="sp-plain-input" id="country" placeholder="Country" autocomplete="off">
-            <button class="btn-geo sp-geo-btn" id="btnGeoCity" title="Detect city & country">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-            </button>
-          </div>
-
+          <!-- Mission ID -->
           <div class="sp-section">Mission ID</div>
           <div id="missionList" class="sp-mission-list"></div>
           <div id="missionInputRow" class="sp-mission-input-row" style="display:none">

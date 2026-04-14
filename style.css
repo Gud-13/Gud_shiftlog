@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.27
+   Version: 5.28
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -265,31 +265,59 @@ body.dark .sp-status.ready { background: rgba(48,209,88,.15); color: #30d158; bo
   cursor: pointer; width: 100%; height: 100%;
 }
 
-/* Float input (Vehicle ID) — без floating label */
-.sp-float-wrap { flex: 1; position: relative; }
-.sp-float-input {
-  width: 100%; padding: 11px;
+/* ── Строка 1: дата ── */
+.sp-date-row { margin-bottom: 10px; }
+
+/* ── Строка 2: три колонки Vehicle + Driver + Operator ── */
+.sp-fields-row-3 {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+/* ── Строка 3: две колонки City + Country ── */
+.sp-fields-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.sp-col { display: flex; flex-direction: column; gap: 5px; }
+.sp-col-label {
+  font-size: 9px; font-weight: 700; letter-spacing: .7px;
+  text-transform: uppercase; color: var(--muted);
+  padding-left: 1px; cursor: default;
+}
+
+/* Единый стиль всех input */
+.sp-field-input {
+  width: 100%; padding: 10px 11px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   font-size: 14px; font-weight: 500;
   color: var(--text); background: var(--white);
   font-family: inherit; outline: none;
-  transition: border-color .15s;
+  transition: border-color .15s, border-left-color .2s;
 }
-.sp-float-input:focus { border-color: var(--blue); }
-.sp-float-input::placeholder { color: var(--muted); font-weight: 400; }
+.sp-field-input:focus { border-color: var(--blue); }
+.sp-field-input::placeholder { color: var(--muted); font-weight: 400; }
 
-/* Plain inputs (City, Country) */
-.sp-plain-input {
-  padding: 11px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 14px; color: var(--text);
-  background: var(--white); font-family: inherit; outline: none;
-  transition: border-color .15s;
+/* Поле роли — левый border 3px, по умолчанию серый */
+.sp-role-field {
+  border-left-width: 3px;
+  border-left-color: var(--border);
 }
-.sp-plain-input:focus { border-color: var(--blue); }
-.sp-plain-input::placeholder { color: var(--muted); }
+
+/* Активная роль — зелёный label + зелёная полоска */
+.sp-role-col.active .sp-col-label { color: var(--green); }
+.sp-role-col.active .sp-role-field { border-left-color: var(--green); }
+.sp-role-col .sp-col-label { cursor: pointer; transition: color .2s; }
+
+/* Country + 📍 */
+.sp-country-wrap { display: flex; gap: 8px; }
+.sp-country-wrap .sp-field-input { flex: 1; }
 .sp-geo-btn {
   flex-shrink: 0; width: 42px;
   border: 1px solid var(--border);
@@ -297,55 +325,13 @@ body.dark .sp-status.ready { background: rgba(48,209,88,.15); color: #30d158; bo
   background: var(--white);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; color: var(--sub);
+  transition: border-color .15s;
 }
+.sp-geo-btn:active { background: var(--bg); }
 
-/* Location row — grid совпадает с Role row */
-.sp-location-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 42px;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-.sp-location-row .sp-plain-input { width: 100%; }
+/* Убираем старый класс */
+.sp-operator { border-left-width: 3px; border-left-color: var(--green); }
 
-/* Главная строка: дата + vehicle + driver + operator */
-.sp-row-main {
-  display: grid;
-  grid-template-columns: auto 2fr 1.2fr 1.2fr;
-  gap: 8px;
-  align-items: end;
-  margin-bottom: 12px;
-}
-.sp-role-item {
-  display: flex; flex-direction: column; gap: 6px;
-}
-.sp-role-content { display: flex; flex-direction: column; gap: 6px; }
-.sp-role-name {
-  font-size: 10px; font-weight: 700; letter-spacing: .5px;
-  text-transform: uppercase; color: var(--muted);
-  cursor: pointer; user-select: none; transition: color .2s;
-}
-.sp-role-item.active .sp-role-name { color: var(--green); }
-.sp-role-input {
-  width: 100%;
-  padding: 10px 11px;
-  border: 1px solid var(--border);
-  border-left-width: 3px;
-  border-radius: var(--radius-sm);
-  background: var(--white);
-  font-size: 14px; font-weight: 500;
-  font-family: inherit; color: var(--text);
-  outline: none;
-  transition: border-color .2s, border-left-color .2s;
-}
-.sp-role-item.active .sp-role-input {
-  border-left-color: var(--green);
-}
-.sp-role-item:not(.active) .sp-role-input {
-  background: var(--bg);
-  color: var(--muted);
-}
-.sp-role-input::placeholder { color: var(--muted); font-weight: 400; font-size: 13px; }
 
 /* Mission ID */
 .sp-mission-list { margin-bottom: 2px; }

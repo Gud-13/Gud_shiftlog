@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.27
+   Version: 5.28
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.27';
+const APP_VERSION = '5.28';
 
 /* ───────────────────────────────────────────
    DATA
@@ -370,8 +370,10 @@ function spUpdateDateChip() {
 
 function spSetRole(role) {
   _spActiveRole = role;
-  $('spRoleDriver').classList.toggle('active', role === 'driver');
-  $('spRoleOperator').classList.toggle('active', role === 'operator');
+  const dr = $('spRoleDriver');
+  const op = $('spRoleOperator');
+  if (dr) dr.classList.toggle('active', role === 'driver');
+  if (op) op.classList.toggle('active', role === 'operator');
   spCheckStatus();
   saveState();
 }
@@ -381,8 +383,8 @@ function spCheckStatus() {
   const city     = $('cityField').value.trim();
   const country  = $('country').value.trim();
   const myId     = _spActiveRole === 'driver'
-    ? $('driverId').value.trim()
-    : $('operatorId').value.trim();
+    ? $('driverId')?.value.trim()
+    : $('operatorId')?.value.trim();
   const badge = $('shiftStatusBadge');
   if (!badge) return;
   const ready = vehicle && city && country && myId;
@@ -431,27 +433,21 @@ function spRenderMissions() {
 }
 
 function initShiftParams() {
-  // Дата-чип — обновляем при загрузке и при изменении
   spUpdateDateChip();
   $('shiftDate').addEventListener('change', () => {
     spUpdateDateChip();
     spCheckStatus();
   });
-  // Mission input — Enter добавляет
   $('missionInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') spAddMission();
     if (e.key === 'Escape') spToggleMissionInput();
   });
-  // Применяем сохранённую роль
   spSetRole(_spActiveRole);
-  // Рендерим missions из loadState
   spRenderMissions();
-  // Автопроверка статуса при вводе
   ['vehicleId','cityField','country','driverId','operatorId'].forEach(id => {
     const el = $(id);
     if (el) el.addEventListener('input', spCheckStatus);
   });
-  // Первичная проверка
   spCheckStatus();
 }
 
