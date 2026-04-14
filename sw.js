@@ -6,7 +6,7 @@
    кэш используем только если нет сети.
 ═══════════════════════════════════════════ */
 
-const CACHE_NAME = 'shiftlog-v5.30';
+const CACHE_NAME = 'shiftlog-v5.31';
 
 const ASSETS = [
   '/Gud_shiftlog/',

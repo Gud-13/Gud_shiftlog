@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.30
+   Version: 5.31
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.30';
+const APP_VERSION = '5.31';
 
 /* ───────────────────────────────────────────
    DATA
@@ -842,6 +842,30 @@ function initQuickAdd() {
     btn.addEventListener('click', () => addEvent(btn.dataset.type, ''));
   });
   $('btnAddEvent').addEventListener('click', () => addEvent('other', ''));
+
+  // More toggle — restore state from localStorage
+  const panel = $('quickMorePanel');
+  const btn   = $('btnQuickMore');
+  const icon  = $('quickMoreIcon');
+  const label = $('quickMoreLabel');
+  let open = localStorage.getItem('quickMoreOpen') === '1';
+
+  function applyMoreState() {
+    panel.style.display = open ? 'block' : 'none';
+    btn.classList.toggle('open', open);
+    label.textContent = open ? 'Less' : 'More';
+    // rotate icon: + becomes ×
+    icon.style.transform = open ? 'rotate(45deg)' : 'rotate(0deg)';
+    icon.style.transition = 'transform .2s';
+  }
+
+  btn.addEventListener('click', () => {
+    open = !open;
+    localStorage.setItem('quickMoreOpen', open ? '1' : '0');
+    applyMoreState();
+  });
+
+  applyMoreState();
 }
 
 

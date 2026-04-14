@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.30
+   Version: 5.31
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -466,6 +466,22 @@ body.dark .quick-group-label.org { color: #60a5fa; }
 .q-org { background: #eef4ff; border-color: #c7d9fd; color: #1a3a8a; }
 body.dark .q-sys { background: rgba(255,159,10,.1); border-color: rgba(255,159,10,.25); color: #ff9f0a; }
 body.dark .q-org { background: rgba(10,132,255,.1);  border-color: rgba(10,132,255,.25); color: #0a84ff; }
+
+/* More button */
+.q-more-btn {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 10px;
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--sub);
+  font-size: 12px; font-weight: 600;
+  font-family: inherit; cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.q-more-btn:active { background: var(--border); }
+.q-more-btn.open { color: var(--text); border-color: var(--text); }
 
 /* ═══════════════════════════════════════════
    EVENTS
