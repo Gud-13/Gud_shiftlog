@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.29
+   Version: 5.30
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.29';
+const APP_VERSION = '5.30';
 
 /* ───────────────────────────────────────────
    DATA
@@ -378,6 +378,13 @@ function spSetRole(role) {
   saveState();
 }
 
+function spUpdateHasValue() {
+  ['vehicleId','driverId','operatorId','cityField','country'].forEach(id => {
+    const el = $(id);
+    if (el) el.classList.toggle('has-value', !!el.value.trim());
+  });
+}
+
 function spCheckStatus() {
   const vehicle  = $('vehicleId').value.trim();
   const city     = $('cityField').value.trim();
@@ -390,10 +397,7 @@ function spCheckStatus() {
   const ready = vehicle && city && country && myId;
   badge.textContent = ready ? 'Ready' : 'Fill in';
   badge.className = 'sp-status ' + (ready ? 'ready' : 'incomplete');
-  ['vehicleId','driverId','operatorId','cityField','country'].forEach(id => {
-    const el = $(id);
-    if (el) el.classList.toggle('has-value', !!el.value.trim());
-  });
+  spUpdateHasValue();
 }
 
 function spToggleMissionInput() {
@@ -450,7 +454,10 @@ function initShiftParams() {
   spRenderMissions();
   ['vehicleId','cityField','country','driverId','operatorId'].forEach(id => {
     const el = $(id);
-    if (el) el.addEventListener('input', spCheckStatus);
+    if (el) {
+      el.addEventListener('input', spCheckStatus);
+      el.addEventListener('change', spCheckStatus);
+    }
   });
   spCheckStatus();
 }
