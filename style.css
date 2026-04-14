@@ -320,6 +320,7 @@ body.dark .sp-status.ready { background: rgba(48,209,88,.15); color: #30d158; bo
 /* Country + 📍 */
 .sp-country-wrap { display: flex; gap: 8px; }
 .sp-country-wrap .sp-field-input { flex: 1; }
+.sp-country-wrap .sp-field-input.has-value { background: var(--white); }
 .sp-geo-btn {
   flex-shrink: 0; width: 42px;
   border: 1px solid var(--border);

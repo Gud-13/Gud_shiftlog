@@ -1181,10 +1181,8 @@ function _doNewShift() {
   disks = savedDisks; diskCounter = savedDiskCounter;
   $('shiftDate').value   = new Date().toISOString().slice(0,10);
   $('vehicleId').value   = savedVehicle;
-  _spMissions = [];
-  _spMissionCtr = 0;
+  spUpdateDateChip();
   spRenderMissions();
-  spCheckStatus();
   $('cityField').value   = '';
   $('country').value     = savedCountry;
   $('driverId').value    = savedDriver;
@@ -1192,6 +1190,7 @@ function _doNewShift() {
   $('notes').value       = '';
   renderEvents();
   renderDisks();
+  spCheckStatus();
   saveState();
   showToast('New shift started');
 }
@@ -1684,7 +1683,7 @@ function initGeo() {
       const country = a.country || '';
       if (city)    { $('cityField').value = city; }
       if (country) { $('country').value   = country; }
-      if (city || country) { saveState(); showToast('City & Country updated'); }
+      if (city || country) { spCheckStatus(); saveState(); showToast('City & Country updated'); }
     });
   });
 
