@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.23
+   Version: 5.24
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.23';
+const APP_VERSION = '5.24';
 
 /* ───────────────────────────────────────────
    DATA
@@ -352,6 +352,109 @@ function updateScheduleHighlight(now) {
 /* ───────────────────────────────────────────
    NAVIGATION
 ─────────────────────────────────────────── */
+/* ───────────────────────────────────────────
+   SHIFT PARAMETERS — новый блок
+─────────────────────────────────────────── */
+let _spActiveRole = 'driver';
+let _spMissions   = [];
+let _spMissionCtr = 0;
+
+function spUpdateDateChip() {
+  const val = $('shiftDate').value;
+  if (!val) return;
+  const d = new Date(val + 'T12:00:00');
+  $('spDateDay').textContent   = d.getDate();
+  $('spDateMonth').textContent = d.toLocaleString('en', { month: 'short' }).toUpperCase();
+  $('spDateYear').textContent  = d.getFullYear();
+}
+
+function spSetRole(role) {
+  _spActiveRole = role;
+  $('spRoleDriver').classList.toggle('active', role === 'driver');
+  $('spRoleOperator').classList.toggle('active', role === 'operator');
+  spCheckStatus();
+  saveState();
+}
+
+function spCheckStatus() {
+  const vehicle  = $('vehicleId').value.trim();
+  const city     = $('cityField').value.trim();
+  const country  = $('country').value.trim();
+  const myId     = _spActiveRole === 'driver'
+    ? $('driverId').value.trim()
+    : $('operatorId').value.trim();
+  const badge = $('shiftStatusBadge');
+  if (!badge) return;
+  const ready = vehicle && city && country && myId;
+  badge.textContent = ready ? 'Ready' : 'Fill in';
+  badge.className = 'sp-status ' + (ready ? 'ready' : 'incomplete');
+}
+
+function spToggleMissionInput() {
+  const row = $('missionInputRow');
+  const btn = $('btnAddMission');
+  const show = row.style.display === 'none';
+  row.style.display = show ? 'flex' : 'none';
+  btn.style.display = show ? 'none' : 'flex';
+  if (show) setTimeout(() => $('missionInput').focus(), 50);
+}
+
+function spAddMission() {
+  const inp = $('missionInput');
+  const val = inp.value.trim();
+  if (!val) return;
+  _spMissions.push({ id: ++_spMissionCtr, val });
+  inp.value = '';
+  spRenderMissions();
+  $('missionInputRow').style.display = 'none';
+  $('btnAddMission').style.display = 'flex';
+  saveState();
+}
+
+function spRemoveMission(id) {
+  _spMissions = _spMissions.filter(m => m.id !== id);
+  spRenderMissions();
+  saveState();
+}
+
+function spRenderMissions() {
+  const list = $('missionList');
+  if (!list) return;
+  list.innerHTML = _spMissions.map(m => `
+    <div class="sp-mission-item">
+      <div class="sp-mission-dot"></div>
+      <span class="sp-mission-text">${esc(m.val)}</span>
+      <button class="sp-mission-del" onclick="spRemoveMission(${m.id})">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>`).join('');
+}
+
+function initShiftParams() {
+  // Дата-чип — обновляем при загрузке и при изменении
+  spUpdateDateChip();
+  $('shiftDate').addEventListener('change', () => {
+    spUpdateDateChip();
+    spCheckStatus();
+  });
+  // Mission input — Enter добавляет
+  $('missionInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') spAddMission();
+    if (e.key === 'Escape') spToggleMissionInput();
+  });
+  // Применяем сохранённую роль
+  spSetRole(_spActiveRole);
+  // Рендерим missions из loadState
+  spRenderMissions();
+  // Автопроверка статуса при вводе
+  ['vehicleId','cityField','country','driverId','operatorId'].forEach(id => {
+    const el = $(id);
+    if (el) el.addEventListener('input', spCheckStatus);
+  });
+  // Первичная проверка
+  spCheckStatus();
+}
+
 function initNav() {
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -386,11 +489,12 @@ function _doSave() {
     const state = {
       shiftDate:  $('shiftDate').value,
       vehicleId:  $('vehicleId').value,
-      missionId:  $('missionId').value,
       cityField:  $('cityField').value,
       country:    $('country').value,
       driverId:   $('driverId').value,
       operatorId: $('operatorId').value,
+      activeRole: _spActiveRole,
+      missions:   _spMissions,
       notes:      $('notes').value,
       events,
       disks,
@@ -407,13 +511,15 @@ function loadState() {
     if (!raw) return false;
     const s = JSON.parse(raw);
     $('shiftDate').value  = s.shiftDate  || new Date().toISOString().slice(0,10);
-    $('vehicleId').value  = s.vehicleId  || 'DC-205';
-    $('missionId').value  = s.missionId  || '';
+    $('vehicleId').value  = s.vehicleId  || '';
     $('cityField').value  = s.cityField  || '';
     $('country').value    = s.country    || '';
-    $('driverId').value   = s.driverId   || '1009';
-    $('operatorId').value = s.operatorId || '1108';
+    $('driverId').value   = s.driverId   || '';
+    $('operatorId').value = s.operatorId || '';
     $('notes').value      = s.notes      || '';
+    _spActiveRole = s.activeRole || 'driver';
+    _spMissions   = s.missions   || [];
+    _spMissionCtr = _spMissions.length ? Math.max(..._spMissions.map(m => m.id)) : 0;
     events       = s.events       || [];
     disks        = s.disks        || [];
     eventCounter = s.eventCounter || 0;
@@ -745,10 +851,17 @@ function getFBVehicleId() {
 
 // Возвращает "Dr. 1009" или "Op. 1108" в зависимости от заполненных полей
 function getMyName() {
-  const driverId   = $('driverId')?.value.trim();
-  const operatorId = $('operatorId')?.value.trim();
-  if (driverId)   return `Dr. ${driverId}`;
-  if (operatorId) return `Op. ${operatorId}`;
+  if (_spActiveRole === 'driver') {
+    const id = $('driverId')?.value.trim();
+    if (id) return `Dr. ${id}`;
+  } else {
+    const id = $('operatorId')?.value.trim();
+    if (id) return `Op. ${id}`;
+  }
+  const d = $('driverId')?.value.trim();
+  const o = $('operatorId')?.value.trim();
+  if (d) return `Dr. ${d}`;
+  if (o) return `Op. ${o}`;
   return 'Unknown';
 }
 
@@ -953,7 +1066,6 @@ function copyDiskStatus() {
 function generateReport() {
   const date     = $('shiftDate').value;
   const vehicle  = $('vehicleId').value  || 'N/A';
-  const mission  = $('missionId').value;
   const city     = $('cityField').value;
   const country  = $('country').value;
   const driverId = $('driverId').value;
@@ -988,9 +1100,11 @@ function generateReport() {
     out += '\n';
   });
 
-  if (mission) out += `Mission ID ${mission}.\n`;
-  if (city)    out += `City: ${city}.\n`;
-  if (mission || city) out += '\n';
+  if (_spMissions.length) {
+    _spMissions.forEach(m => { out += `Mission ID: ${m.val}\n`; });
+    out += '\n';
+  }
+  if (city) out += `City: ${city}.\n`;
 
   if (disks.length) {
     out += `Disk Status — Vehicle ${vehicle}`;
@@ -1067,7 +1181,10 @@ function _doNewShift() {
   disks = savedDisks; diskCounter = savedDiskCounter;
   $('shiftDate').value   = new Date().toISOString().slice(0,10);
   $('vehicleId').value   = savedVehicle;
-  $('missionId').value   = '';
+  _spMissions = [];
+  _spMissionCtr = 0;
+  spRenderMissions();
+  spCheckStatus();
   $('cityField').value   = '';
   $('country').value     = savedCountry;
   $('driverId').value    = savedDriver;
@@ -2096,6 +2213,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Init modules
   initTheme();
   initClock();
+  initShiftParams();
   initNav();
   initQuickAdd();
   initGeo();

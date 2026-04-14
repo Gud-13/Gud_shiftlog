@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.23
+   Version: 5.24
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -218,14 +218,162 @@ body.dark .card-badge.amber { color: #ff9f0a; }
 ═══════════════════════════════════════════ */
 .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-.shift-params-grid { grid-template-columns: repeat(12, 1fr); }
-.shift-params-grid .field:nth-child(1) { grid-column: span 4; }
-.shift-params-grid .field:nth-child(2) { grid-column: span 4; }
-.shift-params-grid .field:nth-child(3) { grid-column: span 4; }
-.shift-params-grid .field:nth-child(4) { grid-column: span 3; }
-.shift-params-grid .field:nth-child(5) { grid-column: span 3; }
-.shift-params-grid .field:nth-child(6) { grid-column: span 3; }
-.shift-params-grid .field:nth-child(7) { grid-column: span 3; }
+/* ═══════════════════════════════════════════
+   SHIFT PARAMETERS — redesign
+═══════════════════════════════════════════ */
+.sp-section {
+  font-size: 9px; font-weight: 700; letter-spacing: .7px;
+  text-transform: uppercase; color: var(--muted);
+  margin: 14px 0 8px; padding: 0 2px;
+}
+.sp-row {
+  display: flex; gap: 8px; align-items: stretch; margin-bottom: 8px;
+}
+
+/* Status badge */
+.sp-status {
+  font-size: 10px; font-weight: 700; letter-spacing: .5px;
+  text-transform: uppercase; padding: 3px 10px;
+  border-radius: 20px; transition: all .3s;
+}
+.sp-status.incomplete {
+  background: rgba(226,75,74,.08); color: #c0392b;
+  border: 1px solid rgba(226,75,74,.25);
+}
+.sp-status.ready {
+  background: rgba(48,209,88,.1); color: #25a244;
+  border: 1px solid rgba(48,209,88,.3);
+}
+body.dark .sp-status.incomplete { background: rgba(255,69,58,.12); color: #ff453a; border-color: rgba(255,69,58,.3); }
+body.dark .sp-status.ready { background: rgba(48,209,88,.15); color: #30d158; border-color: rgba(48,209,88,.35); }
+
+/* Date chip */
+.sp-date-chip {
+  position: relative; flex-shrink: 0;
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--white); cursor: pointer;
+}
+.sp-date-day { font-size: 22px; font-weight: 600; color: var(--text); line-height: 1; }
+.sp-date-meta { display: flex; flex-direction: column; }
+.sp-date-month { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--sub); }
+.sp-date-year { font-size: 10px; color: var(--muted); }
+.sp-date-hidden {
+  position: absolute; inset: 0; opacity: 0;
+  cursor: pointer; width: 100%; height: 100%;
+}
+
+/* Float input (Vehicle ID) */
+.sp-float-wrap { flex: 1; position: relative; }
+.sp-float-label {
+  position: absolute; top: 6px; left: 11px;
+  font-size: 9px; font-weight: 700; letter-spacing: .5px;
+  text-transform: uppercase; color: var(--muted);
+  pointer-events: none;
+}
+.sp-float-input {
+  width: 100%; padding: 20px 11px 7px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 500;
+  color: var(--text); background: var(--white);
+  font-family: inherit; outline: none;
+  transition: border-color .15s;
+}
+.sp-float-input:focus { border-color: var(--blue); }
+
+/* Plain inputs (City, Country) */
+.sp-plain-input {
+  flex: 1; padding: 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px; color: var(--text);
+  background: var(--white); font-family: inherit; outline: none;
+  transition: border-color .15s;
+}
+.sp-plain-input:focus { border-color: var(--blue); }
+.sp-plain-input::placeholder { color: var(--muted); }
+.sp-geo-btn {
+  flex-shrink: 0; width: 42px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--sub);
+}
+
+/* Role selector */
+.sp-role-row { display: flex; gap: 20px; margin-bottom: 8px; }
+.sp-role-item {
+  flex: 1; display: flex; flex-direction: row;
+  align-items: stretch; gap: 10px;
+}
+.sp-role-bar {
+  width: 2.5px; border-radius: 2px; flex-shrink: 0;
+  background: var(--border); align-self: stretch;
+  transition: background .2s;
+}
+.sp-role-item.active .sp-role-bar { background: var(--blue); }
+.sp-role-content { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+.sp-role-name {
+  font-size: 10px; font-weight: 700; letter-spacing: .5px;
+  text-transform: uppercase; color: var(--muted);
+  cursor: pointer; user-select: none; transition: color .2s;
+}
+.sp-role-item.active .sp-role-name { color: var(--blue); }
+.sp-role-input {
+  width: 100%; border: none;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  font-size: 15px; font-weight: 500;
+  font-family: inherit; color: var(--text);
+  outline: none; padding: 2px 0 6px;
+  transition: border-color .15s;
+}
+.sp-role-input:focus { border-bottom-color: var(--blue); }
+.sp-role-input::placeholder { color: var(--muted); font-weight: 400; font-size: 13px; }
+
+/* Mission ID */
+.sp-mission-list { margin-bottom: 2px; }
+.sp-mission-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 0; border-bottom: 1px solid var(--border);
+}
+.sp-mission-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--blue); flex-shrink: 0;
+}
+.sp-mission-text { flex: 1; font-size: 13px; font-weight: 500; color: var(--text); }
+.sp-mission-del {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1px solid var(--border); background: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--muted); flex-shrink: 0;
+  transition: border-color .15s, color .15s;
+}
+.sp-mission-del:hover { border-color: var(--red); color: var(--red); }
+.sp-mission-input-row { display: flex; gap: 6px; margin-top: 6px; }
+.sp-mission-input-row input {
+  flex: 1; padding: 9px 11px;
+  border: 1px solid var(--blue); border-radius: var(--radius-sm);
+  font-size: 13px; font-family: inherit;
+  background: var(--white); color: var(--text); outline: none;
+}
+.sp-mission-add-btn {
+  padding: 9px 14px; border-radius: var(--radius-sm);
+  border: 1px solid var(--blue);
+  background: rgba(0,113,227,.08); color: var(--blue);
+  font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
+}
+body.dark .sp-mission-add-btn { background: rgba(10,132,255,.15); color: #0a84ff; border-color: #0a84ff; }
+.sp-add-mission-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 10px 0 2px; font-size: 12px; font-weight: 600;
+  color: var(--blue); background: none; border: none;
+  cursor: pointer; font-family: inherit;
+}
 
 .ticket-settings-grid { grid-template-columns: repeat(6, 1fr); }
 .ticket-settings-grid .field:nth-child(1) { grid-column: span 2; }
@@ -235,15 +383,6 @@ body.dark .card-badge.amber { color: #ff9f0a; }
 .ticket-settings-grid .field:nth-child(5) { grid-column: span 3; }
 
 @media (max-width: 500px) {
-  /* Shift Parameters: верхний ряд 3 col → 1 col, нижний ряд → 2 col */
-  .shift-params-grid .field:nth-child(1) { grid-column: span 4; }
-  .shift-params-grid .field:nth-child(2) { grid-column: span 4; }
-  .shift-params-grid .field:nth-child(3) { grid-column: span 4; }
-  .shift-params-grid .field:nth-child(4) { grid-column: span 6; }
-  .shift-params-grid .field:nth-child(5) { grid-column: span 6; }
-  .shift-params-grid .field:nth-child(6) { grid-column: span 6; }
-  .shift-params-grid .field:nth-child(7) { grid-column: span 6; }
-
   /* Ticket Settings: 3 col → 2 col */
   .ticket-settings-grid .field:nth-child(1) { grid-column: span 3; }
   .ticket-settings-grid .field:nth-child(2) { grid-column: span 3; }
@@ -974,15 +1113,6 @@ body.dark .help-section-highlight {
    MOBILE ADAPTATIONS (max-width: 500px)
 ═══════════════════════════════════════════ */
 @media (max-width: 500px) {
-  /* Shift Parameters: верхний ряд 3 col → 1 col, нижний ряд 4 col → 2 col */
-  .shift-params-grid .field:nth-child(1) { grid-column: span 4; }
-  .shift-params-grid .field:nth-child(2) { grid-column: span 4; }
-  .shift-params-grid .field:nth-child(3) { grid-column: span 4; }
-  .shift-params-grid .field:nth-child(4) { grid-column: span 6; }
-  .shift-params-grid .field:nth-child(5) { grid-column: span 6; }
-  .shift-params-grid .field:nth-child(6) { grid-column: span 6; }
-  .shift-params-grid .field:nth-child(7) { grid-column: span 6; }
-
   /* Ticket Settings: 3 col → 2 col */
   .ticket-settings-grid .field:nth-child(1) { grid-column: span 3; }
   .ticket-settings-grid .field:nth-child(2) { grid-column: span 3; }
