@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.39
+   Version: 5.40
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.39';
+const APP_VERSION = '5.40';
 
 /* ───────────────────────────────────────────
    DATA
@@ -100,7 +100,7 @@ const DT_TYPES = new Set([
   'dt_vpi','dt_display','dt_prelabel','dt_ecu','dt_ssd_change','dt_measurement',
   'dt_startup','dt_protocol','dt_route_doc','dt_handover','dt_refuelling',
   'dt_transfer','dt_standby_wait','dt_maintenance','dt_service','dt_no_storage',
-  'dt_police','dt_other_org','dt_other_sys',
+  'dt_police','dt_other_org','dt_other_sys','break',
 ]);
 
 const DT_LABELS = {
@@ -183,6 +183,7 @@ const DT_COMMENTS = {
   dt_police:        ['Vehicle stopped by Police','Vehicle stopped by customs for inspection'],
   dt_other_org:     ["Unloading luggage's at the hotel.","Accommodation check-in.","Accommodation check-out."],
   dt_other_sys:     ['xxxyyy'],
+  break:            ['Break'],
 };
 
 const TICKET_TEMPLATES = {
@@ -648,6 +649,7 @@ function buildTypeOptions(selected) {
     ['dt_measurement','Measurement System'],['dt_low_speed','< 35 km/h'],
     ['dt_ssd_issue','SSD Issue'],['dt_ssd_logistics','SSD Logistics'],
     ['dt_ssd_change','SSD Change'],['dt_standby','Stand-by System'],
+    ['dt_other_sys','Others Sys'],
   ];
   const org = [
     ['dt_handover','Handover'],['dt_protocol','Protocol / Documentation'],
