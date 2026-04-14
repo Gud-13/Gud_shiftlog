@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ShiftLog v5.26 -->
+<!-- ShiftLog v5.27 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -80,7 +80,7 @@
         <div class="card-body">
 
           <div class="sp-section">Vehicle</div>
-          <div class="sp-row">
+          <div class="sp-row-main">
             <div class="sp-date-chip" id="spDateChip">
               <span class="sp-date-day" id="spDateDay">—</span>
               <div class="sp-date-meta">
@@ -92,18 +92,6 @@
             <div class="sp-float-wrap">
               <input type="text" class="sp-float-input sp-plain-vehicle" id="vehicleId" placeholder="e.g. DC-205" autocomplete="off">
             </div>
-          </div>
-
-          <div class="sp-section">Location</div>
-          <div class="sp-location-row">
-            <input type="text" class="sp-plain-input" id="cityField" placeholder="City" autocomplete="off">
-            <input type="text" class="sp-plain-input" id="country" placeholder="Country" autocomplete="off">
-            <button class="btn-geo sp-geo-btn" id="btnGeoCity" title="Detect city & country">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-            </button>
-          </div>
-
-          <div class="sp-role-row">
             <div class="sp-role-item active" id="spRoleDriver">
               <div class="sp-role-content">
                 <span class="sp-role-name" onclick="spSetRole('driver')">Driver</span>
@@ -118,6 +106,15 @@
                   onfocus="spSetRole('operator')" autocomplete="off">
               </div>
             </div>
+          </div>
+
+          <div class="sp-section">Location</div>
+          <div class="sp-location-row">
+            <input type="text" class="sp-plain-input" id="cityField" placeholder="City" autocomplete="off">
+            <input type="text" class="sp-plain-input" id="country" placeholder="Country" autocomplete="off">
+            <button class="btn-geo sp-geo-btn" id="btnGeoCity" title="Detect city & country">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            </button>
           </div>
 
           <div class="sp-section">Mission ID</div>

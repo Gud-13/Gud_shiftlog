@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.26
+   Version: 5.27
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -308,12 +308,13 @@ body.dark .sp-status.ready { background: rgba(48,209,88,.15); color: #30d158; bo
 }
 .sp-location-row .sp-plain-input { width: 100%; }
 
-/* Role selector — левый border, сетка совпадает с Location */
-.sp-role-row {
+/* Главная строка: дата + vehicle + driver + operator */
+.sp-row-main {
   display: grid;
-  grid-template-columns: 1fr calc(1fr + 42px + 8px);
+  grid-template-columns: auto 2fr 1.2fr 1.2fr;
   gap: 8px;
-  margin-bottom: 8px;
+  align-items: end;
+  margin-bottom: 12px;
 }
 .sp-role-item {
   display: flex; flex-direction: column; gap: 6px;
@@ -324,7 +325,7 @@ body.dark .sp-status.ready { background: rgba(48,209,88,.15); color: #30d158; bo
   text-transform: uppercase; color: var(--muted);
   cursor: pointer; user-select: none; transition: color .2s;
 }
-.sp-role-item.active .sp-role-name { color: var(--blue); }
+.sp-role-item.active .sp-role-name { color: var(--green); }
 .sp-role-input {
   width: 100%;
   padding: 10px 11px;
@@ -338,7 +339,7 @@ body.dark .sp-status.ready { background: rgba(48,209,88,.15); color: #30d158; bo
   transition: border-color .2s, border-left-color .2s;
 }
 .sp-role-item.active .sp-role-input {
-  border-left-color: var(--blue);
+  border-left-color: var(--green);
 }
 .sp-role-item:not(.active) .sp-role-input {
   background: var(--bg);
