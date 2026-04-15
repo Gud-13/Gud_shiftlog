@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.63
+   Version: 5.69
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.60';
+const APP_VERSION = '5.69';
 
 /* ───────────────────────────────────────────
    DATA
@@ -16,7 +16,7 @@ let disks       = [];
 let eventCounter = 0;
 let diskCounter  = 0;
 
-const TICKET_FIELDS = ['tkLeader','tkPlate','tkVwPhone','tkCapPhone','tkLocation','tkTemplate'];
+const TICKET_FIELDS = ['tkLeader','tkPlate','tkVwPhone','tkCapPhone','tkLocation'];
 
 // Подсказки Description в зависимости от Category
 const CATEGORY_DESCRIPTIONS = {
@@ -800,13 +800,12 @@ document.addEventListener('keydown', e => {
     updateEvent(id, 'kmStart', val);
     // Copy to km end if empty
     const ev = events.find(ev => ev.id === id);
+    const endInput = card.querySelector('.km-end');
     if (ev && !ev.kmFinish) {
       updateEvent(id, 'kmFinish', val);
-      const endInput = card.querySelector('.km-end');
       if (endInput) endInput.value = val;
     }
-    const endInput2 = card.querySelector('.km-end');
-    if (endInput2) endInput2.focus();
+    if (endInput) endInput.focus();
   }
 });
 
@@ -1034,6 +1033,17 @@ function renderDisks() {
   }
 }
 
+// Gradient color: green(0%) → yellow(50%) → red(100%)
+function gradColor(p) {
+  const clamped = Math.max(0, Math.min(100, p));
+  if (clamped <= 50) {
+    const t = clamped / 50;
+    return `rgb(${Math.round(22+(234-22)*t)},${Math.round(163+(179-163)*t)},${Math.round(74+74*(1-t))})`;
+  }
+  const t = (clamped - 50) / 50;
+  return `rgb(${Math.round(234+(239-234)*t)},${Math.round(179-179*t)},${Math.round(8-8*t)})`;
+}
+
 function buildDiskRow(dk) {
   const isInUse = dk.status === 'in use';
   const tbVal = parseFloat(dk.percent) || 0;
@@ -1042,26 +1052,6 @@ function buildDiskRow(dk) {
   if (dk.status === 'empty') pct = 0;
   else if (dk.status === 'full') pct = 100;
   else if (isInUse) pct = dk.percent ? Math.round((1 - tbVal / 90) * 100) : 0;
-
-  // Градиент цвета: зелёный(0%) → жёлтый(50%) → красный(100%)
-  function gradColor(p) {
-    const clamped = Math.max(0, Math.min(100, p));
-    if (clamped <= 50) {
-      // зелёный → жёлтый
-      const t = clamped / 50;
-      const r = Math.round(22 + (234 - 22) * t);
-      const g = Math.round(163 + (179 - 163) * t);
-      const b = Math.round(74 + 74 * (1 - t));
-      return `rgb(${r},${g},${b})`;
-    } else {
-      // жёлтый → красный
-      const t = (clamped - 50) / 50;
-      const r = Math.round(234 + (239 - 234) * t);
-      const g = Math.round(179 - 179 * t);
-      const b = Math.round(8 - 8 * t);
-      return `rgb(${r},${g},${b})`;
-    }
-  }
 
   let barStyle = '';
   if (dk.status === 'empty')  barStyle = `width:100%;background:#30d158`;
@@ -1075,7 +1065,6 @@ function buildDiskRow(dk) {
   const pctInfo = isInUse
     ? `<div class="disk-pct-row">
          <input type="number" value="${dk.percent}" min="0" max="90" step="0.1" class="disk-pct-input"
-           style="color:${inUseColor}"
            onchange="updateDisk(${dk.id},'percent',this.value);renderDisks()"
            placeholder="TB">
          <span class="disk-pct-label" style="color:${inUseColor}"><b>${dk.percent || '—'}</b> TB available · ${pct}% full</span>
@@ -1136,7 +1125,7 @@ function copyDiskStatus() {
     }
     out += `${dk.diskId} - ${s};\n`;
   });
-  navigator.clipboard.writeText(out.trimEnd()).then(() => showToast('Disk report copied'));
+  navigator.clipboard.writeText(out.trimEnd()).then(() => showToast('Disk report copied')).catch(() => showToast('Copy failed'));
 }
 
 
@@ -1239,7 +1228,7 @@ function openPreview() {
 
 function copyReport() {
   navigator.clipboard.writeText(generateReport())
-    .then(() => { showToast('Report copied'); closeModal('previewOverlay'); });
+    .then(() => { showToast('Report copied'); closeModal('previewOverlay'); }).catch(() => showToast('Copy failed'));
 }
 
 
@@ -1321,7 +1310,7 @@ function openHistory() {
 
 function copyHistory(i) {
   const hist = JSON.parse(localStorage.getItem('shiftHistory') || '[]');
-  if (hist[i]) navigator.clipboard.writeText(hist[i].report).then(() => showToast('Report copied'));
+  if (hist[i]) navigator.clipboard.writeText(hist[i].report).then(() => showToast('Report copied')).catch(() => showToast('Copy failed'));
 }
 
 function deleteHistory(i) {
@@ -1429,20 +1418,7 @@ function updateDescriptionSelect() {
   updatePhotoName();
 }
 
-function openBottomSheet(title, items, onSelect) {
-  $('bottomSheetTitle').textContent = title;
-  $('bottomSheetList').innerHTML = items.map(item =>
-    `<div class="sheet-item" onclick="selectSheetItem(this, '${esc(item)}')">${esc(item)}</div>`
-  ).join('');
-  $('bottomSheetList')._onSelect = onSelect;
-  $('bottomSheetOverlay').classList.add('open');
-}
 
-function selectSheetItem(el, val) {
-  const cb = $('bottomSheetList')._onSelect;
-  if (cb) cb(val);
-  $('bottomSheetOverlay').classList.remove('open');
-}
 
 // Helpers — принудительно устанавливают режим select/edit
 function _setCategoryMode(mode) {
@@ -1595,7 +1571,7 @@ function initPhotoName() {
   $('btnCopyPhotoName').addEventListener('click', () => {
     const name = $('photoNameDisplay')?.textContent;
     if (!name || name.startsWith('—')) { showToast('Fill in Description first'); return; }
-    navigator.clipboard.writeText(name).then(() => showToast('File name copied'));
+    navigator.clipboard.writeText(name).then(() => showToast('File name copied')).catch(() => showToast('Copy failed'));
   });
 
   // Первоначальная генерация
@@ -1681,14 +1657,14 @@ function copyTicket() {
   if (v('tkBody')) {
     out += `${NL}Dear Partners,${NL}${NL}${v('tkBody')}${NL}${NL}Best regards,`;
   }
-  navigator.clipboard.writeText(out.trim()).then(() => showToast('Ticket copied'));
+  navigator.clipboard.writeText(out.trim()).then(() => showToast('Ticket copied')).catch(() => showToast('Copy failed'));
 }
 
 function copyUpdate() {
   const body = $('tkUpdate')?.value || '';
   if (!body.trim()) { showToast('Update body is empty'); return; }
   const out = `Update:\n\n${body.trim()}\n\nBest regards.`;
-  navigator.clipboard.writeText(out).then(() => showToast('Update copied'));
+  navigator.clipboard.writeText(out).then(() => showToast('Update copied')).catch(() => showToast('Copy failed'));
 }
 
 

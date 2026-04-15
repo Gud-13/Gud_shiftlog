@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.63
+   Version: 5.69
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -635,11 +635,12 @@ body.dark .dt-sys .event-desc, body.dark .dt-org .event-desc { background: var(-
   padding-top: 2px;
 }
 .disk-pct-input {
-  width: auto; min-width: 36px; max-width: 60px;
+  width: 100%;
   padding: 0 8px; height: 28px; line-height: 28px;
-  font-size: 12px; font-weight: 700; text-align: center;
+  font-size: 9px; font-weight: 600; text-align: left;
   border-radius: var(--radius-sm);
   background: var(--bg); border-color: transparent;
+  color: var(--text);
   box-sizing: border-box;
   -moz-appearance: textfield; appearance: textfield;
 }
@@ -707,7 +708,6 @@ body.dark .btn-clear { border-color: rgba(239,68,68,.3); color: var(--red); }
 .footer-row .btn-primary { flex: 1; }
 .footer-row .btn-secondary { flex-shrink: 0; }
 
-.page-credit { text-align: center; padding: 8px 0 4px; font-size: 11px; color: var(--muted); letter-spacing: .5px; }
 .page-credit strong { color: var(--sub); }
 
 /* Photo Naming */
@@ -853,14 +853,6 @@ body.dark .contact-btn-gray {
   background: var(--white);
   border-color: var(--border);
   color: var(--sub);
-}
-.contact-empty {
-  text-align: center;
-  color: var(--muted);
-  font-size: 13px;
-  padding: 16px 0 8px;
-  border: 1.5px dashed var(--border);
-  border-radius: var(--radius-sm);
 }
 .quick-link-item {
   display: flex; align-items: center; padding: 11px 0;
@@ -1285,29 +1277,6 @@ body.dark .desc-suggestion-btn {
 }
 
 /* Highlight секция в Manual (Valeo Windows Login) */
-.help-section-highlight {
-  background: var(--red-light);
-  border: 1px solid rgba(239,68,68,.2);
-  border-radius: var(--radius-sm);
-  padding: 12px;
-  margin-bottom: 24px;
-}
-.help-section-highlight .help-section-header {
-  border-bottom-color: rgba(239,68,68,.2);
-}
-.help-section-highlight .help-section-title {
-  color: var(--red);
-}
-.help-section-highlight .help-section-icon {
-  filter: none;
-}
-.help-section-highlight .help-item b {
-  color: var(--red);
-}
-body.dark .help-section-highlight {
-  background: var(--red-light);
-  border-color: rgba(239,68,68,.25);
-}
 
 /* ═══════════════════════════════════════════
    MOBILE ADAPTATIONS (max-width: 500px)
