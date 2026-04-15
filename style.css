@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
-   Version: 5.52
+   Version: 5.55
 ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -611,6 +611,11 @@ body.dark .dt-sys .event-desc, body.dark .dt-org .event-desc { background: var(-
   border-bottom: 1px solid var(--border);
 }
 .disk-row:last-child { border-bottom: none; }
+.disk-row-inuse { grid-template-rows: auto; }
+
+.disk-id-cell {
+  display: flex; flex-direction: column; gap: 4px;
+}
 
 .disk-row input[type=text] {
   font-weight: 600; font-size: 12px; padding: 5px 8px;
@@ -618,20 +623,24 @@ body.dark .dt-sys .event-desc, body.dark .dt-org .event-desc { background: var(-
 }
 .disk-row input[type=text]:focus { border-color: var(--border); }
 
-.disk-track { height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.disk-track-wrap {
+  position: relative;
+  display: flex; flex-direction: column; gap: 4px; justify-content: center;
+}
+.disk-track { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
 .disk-fill { height: 100%; border-radius: 99px; transition: width .4s, background .4s; }
+.disk-pct-label {
+  font-size: 11px; font-weight: 500; color: var(--sub);
+  text-align: center; white-space: nowrap;
+}
 
 .disk-row select { font-size: 11px; padding: 5px 6px; }
 
-.disk-pct-row {
-  grid-column: 1 / -1;
-  display: flex; align-items: center; gap: 8px; padding-top: 4px;
-}
-.disk-pct-row input {
-  width: 60px; padding: 4px 6px;
+.disk-pct-input {
+  width: 56px; padding: 3px 6px;
   font-size: 12px; font-weight: 700; text-align: center;
+  border-radius: var(--radius-sm);
 }
-.disk-pct-label { font-size: 11px; font-weight: 600; color: var(--sub); }
 
 /* ═══════════════════════════════════════════
    BUTTONS
@@ -755,28 +764,86 @@ body.dark .photo-name-row { background: var(--white); }
 /* ═══════════════════════════════════════════
    CONTACTS
 ═══════════════════════════════════════════ */
-.contact-card { padding: 4px 0; }
-.contact-name {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 10px;
+.contact-address {
+  display: flex; align-items: flex-start; gap: 6px;
+  font-size: 11px; color: var(--muted); line-height: 1.4;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  transition: color .15s;
 }
-.contact-row {
+.contact-address:hover { color: var(--sub); }
+.contact-address svg { flex-shrink: 0; margin-top: 1px; }
+
+.contact-person {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-between;
   gap: 10px;
-  padding: 7px 0;
+  padding: 9px 0;
   border-bottom: 0.5px solid var(--border);
-  font-size: 13px;
-  color: var(--sub);
-  line-height: 1.4;
 }
-.contact-row:last-child { border-bottom: none; }
-.contact-row svg { flex-shrink: 0; margin-top: 2px; color: var(--muted); }
-.contact-link { color: var(--blue); text-decoration: none; word-break: break-all; }
-.contact-link:active { opacity: .7; }
-body.dark .contact-link { color: var(--blue); }
+.contact-person:last-child { border-bottom: none; padding-bottom: 0; }
+
+.contact-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  flex-shrink: 0;
+}
+
+.contact-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.contact-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 11px;
+  border-radius: 20px;
+  border: 1px solid;
+  font-size: 12px; font-weight: 500;
+  font-family: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.contact-btn:active { opacity: .7; }
+
+.contact-btn-amber {
+  background: var(--amber-light);
+  border-color: var(--amber-border);
+  color: #92400E;
+}
+body.dark .contact-btn-amber {
+  background: var(--amber-light);
+  border-color: var(--amber-border);
+  color: var(--amber);
+}
+.contact-btn-blue {
+  background: var(--blue-light);
+  border-color: var(--blue-border);
+  color: #1E3A8A;
+}
+body.dark .contact-btn-blue {
+  background: var(--blue-light);
+  border-color: var(--blue-border);
+  color: var(--blue);
+}
+.contact-btn-gray {
+  background: var(--bg);
+  border-color: var(--border);
+  color: var(--sub);
+}
+body.dark .contact-btn-gray {
+  background: var(--white);
+  border-color: var(--border);
+  color: var(--sub);
+}
 .contact-empty {
   text-align: center;
   color: var(--muted);
@@ -991,7 +1058,40 @@ body.dark .modal { background: var(--glass-bg); }
 }
 .confirm-btns .btn-secondary { padding: 0; border-color: var(--border); background: none; color: var(--sub); }
 .confirm-btns .btn-danger { padding: 0; border-color: rgba(255,59,48,.35); background: var(--red-light); color: var(--red); }
-.modal.modal-full { max-height: 90vh; }
+.modal.modal-full {
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Sticky header */
+.help-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 16px 20px 0;
+  flex-shrink: 0;
+}
+.help-sticky-header .modal-title {
+  margin-bottom: 10px;
+}
+.help-sticky-header .help-lang-switcher {
+  margin-bottom: 12px;
+}
+
+/* Help content scrollable area */
+#helpContent {
+  overflow-y: auto;
+  flex: 1;
+  padding: 16px 20px 32px;
+  -webkit-overflow-scrolling: touch;
+}
 
 /* History */
 .history-item {
@@ -1018,6 +1118,14 @@ body.dark .modal { background: var(--glass-bg); }
 /* ═══════════════════════════════════════════
    MANUAL — профессиональный продуктовый гайд
 ═══════════════════════════════════════════ */
+.help-version {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: .3px;
+  margin-left: auto;
+}
+
 .help-lang-switcher { display: flex; gap: 6px; margin-bottom: 20px; }
 .lang-btn {
   padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border);
@@ -1025,16 +1133,6 @@ body.dark .modal { background: var(--glass-bg); }
   cursor: pointer; font-family: inherit; transition: background .15s, color .15s, border-color .15s;
 }
 .lang-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
-
-.help-version {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--muted);
-  letter-spacing: .5px;
-  text-align: right;
-  margin-bottom: 16px;
-  margin-top: -8px;
-}
 
 .help-section { margin-bottom: 24px; }
 

@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.52
+   Version: 5.55
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.52';
+const APP_VERSION = '5.55';
 
 /* ───────────────────────────────────────────
    DATA
@@ -1073,22 +1073,27 @@ function buildDiskRow(dk) {
   const inUseColor = isInUse ? gradColor(pct) : 'var(--sub)';
 
   const pctInfo = isInUse
-    ? `<div class="disk-pct-row">
-         <input type="number" value="${dk.percent}" min="0" max="90" step="0.1" class="disk-pct-input"
-           style="color:${inUseColor}"
-           onchange="updateDisk(${dk.id},'percent',this.value);renderDisks()"
-           placeholder="TB">
-         <span class="disk-pct-label" style="color:${inUseColor}">TB available · <b>${pct}%</b> full</span>
-       </div>`
+    ? `<input type="number" value="${dk.percent}" min="0" max="90" step="0.1" class="disk-pct-input"
+         style="color:${inUseColor}"
+         onchange="updateDisk(${dk.id},'percent',this.value);renderDisks()"
+         placeholder="TB">`
     : '';
 
+  const barHtml = isInUse
+    ? `<div class="disk-track-wrap">
+         <div class="disk-track"><div class="disk-fill" style="${barStyle}"></div></div>
+         <span class="disk-pct-label" style="color:${inUseColor}"><b>${dk.percent || '—'}</b> TB available · ${pct}% full</span>
+       </div>`
+    : `<div class="disk-track"><div class="disk-fill" style="${barStyle}"></div></div>`;
+
   return `
-  <div class="disk-row" data-did="${dk.id}">
-    <input type="text" value="${esc(dk.diskId || '')}" placeholder="#xxxxxx"
-      onchange="updateDisk(${dk.id},'diskId',this.value)">
-    <div class="disk-track">
-      <div class="disk-fill" style="${barStyle}"></div>
+  <div class="disk-row${isInUse ? ' disk-row-inuse' : ''}" data-did="${dk.id}">
+    <div class="disk-id-cell">
+      <input type="text" value="${esc(dk.diskId || '')}" placeholder="#xxxxxx"
+        onchange="updateDisk(${dk.id},'diskId',this.value)">
+      ${pctInfo}
     </div>
+    ${barHtml}
     <select onchange="updateDisk(${dk.id},'status',this.value);renderDisks()">
       <option value="empty"  ${dk.status==='empty' ?'selected':''}>empty</option>
       <option value="in use" ${dk.status==='in use'?'selected':''}>in use</option>
@@ -1096,7 +1101,6 @@ function buildDiskRow(dk) {
       <option value="faulty" ${dk.status==='faulty'?'selected':''}>faulty</option>
     </select>
     <button class="btn-remove" onclick="removeDisk(${dk.id})"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    ${pctInfo}
   </div>`;
 }
 
@@ -1935,7 +1939,7 @@ const HELP_DATA = {
         items: [
           'Write from the <b>third person</b> — use "The team", "They". Never use I, we, us',
           '<b>No signature</b> at the end',
-          'Photos only in <b>.jpg / .jpeg</b> format — attach to message, never embed in text',
+          'Photos in <b>.jpg / .jpeg</b> format — send to the vehicle WhatsApp group immediately after the ticket, as a separate message',
           'Prepare a ticket if the issue is <b>not solved within 15 min</b> of troubleshooting',
           'Send to the <b>vehicle WhatsApp group</b> and tag: <b>@Nelu Colun, @Kristi Bujor, @Victor Balan</b>',
         ],
@@ -1961,10 +1965,18 @@ const HELP_DATA = {
       },
       {
         icon: '🔐', title: 'Valeo — Windows Login',
-        highlight: true,
         items: [
           'System: <b>Valeo</b>',
           'Windows password: <b>VW-kss2.0</b>',
+        ],
+      },
+      {
+        icon: '🔑', title: 'Quick Reference',
+        items: [
+          '<b>SCRIVE</b> — <a href="https://dgjlw5mhq5zna.cloudfront.net/login" target="_blank" style="color:var(--blue)">dgjlw5mhq5zna.cloudfront.net/login</a>',
+          'Login: <b>driver@scrive.com</b> · Password: <b>Capgemini2022!</b>',
+          '<b>Valeo Windows</b> — Password: <b>VW-kss2.0</b>',
+          '<b>Change drive letter (Win):</b> Win+R → <b>diskmgmt.msc</b> → D: right-click → Change Drive Letter → X → OK',
         ],
       },
       {
@@ -1983,9 +1995,8 @@ const HELP_DATA = {
       },
       {
         icon: '⚖️', title: 'About & Legal',
-        highlight: true,
         items: [
-          '<b>ShiftLog</b> — developed by <b>Eugeniu Gud</b>',
+          '<b>ShiftLog</b> — designed & built by <b>Eugeniu Gud</b>',
           'Copyright © 2024–2026 Eugeniu Gud. All rights reserved.',
           'This application is an original work of the Author and is protected by applicable copyright law.',
           '<b>Permitted use:</b> personal and operational use within the ADAS Valeo/VW Capgemini KSS2.0 team only.',
@@ -2045,7 +2056,7 @@ const HELP_DATA = {
         items: [
           'Scrieți la <b>persoana a treia</b> — folosiți "The team", "They". Nu folosiți I, we, us',
           '<b>Fără semnătură</b> la final',
-          'Fotografii doar în format <b>.jpg / .jpeg</b> — atașate la mesaj, niciodată în text',
+          'Fotografii în format <b>.jpg / .jpeg</b> — trimiteți în grupul WhatsApp al vehiculului imediat după ticket, ca mesaj separat',
           'Pregătiți ticket dacă problema nu este rezolvată în <b>15 minute</b> de troubleshooting',
           'Trimiteți în <b>grupul WhatsApp al vehiculului</b> și marcați: <b>@Nelu Colun, @Kristi Bujor, @Victor Balan</b>',
         ],
@@ -2071,10 +2082,18 @@ const HELP_DATA = {
       },
       {
         icon: '🔐', title: 'Valeo — Autentificare Windows',
-        highlight: true,
         items: [
           'Sistem: <b>Valeo</b>',
           'Parolă Windows: <b>VW-kss2.0</b>',
+        ],
+      },
+      {
+        icon: '🔑', title: 'Quick Reference',
+        items: [
+          '<b>SCRIVE</b> — <a href="https://dgjlw5mhq5zna.cloudfront.net/login" target="_blank" style="color:var(--blue)">dgjlw5mhq5zna.cloudfront.net/login</a>',
+          'Login: <b>driver@scrive.com</b> · Parolă: <b>Capgemini2022!</b>',
+          '<b>Valeo Windows</b> — Parolă: <b>VW-kss2.0</b>',
+          '<b>Schimbare literă disc (Win):</b> Win+R → <b>diskmgmt.msc</b> → D: click dreapta → Change Drive Letter → X → OK',
         ],
       },
       {
@@ -2093,9 +2112,8 @@ const HELP_DATA = {
       },
       {
         icon: '⚖️', title: 'Despre & Legal',
-        highlight: true,
         items: [
-          '<b>ShiftLog</b> — dezvoltat de <b>Eugeniu Gud</b>',
+          '<b>ShiftLog</b> — designed & built by <b>Eugeniu Gud</b>',
           'Copyright © 2024–2026 Eugeniu Gud. Toate drepturile rezervate.',
           'Această aplicație este o operă originală a Autorului și este protejată de legislația privind drepturile de autor.',
           '<b>Utilizare permisă:</b> exclusiv pentru uz personal și operațional în cadrul echipei ADAS Valeo/VW Capgemini KSS2.0.',
@@ -2155,7 +2173,7 @@ const HELP_DATA = {
         items: [
           'Пишем от <b>третьего лица</b> — "The team", "They". Не использовать I, we, us',
           '<b>Без подписи</b> в конце',
-          'Фото только в формате <b>.jpg / .jpeg</b> — прикреплять к сообщению, не вставлять в текст',
+          'Фото в формате <b>.jpg / .jpeg</b> — отправлять в WhatsApp группу авто сразу после тикета, отдельным сообщением',
           'Готовить тикет если проблема не решена за <b>15 минут</b> траблшутинга',
           'Отправлять в <b>группу WhatsApp авто</b> и отмечать: <b>@Nelu Colun, @Kristi Bujor, @Victor Balan</b>',
         ],
@@ -2181,10 +2199,18 @@ const HELP_DATA = {
       },
       {
         icon: '🔐', title: 'Valeo — Вход в Windows',
-        highlight: true,
         items: [
           'Система: <b>Valeo</b>',
           'Пароль Windows: <b>VW-kss2.0</b>',
+        ],
+      },
+      {
+        icon: '🔑', title: 'Quick Reference',
+        items: [
+          '<b>SCRIVE</b> — <a href="https://dgjlw5mhq5zna.cloudfront.net/login" target="_blank" style="color:var(--blue)">dgjlw5mhq5zna.cloudfront.net/login</a>',
+          'Логин: <b>driver@scrive.com</b> · Пароль: <b>Capgemini2022!</b>',
+          '<b>Valeo Windows</b> — Пароль: <b>VW-kss2.0</b>',
+          '<b>Смена буквы диска (Win):</b> Win+R → <b>diskmgmt.msc</b> → D: правая кнопка → Change Drive Letter → X → OK',
         ],
       },
       {
@@ -2203,9 +2229,8 @@ const HELP_DATA = {
       },
       {
         icon: '⚖️', title: 'О приложении и правовая информация',
-        highlight: true,
         items: [
-          '<b>ShiftLog</b> — разработано <b>Eugeniu Gud</b>',
+          '<b>ShiftLog</b> — designed & built by <b>Eugeniu Gud</b>',
           'Copyright © 2024–2026 Eugeniu Gud. Все права защищены.',
           'Приложение является оригинальным произведением Автора и защищено действующим законодательством об авторском праве.',
           '<b>Разрешённое использование:</b> исключительно для личного и служебного использования в команде ADAS Valeo/VW Capgemini KSS2.0.',
@@ -2232,6 +2257,7 @@ const HELP_ICONS = {
   '🔐': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
   '💡': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>',
   '⚖️': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>',
+  '🔑': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>',
 };
 
 function renderHelp(lang) {
@@ -2242,7 +2268,7 @@ function renderHelp(lang) {
     b.classList.toggle('active', b.dataset.lang === lang);
   });
 
-  $('helpContent').innerHTML = `<div class="help-version">ShiftLog v${APP_VERSION}</div>` + data.sections.map(sec => {
+  $('helpContent').innerHTML = data.sections.map((sec, secIdx) => {
     const body = sec.steps
       ? `<div class="help-steps">${sec.steps.map((s, i) => `
           <div class="help-step">
@@ -2258,11 +2284,13 @@ function renderHelp(lang) {
     const tip = sec.tip ? `<div class="help-tip">${sec.tip}</div>` : '';
     const highlightClass = sec.highlight ? ' help-section-highlight' : '';
     const iconHtml = HELP_ICONS[sec.icon] || sec.icon;
+    const versionBadge = secIdx === 0 ? `<span class="help-version">v${APP_VERSION}</span>` : '';
 
     return `<div class="help-section${highlightClass}">
       <div class="help-section-header">
         <span class="help-section-icon">${iconHtml}</span>
         <span class="help-section-title">${sec.title}</span>
+        ${versionBadge}
       </div>
       ${body}${tip}
     </div>`;
