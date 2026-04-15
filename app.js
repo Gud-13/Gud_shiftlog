@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
    ShiftLog — app.js
    Clean, modular vanilla JS
-   Version: 5.55
+   Version: 5.63
 ═══════════════════════════════════════════ */
 
 'use strict';
 
-const APP_VERSION = '5.55';
+const APP_VERSION = '5.60';
 
 /* ───────────────────────────────────────────
    DATA
@@ -1073,27 +1073,22 @@ function buildDiskRow(dk) {
   const inUseColor = isInUse ? gradColor(pct) : 'var(--sub)';
 
   const pctInfo = isInUse
-    ? `<input type="number" value="${dk.percent}" min="0" max="90" step="0.1" class="disk-pct-input"
-         style="color:${inUseColor}"
-         onchange="updateDisk(${dk.id},'percent',this.value);renderDisks()"
-         placeholder="TB">`
-    : '';
-
-  const barHtml = isInUse
-    ? `<div class="disk-track-wrap">
-         <div class="disk-track"><div class="disk-fill" style="${barStyle}"></div></div>
+    ? `<div class="disk-pct-row">
+         <input type="number" value="${dk.percent}" min="0" max="90" step="0.1" class="disk-pct-input"
+           style="color:${inUseColor}"
+           onchange="updateDisk(${dk.id},'percent',this.value);renderDisks()"
+           placeholder="TB">
          <span class="disk-pct-label" style="color:${inUseColor}"><b>${dk.percent || '—'}</b> TB available · ${pct}% full</span>
        </div>`
-    : `<div class="disk-track"><div class="disk-fill" style="${barStyle}"></div></div>`;
+    : '';
 
   return `
-  <div class="disk-row${isInUse ? ' disk-row-inuse' : ''}" data-did="${dk.id}">
-    <div class="disk-id-cell">
-      <input type="text" value="${esc(dk.diskId || '')}" placeholder="#xxxxxx"
-        onchange="updateDisk(${dk.id},'diskId',this.value)">
-      ${pctInfo}
+  <div class="disk-row" data-did="${dk.id}">
+    <input type="text" value="${esc(dk.diskId || '')}" placeholder="#xxxxxx"
+      onchange="updateDisk(${dk.id},'diskId',this.value)">
+    <div class="disk-track">
+      <div class="disk-fill" style="${barStyle}"></div>
     </div>
-    ${barHtml}
     <select onchange="updateDisk(${dk.id},'status',this.value);renderDisks()">
       <option value="empty"  ${dk.status==='empty' ?'selected':''}>empty</option>
       <option value="in use" ${dk.status==='in use'?'selected':''}>in use</option>
@@ -1101,6 +1096,7 @@ function buildDiskRow(dk) {
       <option value="faulty" ${dk.status==='faulty'?'selected':''}>faulty</option>
     </select>
     <button class="btn-remove" onclick="removeDisk(${dk.id})"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    ${pctInfo}
   </div>`;
 }
 
@@ -1895,102 +1891,93 @@ const HELP_DATA = {
       {
         icon: '📋', title: 'Shift Report',
         steps: [
-          ['Fill in Shift Parameters', 'Date · Vehicle ID · Mission ID · City + Country (📍 auto-detect both) · Driver & Operator ID'],
-          ['Add events via Quick Add', 'Tap a button → event is created with current time. Orange = System DT, Blue = Org DT'],
-          ['Complete each event card', 'Start/End time · KM start→end (Enter copies to end) · Address 📍 · For DT events: pick comment from dropdown, tap ✏️ to edit the text (e.g. replace A→Frankfurt, B→Paris)'],
-          ['Preview & Copy', 'Generates a full formatted report and copies it to clipboard — paste in WhatsApp or email'],
-          ['New Shift', 'Saves current shift to History, clears events. Vehicle ID, Driver, Operator, Country are kept for the next shift automatically.'],
+          ['Shift Parameters', 'Date · Vehicle ID · Driver or Operator ID · City + Country (📍 auto) · Mission ID'],
+          ['Add events', 'Quick Add → event created with current time. Fill: start/end time · KM · Address 📍 · Comment'],
+          ['KM shortcut', 'Type start KM → Enter → value copies to end, cursor moves to end field'],
+          ['Preview & Copy', 'Tap Preview & Copy → full report copied to clipboard → paste in WhatsApp'],
+          ['New Shift', 'Saves to History · clears events · keeps Vehicle, Driver, Operator, Country'],
         ],
-        tip: '⏱ After 30 min an open event triggers a visual warning and a beep — close events on time.',
+        tip: 'Open event > 30 min → warning + beep. Close events on time.',
       },
       {
         icon: '💾', title: 'Disk Status',
         items: [
-          'Tap <b>+ Add disk</b> for each SSD in the storage box',
-          'Status: <b style="color:#30d158">empty</b> — <b style="color:#ff9f0a">in use</b> — <b style="color:#ff453a">full</b> — <b style="color:#8e8e93">faulty</b>',
-          'For <b>in use</b>: enter available TB → fill % is calculated from 90 TB total capacity',
-          'Progress bar color: green → yellow → red as disk fills up',
-          'Disks are sorted automatically: <b>in use → empty → full → faulty</b>',
-          '<b>🔄 Real-time sync</b> — disk status is shared between all devices with the same Vehicle ID instantly',
-          '<b>Last updated</b> line shows who and when last changed the disk data',
-          '<b>📋 Copy report</b> — formatted text ready to paste in WhatsApp',
+          '+ Add disk — one per SSD in the box',
+          'Set status: <b style="color:#16A34A">empty</b> · <b style="color:#F59E0B">in use</b> · <b style="color:#EF4444">full</b> · <b style="color:#6B7280">faulty</b>',
+          'For <b>in use</b>: enter available TB → % calculated automatically',
+          'Sorted: in use → empty → full → faulty',
+          '🔄 Real-time sync — all devices with same Vehicle ID see changes instantly',
+          'Copy report → paste in WhatsApp',
         ],
       },
       {
         icon: '🎫', title: 'Ticket',
         steps: [
-          ['Ticket Settings (once)', 'Fill in Team Leader, Vehicle, Plate, Phones, Location — saved permanently to the device'],
-          ['Choose a template', 'SSD Logistics: Sending / Receiving / Both → replace [SSD ID] and [tracking number] placeholders'],
-          ['Copy Ticket', 'Tap 📋 Copy Ticket → paste directly into WhatsApp or email. ✕ Clear resets the fields.'],
-          ['Copy Update', 'Type update text in the Update block → 📤 Copy Update — "Update:" prefix is added automatically. ✕ Clear resets the field.'],
+          ['Settings (once)', 'Team Leader · Plate · VW Phone · Cap Phone · Location — saved permanently'],
+          ['Template', 'Select template → fills Category + Description + Body automatically'],
+          ['Copy Ticket', 'Copy Ticket → paste in WhatsApp group · ✕ Clear resets fields'],
+          ['Copy Update', 'Type update → Copy Update → "Update:" prefix added automatically'],
+          ['Photo', 'Send .jpg photos to vehicle WhatsApp group immediately after the ticket, as a separate message'],
         ],
       },
       {
-        icon: '📁', title: 'Docs',
+        icon: '📸', title: 'Photo Name',
         items: [
-          '<b>Quick Links</b> — fast access to Weekly Checklist, Standby hours sheet, Tour money form',
-          '<b>Manuals</b> — KSS2.0 documentation, ticket guides, driver & labeling manuals',
-          '<b>Documents</b> — tap Open to view protocol PDFs in Google Drive',
-          '<b>Shift Schedule</b> — S1/S2/S3 timetable, current shift is highlighted automatically',
+          'Format: <b>YYYYMMDD_V-number_description_1</b>',
+          'Auto-generated from Date + Vehicle + Description in Ticket block',
+          'Tap 📋 to copy · use − / + to change photo number',
+        ],
+      },
+      {
+        icon: '🔑', title: 'Quick Reference',
+        items: [
+          '<b>SCRIVE:</b> <a href="https://dgjlw5mhq5zna.cloudfront.net/login" target="_blank" style="color:var(--blue)">dgjlw5mhq5zna.cloudfront.net/login</a>',
+          'Login: <b>driver@scrive.com</b> · Password: <b>Capgemini2022!</b>',
+          '<b>Valeo Windows</b> password: <b>VW-kss2.0</b>',
+          '<b>Change drive letter:</b> Win+R → <b>diskmgmt.msc</b> → D: right-click → Change Drive Letter → X → OK',
         ],
       },
       {
         icon: '📋', title: 'Ticket Rules',
         items: [
-          'Write from the <b>third person</b> — use "The team", "They". Never use I, we, us',
+          'Write in <b>third person</b> — "The team…". No I / we / us',
           '<b>No signature</b> at the end',
-          'Photos in <b>.jpg / .jpeg</b> format — send to the vehicle WhatsApp group immediately after the ticket, as a separate message',
-          'Prepare a ticket if the issue is <b>not solved within 15 min</b> of troubleshooting',
-          'Send to the <b>vehicle WhatsApp group</b> and tag: <b>@Nelu Colun, @Kristi Bujor, @Victor Balan</b>',
-        ],
-        tip: 'After sending — wait for confirmation before further actions. Until instructions arrive, continue troubleshooting according to the existing manual.',
-      },
-      {
-        icon: '📸', title: 'Photo Naming Convention',
-        items: [
-          'Format: <b>YYYYMMDD_V-number_title_1</b>',
-          'Example: <b>20240730_DC-205_measurement-system-issues_1</b>',
-          'All photos must be in <b>.jpg / .jpeg</b> format',
-          'In the <b>Ticket block</b>, the file name is generated automatically from Date, Vehicle ID and Description — tap 📋 to copy. Use <b>− / +</b> buttons to change the photo number.',
+          'Prepare ticket if issue <b>not solved in 15 min</b>',
+          'Send to <b>vehicle WhatsApp group</b> · tag: <b>@Nelu Colun · @Kristi Bujor · @Victor Balan</b>',
+          'After sending — wait for confirmation before further action',
         ],
       },
       {
-        icon: '🖥', title: 'SCRIVE — Shift Protocol',
+        icon: '📁', title: 'Docs',
         items: [
-          'Web app by Capgemini for filling in the shift protocol',
-          'Link: <b>https://dgjlw5mhq5zna.cloudfront.net/login</b>',
-          'Login: <b>driver@scrive.com</b>',
-          'Password: <b>Capgemini2022!</b>',
+          '<b>Quick Links</b> — Weekly Checklist · Standby hours · Tour money form',
+          '<b>Manuals</b> — KSS2.0 · Ticket guides · Driver manual · Labeling',
+          '<b>Documents</b> — Handover/SSD protocols (tap Open → Google Drive)',
+        ],
+      },
+      {
+        icon: '🖥', title: 'SCRIVE',
+        items: [
+          'Web app: <a href="https://dgjlw5mhq5zna.cloudfront.net/login" target="_blank" style="color:var(--blue)">dgjlw5mhq5zna.cloudfront.net/login</a>',
+          'Login: <b>driver@scrive.com</b> · Password: <b>Capgemini2022!</b>',
         ],
       },
       {
         icon: '🔐', title: 'Valeo — Windows Login',
         items: [
           'System: <b>Valeo</b>',
-          'Windows password: <b>VW-kss2.0</b>',
+          'Password: <b>VW-kss2.0</b>',
         ],
       },
       {
-        icon: '🔑', title: 'Quick Reference',
+        icon: '💡', title: 'Tips',
         items: [
-          '<b>SCRIVE</b> — <a href="https://dgjlw5mhq5zna.cloudfront.net/login" target="_blank" style="color:var(--blue)">dgjlw5mhq5zna.cloudfront.net/login</a>',
-          'Login: <b>driver@scrive.com</b> · Password: <b>Capgemini2022!</b>',
-          '<b>Valeo Windows</b> — Password: <b>VW-kss2.0</b>',
-          '<b>Change drive letter (Win):</b> Win+R → <b>diskmgmt.msc</b> → D: right-click → Change Drive Letter → X → OK',
-        ],
-      },
-      {
-        icon: '💡', title: 'Tips & Shortcuts',
-        items: [
-          '<b>S1 / S2 / S3 badge</b> in the header shows your current shift at a glance',
-          '<b>Enter</b> in any field confirms input and closes the keyboard on mobile',
-          '<b>KM Start → Enter</b> auto-copies the value to KM End field',
-          '<b>History</b> — last 14 shifts saved, tap Copy to re-send any report',
-          'Page refresh is safe — everything is auto-saved every 5 seconds',
-          '<b>App updates automatically</b> — no need to reinstall. Just open the app and it will update in the background',
-          '<b>Install on iPhone:</b> Safari → Share button → "Add to Home Screen" — works like a native app',
-          '<b>Install on Android:</b> Chrome → ⋮ menu → "Add to Home Screen"',
-          '<b>Change SSD drive letter (Windows):</b> Win+R → <b>diskmgmt.msc</b> → find D: → right-click → Change Drive Letter → select X → OK',
+          '<b>S1/S2/S3 badge</b> — shows current shift',
+          '<b>Enter</b> in any field — confirms + closes keyboard',
+          '<b>History</b> — last 14 shifts · tap Copy to resend',
+          '<b>Install iPhone:</b> Safari → Share → Add to Home Screen',
+          '<b>Install Android:</b> Chrome → ⋮ → Add to Home Screen',
+          'Auto-saves every 5s · page refresh is safe',
         ],
       },
       {
@@ -1998,11 +1985,9 @@ const HELP_DATA = {
         items: [
           '<b>ShiftLog</b> — designed & built by <b>Eugeniu Gud</b>',
           'Copyright © 2024–2026 Eugeniu Gud. All rights reserved.',
-          'This application is an original work of the Author and is protected by applicable copyright law.',
-          '<b>Permitted use:</b> personal and operational use within the ADAS Valeo/VW Capgemini KSS2.0 team only.',
-          '<b>Restrictions:</b> copying, redistribution, commercial use, or transfer to third parties without written permission from the Author is strictly prohibited.',
-          '<b>Data:</b> shift data is stored locally on your device. Disk status is synced via Firebase Realtime Database for team use only.',
-          '<b>Disclaimer:</b> the application is provided without warranties of any kind. The Author is not liable for any damages arising from its use.',
+          '<b>Permitted use:</b> ADAS Valeo/VW Capgemini KSS2.0 team only.',
+          '<b>Restrictions:</b> no copying, redistribution or commercial use without written permission.',
+          '<b>Data:</b> stored locally. Disk status synced via Firebase for team use only.',
         ],
       },
     ],
@@ -2012,102 +1997,93 @@ const HELP_DATA = {
       {
         icon: '📋', title: 'Shift Report',
         steps: [
-          ['Completați Shift Parameters', 'Dată · ID vehicul · ID misiune · Oraș + Țară (📍 detectare automată ambele) · ID șofer & operator'],
-          ['Adăugați evenimente', 'Apăsați buton → eveniment creat cu ora curentă. Portocaliu = System DT, Albastru = Org DT'],
-          ['Completați cardul evenimentului', 'Ora start/end · KM start→end (Enter copiază) · Adresă 📍 · Selectați comentariu din dropdown, apăsați ✏️ pentru a edita textul (ex. înlocuiți A→Frankfurt, B→Paris)'],
-          ['Preview & Copy', 'Generează raport complet și îl copiază în clipboard — lipiți în WhatsApp sau email'],
-          ['New Shift', 'Salvează în History, șterge evenimentele. Vehicle ID, Driver, Operator, Country sunt păstrate automat pentru tura următoare.'],
+          ['Shift Parameters', 'Dată · Vehicle ID · Driver sau Operator ID · Oraș + Țară (📍 auto) · Mission ID'],
+          ['Adaugă evenimente', 'Quick Add → eveniment creat cu ora curentă. Completează: start/end · KM · Adresă 📍 · Comentariu'],
+          ['Scurtătură KM', 'Tastează KM start → Enter → valoarea se copiază în end, cursorul merge la end'],
+          ['Preview & Copy', 'Tap Preview & Copy → raport complet copiat → lipește în WhatsApp'],
+          ['New Shift', 'Salvează în History · șterge evenimentele · păstrează Vehicle, Driver, Operator, Country'],
         ],
-        tip: '⏱ După 30 min un eveniment deschis declanșează avertisment vizual și semnal sonor — închideți la timp.',
+        tip: 'Eveniment deschis > 30 min → avertisment + semnal. Închide la timp.',
       },
       {
         icon: '💾', title: 'Disk Status',
         items: [
-          'Apăsați <b>+ Add disk</b> pentru fiecare SSD din cutie',
-          'Status: <b style="color:#30d158">empty</b> — <b style="color:#ff9f0a">in use</b> — <b style="color:#ff453a">full</b> — <b style="color:#8e8e93">faulty</b>',
-          'Pentru <b>in use</b>: introduceți TB disponibili → % se calculează din 90 TB total',
-          'Bara de progres: verde → galben → roșu pe măsură ce discul se umple',
-          'Discurile sunt sortate automat: <b>in use → empty → full → faulty</b>',
-          '<b>🔄 Sincronizare în timp real</b> — statusul discurilor este partajat între toate dispozitivele cu același Vehicle ID instantaneu',
-          '<b>Last updated</b> arată cine și când a modificat ultima dată datele discurilor',
-          '<b>📋 Copy report</b> — text formatat gata de lipit în WhatsApp',
+          '+ Add disk — câte unul per SSD',
+          'Status: <b style="color:#16A34A">empty</b> · <b style="color:#F59E0B">in use</b> · <b style="color:#EF4444">full</b> · <b style="color:#6B7280">faulty</b>',
+          'Pentru <b>in use</b>: introdu TB disponibili → % calculat automat',
+          'Sortat: in use → empty → full → faulty',
+          '🔄 Sincronizare în timp real — toate dispozitivele cu același Vehicle ID',
+          'Copy report → lipește în WhatsApp',
         ],
       },
       {
         icon: '🎫', title: 'Ticket',
         steps: [
-          ['Ticket Settings (o dată)', 'Team Leader, Vehicul, Înmatriculare, Telefoane, Locație — salvate permanent pe dispozitiv'],
-          ['Selectați template', 'SSD Logistics: Sending / Receiving / Both → înlocuiți [SSD ID] și [tracking number]'],
-          ['Copy Ticket', 'Apăsați 📋 Copy Ticket → lipiți direct în WhatsApp. ✕ Clear resetează câmpurile.'],
-          ['Copy Update', 'Scrieți textul în blocul Update → 📤 Copy Update — prefixul "Update:" se adaugă automat. ✕ Clear resetează câmpul.'],
+          ['Settings (o dată)', 'Team Leader · Înmatriculare · Telefoane · Locație — salvate permanent'],
+          ['Template', 'Selectează template → completează Category + Description + Body automat'],
+          ['Copy Ticket', 'Copy Ticket → lipește în grupul WhatsApp · ✕ Clear resetează'],
+          ['Copy Update', 'Scrie update → Copy Update → prefixul "Update:" adăugat automat'],
+          ['Foto', 'Trimite poze .jpg în grupul WhatsApp al vehiculului imediat după ticket, ca mesaj separat'],
         ],
       },
       {
-        icon: '📁', title: 'Docs',
+        icon: '📸', title: 'Denumire Foto',
         items: [
-          '<b>Quick Links</b> — acces rapid la Checklist săptămânal, ore standby, formular bani deplasare',
-          '<b>Manuals</b> — documentație KSS2.0, ghiduri tickete, manuale șofer & etichetare',
-          '<b>Documents</b> — Open deschide PDF-ul protocolului în Google Drive',
-          '<b>Shift Schedule</b> — S1/S2/S3, schimbul curent evidențiat automat',
+          'Format: <b>YYYYMMDD_V-number_descriere_1</b>',
+          'Generat automat din Dată + Vehicle + Description în blocul Ticket',
+          'Tap 📋 pentru copiere · − / + pentru numărul fotografiei',
+        ],
+      },
+      {
+        icon: '🔑', title: 'Quick Reference',
+        items: [
+          '<b>SCRIVE:</b> <a href="https://dgjlw5mhq5zna.cloudfront.net/login" target="_blank" style="color:var(--blue)">dgjlw5mhq5zna.cloudfront.net/login</a>',
+          'Login: <b>driver@scrive.com</b> · Parolă: <b>Capgemini2022!</b>',
+          '<b>Valeo Windows</b> parolă: <b>VW-kss2.0</b>',
+          '<b>Schimbare literă disc:</b> Win+R → <b>diskmgmt.msc</b> → D: click dreapta → Change Drive Letter → X → OK',
         ],
       },
       {
         icon: '📋', title: 'Reguli Ticket',
         items: [
-          'Scrieți la <b>persoana a treia</b> — folosiți "The team", "They". Nu folosiți I, we, us',
+          'Scrie la <b>persoana a treia</b> — "The team…". Fără I / we / us',
           '<b>Fără semnătură</b> la final',
-          'Fotografii în format <b>.jpg / .jpeg</b> — trimiteți în grupul WhatsApp al vehiculului imediat după ticket, ca mesaj separat',
-          'Pregătiți ticket dacă problema nu este rezolvată în <b>15 minute</b> de troubleshooting',
-          'Trimiteți în <b>grupul WhatsApp al vehiculului</b> și marcați: <b>@Nelu Colun, @Kristi Bujor, @Victor Balan</b>',
-        ],
-        tip: 'După trimitere — așteptați confirmarea înainte de acțiuni ulterioare. Până la primirea instrucțiunilor, continuați troubleshooting conform manualului existent.',
-      },
-      {
-        icon: '📸', title: 'Denumire Fotografii',
-        items: [
-          'Format: <b>YYYYMMDD_V-number_titlu_1</b>',
-          'Exemplu: <b>20240730_DC-205_measurement-system-issues_1</b>',
-          'Toate fotografiile trebuie să fie în format <b>.jpg / .jpeg</b>',
-          'În blocul <b>Ticket</b>, numele fișierului se generează automat din Dată, Vehicle ID și Description — apăsați 📋 pentru copiere. Folosiți butoanele <b>− / +</b> pentru a schimba numărul fotografiei.',
+          'Pregătește ticket dacă problema <b>nu e rezolvată în 15 min</b>',
+          'Trimite în <b>grupul WhatsApp al vehiculului</b> · tag: <b>@Nelu Colun · @Kristi Bujor · @Victor Balan</b>',
+          'După trimitere — așteaptă confirmare înainte de acțiuni ulterioare',
         ],
       },
       {
-        icon: '🖥', title: 'SCRIVE — Protocol Tură',
+        icon: '📁', title: 'Docs',
         items: [
-          'Aplicație web Capgemini pentru completarea protocolului de tură',
-          'Link: <b>https://dgjlw5mhq5zna.cloudfront.net/login</b>',
-          'Login: <b>driver@scrive.com</b>',
-          'Parolă: <b>Capgemini2022!</b>',
+          '<b>Quick Links</b> — Checklist săptămânal · Ore standby · Formular bani',
+          '<b>Manuals</b> — KSS2.0 · Ghiduri tickete · Manual șofer · Etichetare',
+          '<b>Documents</b> — Protocoale handover/SSD (Open → Google Drive)',
+        ],
+      },
+      {
+        icon: '🖥', title: 'SCRIVE',
+        items: [
+          'Web app: <a href="https://dgjlw5mhq5zna.cloudfront.net/login" target="_blank" style="color:var(--blue)">dgjlw5mhq5zna.cloudfront.net/login</a>',
+          'Login: <b>driver@scrive.com</b> · Parolă: <b>Capgemini2022!</b>',
         ],
       },
       {
         icon: '🔐', title: 'Valeo — Autentificare Windows',
         items: [
           'Sistem: <b>Valeo</b>',
-          'Parolă Windows: <b>VW-kss2.0</b>',
-        ],
-      },
-      {
-        icon: '🔑', title: 'Quick Reference',
-        items: [
-          '<b>SCRIVE</b> — <a href="https://dgjlw5mhq5zna.cloudfront.net/login" target="_blank" style="color:var(--blue)">dgjlw5mhq5zna.cloudfront.net/login</a>',
-          'Login: <b>driver@scrive.com</b> · Parolă: <b>Capgemini2022!</b>',
-          '<b>Valeo Windows</b> — Parolă: <b>VW-kss2.0</b>',
-          '<b>Schimbare literă disc (Win):</b> Win+R → <b>diskmgmt.msc</b> → D: click dreapta → Change Drive Letter → X → OK',
+          'Parolă: <b>VW-kss2.0</b>',
         ],
       },
       {
         icon: '💡', title: 'Sfaturi',
         items: [
-          '<b>Badge S1/S2/S3</b> în header arată schimbul curent',
-          '<b>Enter</b> confirmă câmpul și închide tastatura pe mobil',
-          '<b>KM Start → Enter</b> copiază automat valoarea în KM End',
-          '<b>History</b> — ultimele 14 schimburi salvate, Copy retrimite orice raport',
-          'Reîncărcarea paginii este sigură — salvare automată la fiecare 5 secunde',
-          '<b>Aplicația se actualizează automat</b> — nu este nevoie de reinstalare. Deschideți aplicația și se va actualiza în fundal',
-          '<b>Instalare pe iPhone:</b> Safari → buton Share → Add to Home Screen — funcționează ca o aplicație nativă',
-          '<b>Instalare pe Android:</b> Chrome → meniu ⋮ → Add to Home Screen',
-          '<b>Schimbare literă disc (Windows):</b> Win+R → <b>diskmgmt.msc</b> → D: click dreapta → Change Drive Letter → X → OK',
+          '<b>Badge S1/S2/S3</b> — arată schimbul curent',
+          '<b>Enter</b> în orice câmp — confirmă + închide tastatura',
+          '<b>History</b> — ultimele 14 schimburi · Copy pentru retrimis',
+          '<b>iPhone:</b> Safari → Share → Add to Home Screen',
+          '<b>Android:</b> Chrome → ⋮ → Add to Home Screen',
+          'Salvare automată la 5s · reîncărcarea paginii e sigură',
         ],
       },
       {
@@ -2115,11 +2091,9 @@ const HELP_DATA = {
         items: [
           '<b>ShiftLog</b> — designed & built by <b>Eugeniu Gud</b>',
           'Copyright © 2024–2026 Eugeniu Gud. Toate drepturile rezervate.',
-          'Această aplicație este o operă originală a Autorului și este protejată de legislația privind drepturile de autor.',
-          '<b>Utilizare permisă:</b> exclusiv pentru uz personal și operațional în cadrul echipei ADAS Valeo/VW Capgemini KSS2.0.',
-          '<b>Restricții:</b> copierea, redistribuirea, utilizarea comercială sau transferul către terți fără permisiunea scrisă a Autorului este strict interzisă.',
-          '<b>Date:</b> datele turelor sunt stocate local pe dispozitiv. Statusul discurilor este sincronizat prin Firebase Realtime Database exclusiv pentru echipă.',
-          '<b>Declinare de responsabilitate:</b> aplicația este furnizată fără garanții de nicio natură. Autorul nu este responsabil pentru niciun prejudiciu rezultat din utilizarea sa.',
+          '<b>Utilizare permisă:</b> exclusiv echipa ADAS Valeo/VW Capgemini KSS2.0.',
+          '<b>Restricții:</b> fără copiere, redistribuire sau uz comercial fără permisiune scrisă.',
+          '<b>Date:</b> stocate local. Status discuri sincronizat via Firebase pentru echipă.',
         ],
       },
     ],
@@ -2129,102 +2103,93 @@ const HELP_DATA = {
       {
         icon: '📋', title: 'Shift Report',
         steps: [
-          ['Заполни Shift Parameters', 'Дата · Vehicle ID · Mission ID · Город + Страна (📍 автоопределение обоих) · Driver & Operator ID'],
-          ['Добавляй события через Quick Add', 'Нажми кнопку → событие с текущим временем. Оранжевый = System DT, Синий = Org DT'],
-          ['Заполни карточку события', 'Время start/end · KM start→end (Enter копирует) · Адрес 📍 · Для DT: выбери комментарий из dropdown, нажми ✏️ для редактирования текста (например замени A→Франкфурт, B→Париж)'],
-          ['Preview & Copy', 'Генерирует полный отчёт и копирует в буфер — вставляй в WhatsApp или email'],
-          ['New Shift', 'Сохраняет смену в историю, очищает события. Vehicle ID, Driver, Operator, Country сохраняются автоматически для следующей смены.'],
+          ['Shift Parameters', 'Дата · Vehicle ID · Driver или Operator ID · Город + Страна (📍 авто) · Mission ID'],
+          ['Добавь события', 'Quick Add → событие с текущим временем. Заполни: start/end · KM · Адрес 📍 · Комментарий'],
+          ['Shortcut KM', 'Введи KM start → Enter → значение копируется в end, курсор переходит в end'],
+          ['Preview & Copy', 'Tap Preview & Copy → полный отчёт скопирован → вставь в WhatsApp'],
+          ['New Shift', 'Сохраняет в History · очищает события · сохраняет Vehicle, Driver, Operator, Country'],
         ],
-        tip: '⏱ Через 30 мин открытое событие показывает визуальное предупреждение и звуковой сигнал — закрывай вовремя.',
+        tip: 'Открытое событие > 30 мин → предупреждение + звук. Закрывай вовремя.',
       },
       {
         icon: '💾', title: 'Disk Status',
         items: [
-          'Нажми <b>+ Add disk</b> для каждого SSD в боксе',
-          'Статус: <b style="color:#30d158">empty</b> — <b style="color:#ff9f0a">in use</b> — <b style="color:#ff453a">full</b> — <b style="color:#8e8e93">faulty</b>',
-          'Для <b>in use</b>: введи доступные TB → % заполненности считается от 90 TB',
-          'Цвет прогресс-бара: зелёный → жёлтый → красный по мере заполнения',
-          'Диски сортируются автоматически: <b>in use → empty → full → faulty</b>',
-          '<b>🔄 Синхронизация в реальном времени</b> — статус дисков виден на всех устройствах с одинаковым Vehicle ID мгновенно',
-          '<b>Last updated</b> показывает кто и когда последний раз менял данные дисков',
-          '<b>📋 Copy report</b> — форматированный текст для вставки в WhatsApp',
+          '+ Add disk — по одному на каждый SSD',
+          'Статус: <b style="color:#16A34A">empty</b> · <b style="color:#F59E0B">in use</b> · <b style="color:#EF4444">full</b> · <b style="color:#6B7280">faulty</b>',
+          'Для <b>in use</b>: введи доступные TB → % считается автоматически',
+          'Сортировка: in use → empty → full → faulty',
+          '🔄 Синхронизация в реальном времени — все устройства с одинаковым Vehicle ID',
+          'Copy report → вставь в WhatsApp',
         ],
       },
       {
         icon: '🎫', title: 'Ticket',
         steps: [
-          ['Ticket Settings (один раз)', 'Тимлидер, Авто, Номер, Телефоны, Адрес — сохраняются навсегда на устройстве'],
-          ['Выбери шаблон', 'SSD Logistics: Sending / Receiving / Both → замени [SSD ID] и [tracking number]'],
-          ['Copy Ticket', 'Нажми 📋 Copy Ticket → вставляй напрямую в WhatsApp. ✕ Clear сбрасывает поля.'],
-          ['Copy Update', 'Введи текст в блоке Update → 📤 Copy Update — префикс "Update:" добавляется автоматически. ✕ Clear сбрасывает поле.'],
+          ['Settings (один раз)', 'Тимлидер · Номер · Телефоны · Адрес — сохраняются навсегда'],
+          ['Template', 'Выбери шаблон → Category + Description + Body заполняются автоматически'],
+          ['Copy Ticket', 'Copy Ticket → вставь в WhatsApp группу · ✕ Clear сбрасывает поля'],
+          ['Copy Update', 'Введи update → Copy Update → префикс "Update:" добавляется автоматически'],
+          ['Фото', 'Отправляй фото .jpg в WhatsApp группу авто сразу после тикета, отдельным сообщением'],
         ],
       },
       {
-        icon: '📁', title: 'Docs',
+        icon: '📸', title: 'Именование фото',
         items: [
-          '<b>Quick Links</b> — быстрый доступ к недельному чеклисту, таблице standby, форме денег на поездку',
-          '<b>Manuals</b> — документация KSS2.0, гайды по тикетам, мануалы для водителей и разметки',
-          '<b>Documents</b> — Open открывает PDF протокола в Google Drive',
-          '<b>Shift Schedule</b> — расписание S1/S2/S3, текущая смена подсвечивается автоматически',
+          'Формат: <b>YYYYMMDD_V-number_описание_1</b>',
+          'Генерируется автоматически из Даты + Vehicle + Description в блоке Ticket',
+          'Tap 📋 чтобы скопировать · − / + для номера фото',
+        ],
+      },
+      {
+        icon: '🔑', title: 'Quick Reference',
+        items: [
+          '<b>SCRIVE:</b> <a href="https://dgjlw5mhq5zna.cloudfront.net/login" target="_blank" style="color:var(--blue)">dgjlw5mhq5zna.cloudfront.net/login</a>',
+          'Логин: <b>driver@scrive.com</b> · Пароль: <b>Capgemini2022!</b>',
+          '<b>Valeo Windows</b> пароль: <b>VW-kss2.0</b>',
+          '<b>Смена буквы диска:</b> Win+R → <b>diskmgmt.msc</b> → D: правая кнопка → Change Drive Letter → X → OK',
         ],
       },
       {
         icon: '📋', title: 'Правила тикета',
         items: [
-          'Пишем от <b>третьего лица</b> — "The team", "They". Не использовать I, we, us',
+          'Пиши от <b>третьего лица</b> — "The team…". Без I / we / us',
           '<b>Без подписи</b> в конце',
-          'Фото в формате <b>.jpg / .jpeg</b> — отправлять в WhatsApp группу авто сразу после тикета, отдельным сообщением',
-          'Готовить тикет если проблема не решена за <b>15 минут</b> траблшутинга',
-          'Отправлять в <b>группу WhatsApp авто</b> и отмечать: <b>@Nelu Colun, @Kristi Bujor, @Victor Balan</b>',
-        ],
-        tip: 'После отправки — дождись подтверждения перед дальнейшими действиями. До получения инструкций продолжать troubleshooting согласно существующему мануалу.',
-      },
-      {
-        icon: '📸', title: 'Именование фотографий',
-        items: [
-          'Формат: <b>YYYYMMDD_V-number_title_1</b>',
-          'Пример: <b>20240730_DC-205_measurement-system-issues_1</b>',
-          'Все фото должны быть в формате <b>.jpg / .jpeg</b>',
-          'В блоке <b>Ticket</b> имя файла генерируется автоматически из Даты, Vehicle ID и Description — нажми 📋 чтобы скопировать. Кнопки <b>− / +</b> меняют номер фото.',
+          'Готовь тикет если проблема <b>не решена за 15 мин</b>',
+          'Отправляй в <b>WhatsApp группу авто</b> · отмечай: <b>@Nelu Colun · @Kristi Bujor · @Victor Balan</b>',
+          'После отправки — жди подтверждения перед дальнейшими действиями',
         ],
       },
       {
-        icon: '🖥', title: 'SCRIVE — Протокол смены',
+        icon: '📁', title: 'Docs',
         items: [
-          'Веб-приложение Capgemini для заполнения протокола смены',
-          'Ссылка: <b>https://dgjlw5mhq5zna.cloudfront.net/login</b>',
-          'Логин: <b>driver@scrive.com</b>',
-          'Пароль: <b>Capgemini2022!</b>',
+          '<b>Quick Links</b> — Недельный чеклист · Standby часы · Форма денег',
+          '<b>Manuals</b> — KSS2.0 · Гайды тикетов · Мануал водителя · Разметка',
+          '<b>Documents</b> — Протоколы handover/SSD (Open → Google Drive)',
+        ],
+      },
+      {
+        icon: '🖥', title: 'SCRIVE',
+        items: [
+          'Web app: <a href="https://dgjlw5mhq5zna.cloudfront.net/login" target="_blank" style="color:var(--blue)">dgjlw5mhq5zna.cloudfront.net/login</a>',
+          'Логин: <b>driver@scrive.com</b> · Пароль: <b>Capgemini2022!</b>',
         ],
       },
       {
         icon: '🔐', title: 'Valeo — Вход в Windows',
         items: [
           'Система: <b>Valeo</b>',
-          'Пароль Windows: <b>VW-kss2.0</b>',
-        ],
-      },
-      {
-        icon: '🔑', title: 'Quick Reference',
-        items: [
-          '<b>SCRIVE</b> — <a href="https://dgjlw5mhq5zna.cloudfront.net/login" target="_blank" style="color:var(--blue)">dgjlw5mhq5zna.cloudfront.net/login</a>',
-          'Логин: <b>driver@scrive.com</b> · Пароль: <b>Capgemini2022!</b>',
-          '<b>Valeo Windows</b> — Пароль: <b>VW-kss2.0</b>',
-          '<b>Смена буквы диска (Win):</b> Win+R → <b>diskmgmt.msc</b> → D: правая кнопка → Change Drive Letter → X → OK',
+          'Пароль: <b>VW-kss2.0</b>',
         ],
       },
       {
         icon: '💡', title: 'Советы',
         items: [
-          '<b>Бейдж S1/S2/S3</b> в шапке показывает текущую смену',
-          '<b>Enter</b> подтверждает поле и убирает клавиатуру на мобильном',
-          '<b>KM Start → Enter</b> автоматически копирует значение в KM End',
-          '<b>История</b> — последние 14 смен, Copy повторно отправляет любой отчёт',
-          'Перезагрузка страницы безопасна — автосохранение каждые 5 секунд',
-          '<b>Приложение обновляется автоматически</b> — удалять и переустанавливать не нужно. Просто открой — обновится в фоне',
-          '<b>Установка на iPhone:</b> Safari → кнопка «Поделиться» → «На экран Домой» — работает как нативное приложение',
-          '<b>Установка на Android:</b> Chrome → меню ⋮ → «Добавить на главный экран»',
-          '<b>Смена буквы диска (Windows):</b> Win+R → <b>diskmgmt.msc</b> → D: правая кнопка → Change Drive Letter → X → OK',
+          '<b>Badge S1/S2/S3</b> — показывает текущую смену',
+          '<b>Enter</b> в любом поле — подтверждает + убирает клавиатуру',
+          '<b>History</b> — последние 14 смен · Copy для повторной отправки',
+          '<b>iPhone:</b> Safari → Share → Add to Home Screen',
+          '<b>Android:</b> Chrome → ⋮ → Add to Home Screen',
+          'Автосохранение каждые 5с · перезагрузка безопасна',
         ],
       },
       {
@@ -2232,11 +2197,9 @@ const HELP_DATA = {
         items: [
           '<b>ShiftLog</b> — designed & built by <b>Eugeniu Gud</b>',
           'Copyright © 2024–2026 Eugeniu Gud. Все права защищены.',
-          'Приложение является оригинальным произведением Автора и защищено действующим законодательством об авторском праве.',
-          '<b>Разрешённое использование:</b> исключительно для личного и служебного использования в команде ADAS Valeo/VW Capgemini KSS2.0.',
-          '<b>Ограничения:</b> копирование, распространение, коммерческое использование или передача третьим лицам без письменного разрешения Автора строго запрещены.',
-          '<b>Данные:</b> данные смен хранятся локально на устройстве. Статус дисков синхронизируется через Firebase Realtime Database исключительно для командного использования.',
-          '<b>Отказ от ответственности:</b> приложение предоставляется без каких-либо гарантий. Автор не несёт ответственности за любой ущерб, возникший в результате его использования.',
+          '<b>Разрешённое использование:</b> только команда ADAS Valeo/VW Capgemini KSS2.0.',
+          '<b>Ограничения:</b> запрещено копирование, распространение и коммерческое использование без разрешения.',
+          '<b>Данные:</b> хранятся локально. Статус дисков синхронизируется через Firebase для команды.',
         ],
       },
     ],
